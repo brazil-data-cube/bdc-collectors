@@ -62,6 +62,20 @@ class BaseCollection:
         """List all files in the collection."""
         return [entry for entry in self.path(collection, prefix).glob('*') if entry.is_file()]
 
+    def get_assets(self, collection: Collection, path=None, prefix=None) -> Dict[str, str]:
+        """Get a list of extra assets contained in collection path.
+
+        Args:
+            collection - A instance of bdc_catalog.models.Collection context.
+            path - Path to seek for the files
+            prefix - Extra prefix. By default, used the Brazil Data Cube Cluster.
+
+        Returns:
+            Dict[str, str]
+            Map of asset_name and the absolute asset in disk.
+        """
+        return dict()
+
     def path(self, collection: Collection, prefix=None) -> Path:
         """Retrieve the relative path to the Collection on Brazil Data Cube cluster."""
         if prefix is None:

@@ -81,6 +81,7 @@ def download(provider, scene_id, output, **kwargs):
         provider - Provider name to search.
         scene_id - Scene Id to download.
         output - Directory to save
+        dataset - Optional data set name
         username - Optional username used to download from provider.
         password - Optional password used to download from provider.
     """

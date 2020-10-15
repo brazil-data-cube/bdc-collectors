@@ -89,3 +89,22 @@ class BaseLandsat(BaseCollection):
         scene_path = Path(prefix or '') / 'Repository/Archive' / folder / year_month / self.parser.tile_id()
 
         return scene_path / '{}.tar.gz'.format(self.parser.scene_id)
+
+    def get_assets(self, collection, path=None, prefix=None) -> dict:
+        """Retrieve the map of MTL and ANG assets of Landsat product."""
+        if path is None:
+            path = self.path(collection, prefix=prefix)
+
+        scene_id = self.parser.scene_id
+
+        expected_files = [f'{scene_id}_{asset}' for asset in self.assets]
+
+        output = dict()
+
+        for p in path.glob('*'):
+            for asset in self.assets:
+                if p.name.endswith(asset):
+                    output[asset.split('.')[0]] = str(p)
+                    break
+
+        return output

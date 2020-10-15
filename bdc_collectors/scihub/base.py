@@ -53,3 +53,19 @@ class SentinelCollection(BaseCollection):
         scene_path = scene_path / self.parser.scene_id
 
         return scene_path
+
+    def get_assets(self, collection, path=None, prefix=None) -> dict:
+        """Retrieve the map assets of Sentinel product."""
+        if path is None:
+            path = self.path(collection, prefix=prefix)
+
+        path = Path(path)
+
+        mtd = path / 'MTD_MSIL2A.xml'
+
+        # TODO: Check for other files (AOT as band??)
+        output = dict(
+            MTD=str(mtd),
+        )
+
+        return output
