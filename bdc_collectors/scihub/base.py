@@ -52,7 +52,7 @@ class SentinelCollection(BaseCollection):
                 tif_files = path.rglob('IMG_DATA/*.tif')
 
                 for tif in tif_files:
-                    band_name = tif.name.split('_')[-1]
+                    band_name = tif.stem.split('_')[-1]
                     output[band_name] = tif
 
                 # TODO: Return as iterator instead
