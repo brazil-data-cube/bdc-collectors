@@ -63,7 +63,7 @@ class DataCollector:
 
             self._provider = provider(**copy_args)
         else:
-            self._provider = provider(instance.credentials, **kwargs)
+            self._provider = provider(*instance.credentials, **kwargs)
 
         self._collection_provider = collection_provider
 
