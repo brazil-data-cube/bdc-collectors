@@ -29,6 +29,8 @@ class SentinelCollection(BaseCollection):
 
         path = Path(path)
 
+        output = dict()
+
         # For Sen2cor files, use recursive and seek for jp2 files
         if collection._metadata and collection._metadata.get('processors'):
             processors = collection._metadata['processors']
@@ -38,12 +40,34 @@ class SentinelCollection(BaseCollection):
             if 'sen2cor' in processors:
                 # Get all .jp2 files
                 jp2_files = path.rglob('IMG_DATA/**/*.jp2')
+
+                for jp2 in jp2_files:
+                    band_name = jp2.name.split('_')[-2]
+
+                    # Only list bands, skip AOT and WVP
+                    if band_name not in ('AOT', 'WVP'):
+                        output[band_name] = jp2
+
                 # Get all .tif (Fmask4 only)
                 tif_files = path.rglob('IMG_DATA/*.tif')
+
+                for tif in tif_files:
+                    band_name = tif.name.split('_')[-1]
+                    output[band_name] = tif
+
                 # TODO: Return as iterator instead
-                return list(jp2_files) + list(tif_files)
+                return output
         # Look for default files in root dir
-        return super().get_files(collection, path, prefix=prefix)
+        files = path.glob('*')
+        scene_id = self.parser.scene_id
+        for f in files:
+            # TODO: Adapt to work with L1 (Use same sen2cor .SAFE)
+            if scene_id in f.stem and f.suffix != '.png' and not f.stem.endswith('aerosol'):
+                band_name = f.stem.replace(f'{scene_id}_', '')
+
+                output[band_name] = f
+
+        return output
 
     def compressed_file(self, collection, prefix=None):
         """Retrieve path to the compressed scene (.zip) on local storage."""
@@ -86,10 +110,29 @@ class SentinelCollection(BaseCollection):
 
         mtd = path / 'MTD_MSIL2A.xml'
 
+        mtl = list(path.rglob('MTD_TL.xml'))
+
+        output = dict()
+
+        wvp = list(path.rglob('IMG_DATA/R10m/*WVP*.jp2'))
+
+        aot = list(path.rglob('IMG_DATA/R10m/*AOT*.jp2'))
+
+        tci = list(path.rglob('IMG_DATA/R10m/*TCI*.jp2'))
+
+        if tci:
+            output['TCI'] = str(tci[0])
+
+        if aot:
+            output['AOT'] = str(aot[0])
+
+        if wvp:
+            output['WVP'] = str(wvp[0])
+
+        if mtl:
+            output['MTD_TL'] = str(mtl[0])
+
         if mtd.exists():
-            # TODO: Check for other files (AOT as band??)
-            output = dict(
-                MTD=str(mtd),
-            )
+            output['MTD_MSIL2A'] = str(mtd)
 
         return output

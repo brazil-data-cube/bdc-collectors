@@ -58,13 +58,9 @@ class BaseCollection:
         self.parser = self.parser_class(scene_id)
         self.collection = collection
 
-    def get_files(self, collection: Collection, path=None, prefix=None) -> Iterator[Path]:
+    def get_files(self, collection: Collection, path=None, prefix=None) -> Dict[str, Path]:
         """List all files in the collection."""
-        if path is None:
-            path = self.path(collection, prefix)
-        else:
-            path = Path(path)
-        return [entry for entry in path.glob('*') if entry.is_file()]
+        return dict()
 
     def get_assets(self, collection: Collection, path=None, prefix=None) -> Dict[str, str]:
         """Get a list of extra assets contained in collection path.

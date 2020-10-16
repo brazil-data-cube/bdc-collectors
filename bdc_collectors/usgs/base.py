@@ -27,13 +27,22 @@ class BaseLandsat(BaseCollection):
     def get_files(self, collection, path=None, prefix=None):
         """List all files from Landsat."""
         # TODO: Use parameter path instead
-        path = self.path(collection, prefix)
+        if path is None:
+            path = self.path(collection, prefix)
 
-        extra = [path / f'{self.parser.scene_id}_{asset}' for asset in self.assets]
+        path = Path(path)
 
-        files = [f for f in path.iterdir() if f.is_file() and f.suffix.lower() == '.tif']
+        output = dict()
+        scene_id = self.parser.scene_id
 
-        return files + extra
+        for f in path.iterdir():
+            if f.is_file() and f.suffix.lower() == '.tif':
+                band_name = f.stem.replace(f'{scene_id}_', '')
+
+                if (band_name.startswith('sr_') and band_name != 'sr_aerosol') or band_name == 'Fmask4':
+                    output[band_name] = f
+
+        return output
 
     def guess_landsat(self, scene_id):
         """Try to guess which Landsat collection belongs the given scene_id."""
@@ -94,6 +103,8 @@ class BaseLandsat(BaseCollection):
         """Retrieve the map of MTL and ANG assets of Landsat product."""
         if path is None:
             path = self.path(collection, prefix=prefix)
+
+        path = Path(path)
 
         scene_id = self.parser.scene_id
 
