@@ -60,7 +60,11 @@ class BaseCollection:
 
     def get_files(self, collection: Collection, path=None, prefix=None) -> Iterator[Path]:
         """List all files in the collection."""
-        return [entry for entry in self.path(collection, prefix).glob('*') if entry.is_file()]
+        if path is None:
+            path = self.path(collection, prefix)
+        else:
+            path = Path(path)
+        return [entry for entry in path.glob('*') if entry.is_file()]
 
     def get_assets(self, collection: Collection, path=None, prefix=None) -> Dict[str, str]:
         """Get a list of extra assets contained in collection path.

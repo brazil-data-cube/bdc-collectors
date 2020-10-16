@@ -22,6 +22,29 @@ class SentinelCollection(BaseCollection):
 
     parser_class = Sentinel2Scene
 
+    def get_files(self, collection: Collection, path=None, prefix=None):
+        """List all files in the collection."""
+        if path is None:
+            path = self.path(collection, prefix)
+
+        path = Path(path)
+
+        # For Sen2cor files, use recursive and seek for jp2 files
+        if collection._metadata and collection._metadata.get('processors'):
+            processors = collection._metadata['processors']
+
+            processors = [proc['name'].lower() for proc in processors]
+
+            if 'sen2cor' in processors:
+                # Get all .jp2 files
+                jp2_files = path.rglob('IMG_DATA/**/*.jp2')
+                # Get all .tif (Fmask4 only)
+                tif_files = path.rglob('IMG_DATA/*.tif')
+                # TODO: Return as iterator instead
+                return list(jp2_files) + list(tif_files)
+        # Look for default files in root dir
+        return super().get_files(collection, path, prefix=prefix)
+
     def compressed_file(self, collection, prefix=None):
         """Retrieve path to the compressed scene (.zip) on local storage."""
         if prefix is None:
@@ -63,9 +86,10 @@ class SentinelCollection(BaseCollection):
 
         mtd = path / 'MTD_MSIL2A.xml'
 
-        # TODO: Check for other files (AOT as band??)
-        output = dict(
-            MTD=str(mtd),
-        )
+        if mtd.exists():
+            # TODO: Check for other files (AOT as band??)
+            output = dict(
+                MTD=str(mtd),
+            )
 
         return output
