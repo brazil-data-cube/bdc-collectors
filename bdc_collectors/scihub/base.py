@@ -108,7 +108,7 @@ class SentinelCollection(BaseCollection):
 
         path = Path(path)
 
-        mtd = path / 'MTD_MSIL2A.xml'
+        mtd = list(path.glob('MTD_MSIL*.xml'))
 
         mtl = list(path.rglob('MTD_TL.xml'))
 
@@ -132,7 +132,7 @@ class SentinelCollection(BaseCollection):
         if mtl:
             output['MTD_TL'] = str(mtl[0])
 
-        if mtd.exists():
-            output['MTD_MSIL2A'] = str(mtd)
+        if mtd:
+            output[mtd[0].stem] = str(mtd[0])
 
         return output
