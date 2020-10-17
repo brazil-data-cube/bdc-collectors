@@ -92,7 +92,7 @@ class SciHub(BaseProvider):
         product_type = query
 
         # TODO: Support download others sentinel
-        platform = kwargs.pop('platform') or 'Sentinel-2'
+        platform = kwargs.pop('platform', None) or 'Sentinel-2'
 
         cloud_cover = kwargs.pop('cloud_cover', None)
 
