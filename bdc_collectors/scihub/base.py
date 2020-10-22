@@ -39,14 +39,14 @@ class SentinelCollection(BaseCollection):
 
             if 'sen2cor' in processors:
                 # Get all .jp2 files
-                jp2_files = path.rglob('IMG_DATA/**/*.jp2')
+                jp2_files = sorted(path.rglob('IMG_DATA/**/*.jp2'))
 
                 for jp2 in jp2_files:
                     band_name = jp2.name.split('_')[-2]
 
                     # Only list bands, skip AOT and WVP
                     if band_name not in ('AOT', 'WVP'):
-                        output[band_name] = jp2
+                        output.setdefault(band_name, jp2)
 
                 # Get all .tif (Fmask4 only)
                 tif_files = path.rglob('IMG_DATA/*.tif')
