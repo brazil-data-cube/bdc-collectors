@@ -37,21 +37,19 @@ class API:
 
         return [entry for entry in entries if os.path.basename(entry) not in _INVALID_PATHS]
 
-    def download(self, path: str, file_name: str, output: str) -> str:
+    def download(self, entry: str, output: str) -> str:
         """Download a single file from remote FTP server.
 
         Raises:
             DownloadError when any exception occurs.
         """
         try:
-            remote_name = os.path.join(path, file_name)
-
             os.makedirs(output, exist_ok=True)
 
-            output = os.path.join(output, file_name)
+            output = os.path.join(output, os.path.basename(entry))
 
             with open(output, 'wb') as f:
-                self.ftp.retrbinary(f'RETR {remote_name}', lambda data: f.write(data))
+                self.ftp.retrbinary(f'RETR {entry}', lambda data: f.write(data))
 
             return output
         except Exception as e:

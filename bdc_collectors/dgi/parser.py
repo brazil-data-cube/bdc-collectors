@@ -23,22 +23,25 @@ class DGICommonScene(SceneParser):
         """Build a parser."""
         super().__init__(scene_id)
 
-        self._parse()
+        self.parse()
 
-    def _parse(self):
+    def parse(self):
         """Parse a pattern filename for FireRisk."""
         scene_id = self.scene_id
 
         fragments = scene_id.split('.')
 
-        if len(fragments) != 3:
-            raise RuntimeError(f'Invalid scene_id. {scene_id}')
+        if len(fragments) == 1:
+            fragments = scene_id.split('_')
 
         self.fragments = fragments
 
     def sensing_date(self) -> datetime:
         """File sensing date."""
-        return datetime.strptime(self.fragments[-1], '%Y%m%d%H')
+        value = self.fragments[-1]
+        if '_' in self.scene_id:
+            value = self.fragments[-2]
+        return datetime.strptime(value, '%Y%m%d%H')
 
     def tile_id(self) -> str:
         """Tile id."""
@@ -55,18 +58,3 @@ class DGICommonScene(SceneParser):
     def source(self):
         """File prefix."""
         return self.fragments[0]
-
-
-class DGITemperatureUmidScene(DGICommonScene):
-    """Parse the filename of temperature and relative humidity."""
-
-    def _parse(self):
-        """Parse a pattern filename for Data temperature and Relative Humidity."""
-        scene_id = self.scene_id
-
-        fragments = scene_id.split('.')
-
-        if len(fragments) != 4:
-            raise RuntimeError(f'Invalid scene_id. {scene_id}')
-
-        self.fragments = fragments

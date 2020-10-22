@@ -21,8 +21,7 @@ from .parser import DGICommonScene
 class DGICollection(BaseCollection):
     """Define a basic folder (collection) in DGI server."""
 
-    remote_path: str
-    format: str
+    pattern: str
 
     parser_class = DGICommonScene
 
@@ -35,8 +34,11 @@ class DGICollection(BaseCollection):
 
         output = dict()
 
-        if path.exists() and path.is_file():
-            output['RISK'] = path
+        if path.exists():
+            glob = list(path.glob(f'{self.parser.scene_id}*'))
+
+            if len(glob) != 0:
+                output['default'] = glob[0]
 
         return output
 
@@ -55,36 +57,8 @@ class DGICollection(BaseCollection):
 
         scene_path = Path(prefix or '') / 'Repository/Archive' / collection.name / year_month
 
-        return scene_path / f'{self.parser.scene_id}.tif'
+        return scene_path
 
     def compressed_file(self, collection: Collection, prefix=None) -> Path:
         """Retrieve the path to the compressed file L1."""
         return None
-
-
-class FireRisk(DGICollection):
-    """Structure for wild fire risk."""
-
-    remote_path: str = 'terrama2q/risco_fogo'
-    format: str = '.tif'
-
-
-class Precipitation(DGICollection):
-    """Structure for data precipitation, following `IMERG <https://gpm.nasa.gov/data/imerg>`_."""
-
-    remote_path: str = 'terrama2q/prec'
-    format: str = '.tif'
-
-
-class Temperature(DGICollection):
-    """Structure for data temperature follwing `Global Forecast System <https://www.ncdc.noaa.gov/data-access/model-data/model-datasets/global-forcast-system-gfs>`_."""
-
-    remote_path: str = 'terrama2q/temp'
-    format: str = '.tif'
-
-
-class RelativeHumidity(DGICollection):
-    """Structure for data relative humidity."""
-
-    remote_path: str = 'terrama2q/umid'
-    format: str = '.tif'
