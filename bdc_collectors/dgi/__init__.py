@@ -206,8 +206,10 @@ class DGI(BaseProvider):
         found = None
 
         for matched in files:
+            # TODO: Improve way to match scene_id and file
             if scene_id in matched[0]:
                 found = matched
+                break
 
         if found is None:
             raise RuntimeError(f'Not found {scene_id} with {dataset}')
