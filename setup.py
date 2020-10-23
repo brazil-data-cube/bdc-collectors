@@ -90,7 +90,8 @@ setup(
             'google = bdc_collectors.google',
             'usgs = bdc_collectors.usgs',
             'onda = bdc_collectors.onda',
-            'scihub = bdc_collectors.scihub'
+            'scihub = bdc_collectors.scihub',
+            'dgi = bdc_collectors.dgi',
         ],
         'bdc_db.scripts': [
             'bdc_collectors = bdc_collectors.scripts'
