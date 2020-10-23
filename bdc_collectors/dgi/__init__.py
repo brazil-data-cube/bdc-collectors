@@ -190,8 +190,9 @@ class DGI(BaseProvider):
             SceneResult(
                 scene_id=Path(f[0]).stem,
                 cloud_cover=None,
-                relative=f,
-                link=urljoin(f'ftp://{self.api.host}', f)
+                relative=f[0],
+                datetime=f[-1],
+                link=urljoin(f'ftp://{self.api.host}', f[0])
             ) for f in files
         ]
 
