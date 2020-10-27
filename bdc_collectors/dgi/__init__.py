@@ -16,6 +16,8 @@ from tempfile import TemporaryDirectory
 from typing import List, Optional, Tuple, Type
 from urllib.parse import urljoin
 
+import dateutil.parser
+
 from ..base import BaseCollection, BaseProvider, SceneResult
 from .api import API
 from .collections import DGICollection
@@ -174,10 +176,10 @@ class DGI(BaseProvider):
         options = dict()
 
         if 'start_date' in kwargs:
-            options['start'] = datetime.fromisoformat(kwargs['start_date'])
+            options['start'] = dateutil.parser.isoparse(kwargs['start_date'])
 
         if 'end_date' in kwargs:
-            options['end'] = datetime.fromisoformat(kwargs['end_date'])
+            options['end'] = dateutil.parser.isoparse(kwargs['end_date'])
 
         files = self.resolve_path(Path(mask), **options)
 

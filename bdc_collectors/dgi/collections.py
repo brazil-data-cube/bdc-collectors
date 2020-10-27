@@ -35,10 +35,21 @@ class DGICollection(BaseCollection):
         output = dict()
 
         if path.exists():
+            name = 'default'
+
+            if 'risco' in self.pattern:
+                name = 'risco'
+            elif 'prec' in self.pattern:
+                name = 'prec'
+            elif 'umid' in self.pattern:
+                name = 'umid'
+            elif 'temperature' in self.pattern:
+                name = 'temperature'
+
             glob = list(path.glob(f'{self.parser.scene_id}*'))
 
             if len(glob) != 0:
-                output['default'] = glob[0]
+                output[name] = glob[0]
 
         return output
 
@@ -55,7 +66,9 @@ class DGICollection(BaseCollection):
 
         year_month = sensing_date.strftime('%Y-%m')
 
-        scene_path = Path(prefix or '') / 'Repository/Archive' / collection.name / year_month
+        version = 'v{0:03d}'.format(collection.version)
+
+        scene_path = Path(prefix or '') / 'Repository/Archive' / collection.name / version / year_month
 
         return scene_path
 
