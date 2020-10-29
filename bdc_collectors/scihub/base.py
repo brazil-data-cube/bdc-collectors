@@ -60,10 +60,10 @@ class SentinelCollection(BaseCollection):
         # Look for default files in root dir
         files = path.glob('*')
         scene_id = self.parser.scene_id
+        scene_id_relative = '_'.join(self.parser.fragments[:-1])
         for f in files:
-            # TODO: Adapt to work with L1 (Use same sen2cor .SAFE)
-            if scene_id in f.stem and f.suffix != '.png' and not f.stem.endswith('aerosol'):
-                band_name = f.stem.replace(f'{scene_id}_', '')
+            if scene_id_relative in f.stem and f.suffix != '.png' and not f.stem.endswith('aerosol'):
+                band_name = f.stem.split('_')[-1]
 
                 output[band_name] = f
 
