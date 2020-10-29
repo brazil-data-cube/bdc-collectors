@@ -63,7 +63,7 @@ class SentinelCollection(BaseCollection):
         scene_id_relative = '_'.join(self.parser.fragments[:-1])
         for f in files:
             if scene_id_relative in f.stem and f.suffix != '.png' and not f.stem.endswith('aerosol'):
-                band_name = f.stem.split('_')[-1]
+                band_name = '_'.join(f.stem.split('_')[len(self.parser.fragments):])
 
                 output[band_name] = f
 
