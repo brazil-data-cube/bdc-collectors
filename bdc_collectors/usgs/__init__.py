@@ -32,6 +32,13 @@ def init_provider():
     )
 
 
+FIELD_SEARCH_MAP = dict(
+    LANDSAT_8_C1='5e83d0b84d321b85',
+    LANDSAT_ETM_C1='5e83a507ba68271e',
+    LANDSAT_TM_C1='5e83d08fd4594aae'
+)
+
+
 class USGS(BaseProvider):
     """Define the USGS provider.
 
@@ -68,6 +75,23 @@ class USGS(BaseProvider):
         if self.api:
             self.api.logout()
 
+    def _search_by_scene_id(self, query, scene_id: str):
+        """Search for SceneID on EarthExplorer Catalog."""
+        params = dict(
+            datasetName=query,
+            maxResults=1,
+            maxCloudCover=100,
+            additionalCriteria=dict(
+                filterType='value',
+                fieldId=FIELD_SEARCH_MAP[query],
+                value=scene_id,
+                operand='='
+            )
+        )
+        response = self.api.request('search', **params)
+
+        return response['results']
+
     def search(self, query, *args, **kwargs) -> List[SceneResult]:
         """Search for data set in USGS catalog."""
         self._api()
@@ -79,12 +103,16 @@ class USGS(BaseProvider):
             max_results=kwargs.get('max_results', 50000)
         )
 
-        if 'bbox' in kwargs:
+        if 'bbox' in kwargs and kwargs['bbox'] is not None:
             bbox = kwargs['bbox']
             # w,s,e,n  => s,w,n,e due bug https://github.com/yannforget/landsatxplore/blob/master/landsatxplore/datamodels.py#L49
             options['bbox'] = [bbox[1], bbox[0], bbox[3], bbox[2]]
 
-        results = self.api.search(query, **options)
+        if kwargs.get('filename') or kwargs.get('scene_id'):
+            scene_id = kwargs.get('filename') or kwargs.get('scene_id')
+            results = self._search_by_scene_id(query, scene_id.replace('*', ''))
+        else:
+            results = self.api.search(query, **options)
 
         valid_scene = self._valid_scene
 
