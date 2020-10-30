@@ -33,10 +33,23 @@ def init_provider():
 
 
 FIELD_SEARCH_MAP = dict(
-    LANDSAT_8_C1='5e83d0b84d321b85',
-    LANDSAT_ETM_C1='5e83a507ba68271e',
-    LANDSAT_TM_C1='5e83d08fd4594aae'
+    LANDSAT_8_C1=dict(
+        scene='5e83d0b84d321b85',
+        path='5e83d0b81d20cee8',
+        row='5e83d0b849ed5ee7'
+    ),
+    LANDSAT_ETM_C1=dict(
+        scene='5e83a507ba68271e',
+        path='5e83a507b9aa5140',
+        row='5e83a5074670b94e'
+    ),
+    LANDSAT_TM_C1=dict(
+        scene='5e83d08fd4594aae',
+        path='5e83d08f6487afc7',
+        row='5e83d08ffa032790'
+    )
 )
+"""Type which maps the supported field filters on EarthExplorer."""
 
 
 class USGS(BaseProvider):
@@ -75,22 +88,31 @@ class USGS(BaseProvider):
         if self.api:
             self.api.logout()
 
-    def _search_by_scene_id(self, query, scene_id: str):
-        """Search for SceneID on EarthExplorer Catalog."""
-        params = dict(
-            datasetName=query,
-            maxResults=1,
-            maxCloudCover=100,
-            additionalCriteria=dict(
-                filterType='value',
-                fieldId=FIELD_SEARCH_MAP[query],
-                value=scene_id,
-                operand='='
+    def _search(self, query, **options):
+        if options.get('additionalCriteria'):
+            params = dict(
+                datasetName=query,
+                maxResults=options['max_results'],
+                maxCloudCover=100,
+                additionalCriteria=options['additionalCriteria']
             )
-        )
-        response = self.api.request('search', **params)
+            response = self.api.request('search', **params)
 
-        return response['results']
+            return response['results']
+        return self.api.search(query, **options)
+
+    @staticmethod
+    def _criteria(value: str, filter_type: str = 'value', operand: str = '=', field_id=None, **opts) -> dict:
+        options = dict(filterType=filter_type, fieldId=field_id)
+
+        if filter_type == 'between':
+            options['firstValue'] = value
+            options['secondValue'] = opts['secondValue']
+        elif filter_type == 'value':
+            options['value'] = value
+            options['operand'] = operand
+
+        return options
 
     def search(self, query, *args, **kwargs) -> List[SceneResult]:
         """Search for data set in USGS catalog."""
@@ -103,16 +125,36 @@ class USGS(BaseProvider):
             max_results=kwargs.get('max_results', 50000)
         )
 
-        if 'bbox' in kwargs and kwargs['bbox'] is not None:
+        if kwargs.get('additionalCriteria'):
+            options['additionalCriteria'] = kwargs['additionalCriteria']
+        elif 'bbox' in kwargs and kwargs['bbox'] is not None:
             bbox = kwargs['bbox']
             # w,s,e,n  => s,w,n,e due bug https://github.com/yannforget/landsatxplore/blob/master/landsatxplore/datamodels.py#L49
             options['bbox'] = [bbox[1], bbox[0], bbox[3], bbox[2]]
-
-        if kwargs.get('filename') or kwargs.get('scene_id'):
+        elif kwargs.get('filename') or kwargs.get('scene_id'):
             scene_id = kwargs.get('filename') or kwargs.get('scene_id')
-            results = self._search_by_scene_id(query, scene_id.replace('*', ''))
-        else:
-            results = self.api.search(query, **options)
+
+            field_map = FIELD_SEARCH_MAP[query]
+
+            criteria = self._criteria(scene_id.replace('*', ''), field_id=field_map['scene'])
+            options['additionalCriteria'] = criteria
+        elif kwargs.get('tile'):
+            path, row = kwargs['tile'][:3], kwargs['tile'][-3:]
+
+            field_map = FIELD_SEARCH_MAP[query]
+
+            path_criteria = self._criteria(path, filter_type='between',
+                                           field_id=field_map['path'], secondValue=path)
+
+            row_criteria = self._criteria(row, filter_type='between',
+                                          field_id=field_map['row'], secondValue=row)
+
+            options['additionalCriteria'] = dict(
+                filterType='and',
+                childFilters=[path_criteria, row_criteria]
+            )
+
+        results = self._search(query, **options)
 
         valid_scene = self._valid_scene
 

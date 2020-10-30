@@ -83,7 +83,7 @@ class TestUSGS:
 
         requests_mock.post(mock_login_url, json={'error': [], 'data': {}}, status_code=200, headers={'content-type':'application/json'})
 
-        provider = provider_class(username='theuser', password='thepassword')
+        provider = provider_class(username='theuser', password='thepassword', lazy=True)
 
         bbox = [-54, -12, -50, -10]
 
@@ -102,6 +102,26 @@ class TestUSGS:
         with pytest.raises(ValueError):
             provider.search('LANDSAT_8_C1', start_date='2020-01-01',
                             end_date='2020-01-31', bbox=bbox, validate=invalid_validate)
+
+        # Mock logout url since it is attached to destructor
+        requests_mock.get(mock_logout_url, json={'error': [], 'data': {}}, status_code=200, headers={'content-type':'application/json'})
+
+    def test_search_by_additional_criteria(self, app, requests_mock, catalog_usgs):
+        provider_class = _provider(app, 'USGS')
+
+        requests_mock.post(mock_login_url, json={'error': [], 'data': {}}, status_code=200, headers={'content-type':'application/json'})
+
+        provider = provider_class(username='theuser', password='thepassword', lazy=True)
+
+        requests_mock.get(mock_search_url, json={'error': [], 'data': dict(results=catalog_usgs)}, status_code=200, headers={'content-type':'application/json'})
+
+        res = provider.search('LANDSAT_8_C1', tile='225067')
+
+        assert len(res) > 0
+
+        res = provider.search('LANDSAT_8_C1', scene_id='LC08_L1GT_225067_20200102_20200113_01_T2')
+
+        assert len(res) > 0
 
         # Mock logout url since it is attached to destructor
         requests_mock.get(mock_logout_url, json={'error': [], 'data': {}}, status_code=200, headers={'content-type':'application/json'})
