@@ -22,7 +22,12 @@ class BaseLandsat(BaseCollection):
 
     parser_class = LandsatScene
 
-    assets = ['MTL.txt', 'ANG.txt']
+    assets = [
+        'MTL.txt', 'ANG.txt', 'radsat_qa.tif',
+        'sr_aerosol.tif', 'pixel_qa.tif',
+        'sensor_azimuth_band4.tif', 'sensor_zenith_band4.tif',
+        'solar_azimuth_band4.tif', 'solar_zenith_band4.tif'
+    ]
 
     def get_files(self, collection, path=None, prefix=None):
         """List all files from Landsat."""

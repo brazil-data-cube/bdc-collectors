@@ -59,7 +59,6 @@ class SentinelCollection(BaseCollection):
                 return output
         # Look for default files in root dir
         files = path.glob('*')
-        scene_id = self.parser.scene_id
         scene_id_relative = '_'.join(self.parser.fragments[:-1])
         for f in files:
             if scene_id_relative in f.stem and f.suffix != '.png' and not f.stem.endswith('aerosol'):
@@ -119,6 +118,11 @@ class SentinelCollection(BaseCollection):
         aot = list(path.rglob('IMG_DATA/R10m/*AOT*.jp2'))
 
         tci = list(path.rglob('IMG_DATA/R10m/*TCI*.jp2'))
+
+        aerosol = list(path.rglob('*_sr_aerosol.tif'))
+
+        if aerosol:
+            output['sr_aerosol'] = str(aerosol[0])
 
         if tci:
             output['TCI'] = str(tci[0])
