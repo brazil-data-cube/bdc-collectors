@@ -17,6 +17,7 @@ from shapely.geometry import box
 
 from ..base import BaseProvider, SceneResult
 from ..exceptions import DataOfflineError
+from ..scihub.sentinel2 import Sentinel2, Sentinel1
 from .api import Api
 
 
@@ -48,6 +49,8 @@ class CREODIAS(BaseProvider):
             raise RuntimeError('Missing "username"/"password" for CREODIAS provider.')
 
         self.api = Api(kwargs['username'], kwargs['password'], progress=kwargs.get('progress', True))
+        self.collections['Sentinel-1'] = Sentinel1
+        self.collections['Sentinel-2'] = Sentinel2
         self.kwargs = kwargs
 
     def search(self, query, **kwargs):
@@ -63,6 +66,9 @@ class CREODIAS(BaseProvider):
             - Landsat7
             - Landsat5
             - Envisat
+
+        You can also specify the processing level `processingLevel` to filter which data set should retrieve.
+        For Sentinel2, use `LEVEL1C` for L1 data, `LEVEL2A` as L2, etc.
 
         Examples:
             >>> from bdc_collectors.creodias import CREODIAS

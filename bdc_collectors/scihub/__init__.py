@@ -11,6 +11,7 @@
 from datetime import datetime
 from typing import List
 
+import dateutil.parser
 from sentinelsat import SentinelAPI, SentinelAPILTAError
 from shapely.geometry import box
 
@@ -33,7 +34,7 @@ def _get_date_time(date) -> datetime:
     if isinstance(date, datetime):
         return date
 
-    return datetime.strptime(date, '%Y-%m-%d')
+    return dateutil.parser.isoparse(date)
 
 
 class SciHub(BaseProvider):

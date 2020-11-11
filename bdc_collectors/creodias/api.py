@@ -12,6 +12,7 @@ import os
 from datetime import datetime
 from typing import Dict, List, Optional, Union
 
+import dateutil.parser
 import requests
 
 from ..base import SceneResult
@@ -120,7 +121,7 @@ class Api:
         if isinstance(date, datetime):
             return date
 
-        return datetime.strptime(date, '%Y-%m-%d')
+        return dateutil.parser.isoparse(date)
 
     def download(self, scene: SceneResult, output: str, max_retry: int = 10, force: bool = False) -> str:
         """Download the scene of CREODIAS server.
