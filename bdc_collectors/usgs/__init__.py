@@ -12,6 +12,7 @@ import logging
 from typing import List
 
 from landsatxplore.api import API, is_product_id
+from landsatxplore.datamodels import temporal_filter
 from landsatxplore.earthexplorer import EE_DOWNLOAD_URL, EarthExplorer
 from landsatxplore.exceptions import EarthExplorerError
 
@@ -96,6 +97,11 @@ class USGS(BaseProvider):
                 maxCloudCover=100,
                 additionalCriteria=options['additionalCriteria']
             )
+            if options.get('start_date'):
+                params['temporalFilter'] = temporal_filter(options['start_date'], options.get('end_date'))
+            if options.get('max_cloud_cover'):
+                params['maxCloudCover'] = options['max_cloud_cover']
+
             response = self.api.request('search', **params)
 
             return response['results']
