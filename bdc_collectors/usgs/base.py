@@ -44,29 +44,11 @@ class BaseLandsat(BaseCollection):
             if f.is_file() and f.suffix.lower() == '.tif':
                 band_name = f.stem.replace(f'{scene_id}_', '')
 
-                if (band_name.startswith('sr_') and band_name != 'sr_aerosol') or band_name == 'Fmask4':
+                if (band_name.startswith('sr_') and band_name != 'sr_aerosol') or band_name == 'Fmask4' or \
+                        band_name.startswith('nbar_'):
                     output[band_name] = f
 
         return output
-
-    def guess_landsat(self, scene_id):
-        """Try to guess which Landsat collection belongs the given scene_id."""
-        parser = self.parser_class(scene_id)
-
-        satellite = int(parser.satellite())
-
-        product = None
-
-        if satellite in (4, 5,):
-            product = Landsat5
-        elif satellite == 7:
-            product = Landsat7
-        elif satellite == 8:
-            product = Landsat8
-        else:
-            raise RuntimeError('Invalid landsat')
-
-        return product()
 
     def path(self, collection: Collection, prefix=None) -> Path:
         """Retrieve the relative path to the Collection on Brazil Data Cube cluster.
@@ -110,10 +92,6 @@ class BaseLandsat(BaseCollection):
             path = self.path(collection, prefix=prefix)
 
         path = Path(path)
-
-        scene_id = self.parser.scene_id
-
-        expected_files = [f'{scene_id}_{asset}' for asset in self.assets]
 
         output = dict()
 

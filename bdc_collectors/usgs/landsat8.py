@@ -32,8 +32,3 @@ class Landsat8SR(BaseLandsat):
     bands = [
         'sr_band1.tif', 'sr_band2.tif', 'sr_band3.tif', 'sr_band4.tif', 'sr_band5.tif', 'sr_band6.tif', 'sr_band7.tif', 'sr_cloud_qa.tif',
     ]
-
-    assets = [
-        'MTL.txt',
-        'ANG.txt'
-    ]

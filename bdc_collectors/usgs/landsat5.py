@@ -18,20 +18,10 @@ class Landsat5(BaseLandsat):
         'B1.TIF', 'B2.TIF', 'B3.TIF', 'B4.TIF', 'B5.TIF', 'B6.TIF', 'B7.TIF', 'BQA.TIF'
     ]
 
-    assets = [
-        'MTL.txt',
-        'ANG.txt'
-    ]
-
 
 class Landsat5SR(BaseLandsat):
     """Simple abstraction for Landsat-5 Surface Reflectance."""
 
     bands = [
         'sr_band1.tif', 'sr_band2.tif', 'sr_band3.tif', 'sr_band4.tif', 'sr_band5.tif', 'sr_band6.tif', 'sr_band7.tif', 'sr_cloud_qa.tif'
-    ]
-
-    assets = [
-        'MTL.txt',
-        'ANG.txt'
     ]
