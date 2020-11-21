@@ -20,11 +20,6 @@ class Landsat8(BaseLandsat):
         'B11.TIF', 'BQA.TIF'
     ]
 
-    assets = [
-        'MTL.txt',
-        'ANG.txt'
-    ]
-
 
 class Landsat8SR(BaseLandsat):
     """Simple abstraction for Landsat-8 Surface Reflectance."""
