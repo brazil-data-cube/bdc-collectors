@@ -164,3 +164,6 @@ class BaseProvider:
     def download_all(self, scenes: List[SceneResult], output: str, **kwargs) -> BulkDownloadResult:
         """Bulk download scenes from remote provider."""
         raise NotImplementedError()
+
+    def disconnect(self):
+        """Disconnect from Data Provider."""
