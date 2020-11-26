@@ -1,101 +1,78 @@
 [
     {
-        "acquisitionDate": "2020-01-02",
-        "startTime": "2020-01-02",
-        "endTime": "2020-01-02",
-        "spatialFootprint": {
+        "browse": [
+            {
+                "id": "5e83d0b86f2c3061",
+                "browseRotationEnabled": null,
+                "browseName": "LandsatLook Natural Color Preview Image",
+                "browsePath": "https://ims.cr.usgs.gov/browse/landsat_8_c1/2020/225/069/LC08_L1TP_225069_20200102_20200113_01_T2.jpg",
+                "overlayPath": "https://ims.cr.usgs.gov/wms/landsat_8_c1?sceneId=lc82250692020002lgn00",
+                "overlayType": "dmid_wms",
+                "thumbnailPath": "https://ims.cr.usgs.gov/thumbnail/landsat_8_c1/2020/225/069/LC08_L1TP_225069_20200102_20200113_01_T2.jpg"
+            },
+            {
+                "id": "5e83d0b85da62c02",
+                "browseRotationEnabled": null,
+                "browseName": "LandsatLook Thermal Preview Image",
+                "browsePath": "https://ims.cr.usgs.gov/browse/landsat_8_c1/2020/225/069/LC08_L1TP_225069_20200102_20200113_01_T2_TIR.jpg",
+                "overlayPath": "https://ims.cr.usgs.gov/wms/landsat_8_c1?sceneId=lc82250692020002lgn00_tir",
+                "overlayType": "dmid_wms",
+                "thumbnailPath": "https://ims.cr.usgs.gov/thumbnail/landsat_8_c1/2020/225/069/LC08_L1TP_225069_20200102_20200113_01_T2_TIR.jpg"
+            },
+            {
+                "id": "5e83d0b8b814a0e6",
+                "browseRotationEnabled": null,
+                "browseName": "LandsatLook Quality Preview Image",
+                "browsePath": "https://ims.cr.usgs.gov/browse/landsat_8_c1/2020/225/069/LC08_L1TP_225069_20200102_20200113_01_T2_QB.jpg",
+                "overlayPath": "https://ims.cr.usgs.gov/wms/landsat_8_c1?sceneId=lc82250692020002lgn00_qb",
+                "overlayType": "dmid_wms",
+                "thumbnailPath": "https://ims.cr.usgs.gov/thumbnail/landsat_8_c1/2020/225/069/LC08_L1TP_225069_20200102_20200113_01_T2_QB.jpg"
+            }
+        ],
+        "cloudCover": "77.22",
+        "entityId": "LC82250692020002LGN00",
+        "displayId": "LC08_L1TP_225069_20200102_20200113_01_T2",
+        "orderingId": null,
+        "metadata": [],
+        "options": {
+            "bulk": true,
+            "download": true,
+            "order": true,
+            "secondary": false
+        },
+        "selected": {
+            "bulk": false,
+            "compare": false,
+            "order": false
+        },
+        "spatialBounds": {
             "type": "Polygon",
             "coordinates": [
                 [
                     [
-                        -53.85356,
-                        -10.80827
+                        -54.49737,
+                        -14.06356
                     ],
                     [
-                        -52.1449,
-                        -11.17345
+                        -54.49737,
+                        -11.9657
                     ],
                     [
-                        -51.7735,
-                        -9.43737
+                        -52.39321,
+                        -11.9657
                     ],
                     [
-                        -53.47286,
-                        -9.07603
+                        -52.39321,
+                        -14.06356
                     ],
                     [
-                        -53.85356,
-                        -10.80827
+                        -54.49737,
+                        -14.06356
                     ]
                 ]
             ]
         },
-        "sceneBounds": "-53.85356,-11.17345,-51.7735,-9.07603",
-        "browseUrl": "https://ims.cr.usgs.gov/browse/landsat_8_c1/2020/225/067/LC08_L1GT_225067_20200102_20200113_01_T2.jpg",
-        "dataAccessUrl": "https://earthexplorer.usgs.gov/metadata/full/landsat_8_c1/LC82250672020002LGN00/",
-        "downloadUrl": "https://earthexplorer.usgs.gov/download/external/options/landsat_8_c1/LC82250672020002LGN00/M2M/",
-        "entityId": "LC82250672020002LGN00",
-        "displayId": "LC08_L1GT_225067_20200102_20200113_01_T2",
-        "cloudCover": "85.09",
-        "metadataUrl": "https://earthexplorer.usgs.gov/metadata/full/landsat_8_c1/LC82250672020002LGN00/?responseType=viewXml",
-        "fgdcMetadataUrl": "https://earthexplorer.usgs.gov/metadata/fgdc/landsat_8_c1/LC82250672020002LGN00/",
-        "modifiedDate": "2020-01-02 13:34:07",
-        "orderUrl": null,
-        "bulkOrdered": false,
-        "ordered": false,
-        "summary": "ID: LC08_L1GT_225067_20200102_20200113_01_T2, Acquisition Date: 2020-01-02, Path: 225, Row: 67"
-    },
-    {
-        "acquisitionDate": "2020-01-02",
-        "startTime": "2020-01-02",
-        "endTime": "2020-01-02",
-        "spatialFootprint": {
-            "type": "Polygon",
-            "coordinates": [
-                [
-                    [
-                        -54.17401,
-                        -12.2528
-                    ],
-                    [
-                        -52.45584,
-                        -12.6188
-                    ],
-                    [
-                        -52.08267,
-                        -10.88331
-                    ],
-                    [
-                        -53.79014,
-                        -10.52125
-                    ],
-                    [
-                        -54.17401,
-                        -12.2528
-                    ]
-                ]
-            ]
-        },
-        "sceneBounds": "-54.17401,-12.6188,-52.08267,-10.52125",
-        "browseUrl": "https://ims.cr.usgs.gov/browse/landsat_8_c1/2020/225/068/LC08_L1TP_225068_20200102_20200113_01_T2.jpg",
-        "dataAccessUrl": "https://earthexplorer.usgs.gov/metadata/full/landsat_8_c1/LC82250682020002LGN00/",
-        "downloadUrl": "https://earthexplorer.usgs.gov/download/external/options/landsat_8_c1/LC82250682020002LGN00/M2M/",
-        "entityId": "LC82250682020002LGN00",
-        "displayId": "LC08_L1TP_225068_20200102_20200113_01_T2",
-        "cloudCover": "71.70",
-        "metadataUrl": "https://earthexplorer.usgs.gov/metadata/full/landsat_8_c1/LC82250682020002LGN00/?responseType=viewXml",
-        "fgdcMetadataUrl": "https://earthexplorer.usgs.gov/metadata/fgdc/landsat_8_c1/LC82250682020002LGN00/",
-        "modifiedDate": "2020-01-02 13:34:07",
-        "orderUrl": null,
-        "bulkOrdered": false,
-        "ordered": false,
-        "summary": "ID: LC08_L1TP_225068_20200102_20200113_01_T2, Acquisition Date: 2020-01-02, Path: 225, Row: 68"
-    },
-    {
-        "acquisitionDate": "2020-01-02",
-        "startTime": "2020-01-02",
-        "endTime": "2020-01-02",
-        "spatialFootprint": {
+        "spatialCoverage": {
             "type": "Polygon",
             "coordinates": [
                 [
@@ -122,111 +99,10 @@
                 ]
             ]
         },
-        "sceneBounds": "-54.49737,-14.06356,-52.39321,-11.9657",
-        "browseUrl": "https://ims.cr.usgs.gov/browse/landsat_8_c1/2020/225/069/LC08_L1TP_225069_20200102_20200113_01_T2.jpg",
-        "dataAccessUrl": "https://earthexplorer.usgs.gov/metadata/full/landsat_8_c1/LC82250692020002LGN00/",
-        "downloadUrl": "https://earthexplorer.usgs.gov/download/external/options/landsat_8_c1/LC82250692020002LGN00/M2M/",
-        "entityId": "LC82250692020002LGN00",
-        "displayId": "LC08_L1TP_225069_20200102_20200113_01_T2",
-        "cloudCover": "77.22",
-        "metadataUrl": "https://earthexplorer.usgs.gov/metadata/full/landsat_8_c1/LC82250692020002LGN00/?responseType=viewXml",
-        "fgdcMetadataUrl": "https://earthexplorer.usgs.gov/metadata/fgdc/landsat_8_c1/LC82250692020002LGN00/",
-        "modifiedDate": "2020-01-02 13:34:07",
-        "orderUrl": null,
-        "bulkOrdered": false,
-        "ordered": false,
-        "summary": "ID: LC08_L1TP_225069_20200102_20200113_01_T2, Acquisition Date: 2020-01-02, Path: 225, Row: 69"
-    },
-    {
-        "acquisitionDate": "2020-01-04",
-        "startTime": "2020-01-04",
-        "endTime": "2020-01-04",
-        "spatialFootprint": {
-            "type": "Polygon",
-            "coordinates": [
-                [
-                    [
-                        -50.76421,
-                        -10.80856
-                    ],
-                    [
-                        -49.05534,
-                        -11.17381
-                    ],
-                    [
-                        -48.68391,
-                        -9.43778
-                    ],
-                    [
-                        -50.38349,
-                        -9.07637
-                    ],
-                    [
-                        -50.76421,
-                        -10.80856
-                    ]
-                ]
-            ]
+        "temporalCoverage": {
+            "endDate": "2020-01-02 00:00:00",
+            "startDate": "2020-01-02 00:00:00"
         },
-        "sceneBounds": "-50.76421,-11.17381,-48.68391,-9.07637",
-        "browseUrl": "https://ims.cr.usgs.gov/browse/landsat_8_c1/2020/223/067/LC08_L1GT_223067_20200104_20200113_01_T2.jpg",
-        "dataAccessUrl": "https://earthexplorer.usgs.gov/metadata/full/landsat_8_c1/LC82230672020004LGN00/",
-        "downloadUrl": "https://earthexplorer.usgs.gov/download/external/options/landsat_8_c1/LC82230672020004LGN00/M2M/",
-        "entityId": "LC82230672020004LGN00",
-        "displayId": "LC08_L1GT_223067_20200104_20200113_01_T2",
-        "cloudCover": "99.94",
-        "metadataUrl": "https://earthexplorer.usgs.gov/metadata/full/landsat_8_c1/LC82230672020004LGN00/?responseType=viewXml",
-        "fgdcMetadataUrl": "https://earthexplorer.usgs.gov/metadata/fgdc/landsat_8_c1/LC82230672020004LGN00/",
-        "modifiedDate": "2020-01-04 13:22:33",
-        "orderUrl": null,
-        "bulkOrdered": false,
-        "ordered": false,
-        "summary": "ID: LC08_L1GT_223067_20200104_20200113_01_T2, Acquisition Date: 2020-01-04, Path: 223, Row: 67"
-    },
-    {
-        "acquisitionDate": "2020-01-04",
-        "startTime": "2020-01-04",
-        "endTime": "2020-01-04",
-        "spatialFootprint": {
-            "type": "Polygon",
-            "coordinates": [
-                [
-                    [
-                        -51.0846,
-                        -12.25287
-                    ],
-                    [
-                        -49.36616,
-                        -12.61894
-                    ],
-                    [
-                        -48.99304,
-                        -10.88344
-                    ],
-                    [
-                        -50.70078,
-                        -10.5213
-                    ],
-                    [
-                        -51.0846,
-                        -12.25287
-                    ]
-                ]
-            ]
-        },
-        "sceneBounds": "-51.0846,-12.61894,-48.99304,-10.5213",
-        "browseUrl": "https://ims.cr.usgs.gov/browse/landsat_8_c1/2020/223/068/LC08_L1GT_223068_20200104_20200113_01_T2.jpg",
-        "dataAccessUrl": "https://earthexplorer.usgs.gov/metadata/full/landsat_8_c1/LC82230682020004LGN00/",
-        "downloadUrl": "https://earthexplorer.usgs.gov/download/external/options/landsat_8_c1/LC82230682020004LGN00/M2M/",
-        "entityId": "LC82230682020004LGN00",
-        "displayId": "LC08_L1GT_223068_20200104_20200113_01_T2",
-        "cloudCover": "99.99",
-        "metadataUrl": "https://earthexplorer.usgs.gov/metadata/full/landsat_8_c1/LC82230682020004LGN00/?responseType=viewXml",
-        "fgdcMetadataUrl": "https://earthexplorer.usgs.gov/metadata/fgdc/landsat_8_c1/LC82230682020004LGN00/",
-        "modifiedDate": "2020-01-04 13:22:33",
-        "orderUrl": null,
-        "bulkOrdered": false,
-        "ordered": false,
-        "summary": "ID: LC08_L1GT_223068_20200104_20200113_01_T2, Acquisition Date: 2020-01-04, Path: 223, Row: 68"
+        "publishDate": "2020-01-02 13:34:07"
     }
 ]

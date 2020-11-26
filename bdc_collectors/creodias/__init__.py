@@ -10,14 +10,13 @@
 
 import concurrent
 import os
-from datetime import datetime
 from typing import List
 
 from shapely.geometry import box
 
 from ..base import BaseProvider, SceneResult
 from ..exceptions import DataOfflineError
-from ..scihub.sentinel2 import Sentinel2, Sentinel1
+from ..scihub.sentinel2 import Sentinel1, Sentinel2
 from .api import Api
 
 

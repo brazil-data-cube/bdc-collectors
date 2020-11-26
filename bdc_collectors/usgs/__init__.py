@@ -11,13 +11,13 @@
 import logging
 from typing import List
 
-from landsatxplore.api import API, is_product_id
-from landsatxplore.datamodels import temporal_filter
-from landsatxplore.earthexplorer import EE_DOWNLOAD_URL, EarthExplorer
+from landsatxplore.earthexplorer import EarthExplorer
 from landsatxplore.exceptions import EarthExplorerError
+from shapely.geometry import shape
 
 from ..base import BaseProvider, SceneResult
 from ..exceptions import DownloadError
+from .api import LandsatApi
 from .landsat5 import Landsat5
 from .landsat7 import Landsat7
 from .landsat8 import Landsat8
@@ -50,16 +50,22 @@ FIELD_SEARCH_MAP = dict(
         row='5e83d08ffa032790'
     )
 )
-"""Type which maps the supported field filters on EarthExplorer."""
+"""Type which maps the supported field filters on EarthExplorer.
+TODO: Implement following `DataSet filters <https://m2m.cr.usgs.gov/api/docs/reference/#dataset-filters>`_."""
 
 
 class USGS(BaseProvider):
     """Define the USGS provider.
 
     This providers consumes the `USGS EarthExplorer <https://earthexplorer.usgs.gov/>`_ catalog.
+
+    This module follows the new experimental `API 1.5 <https://m2m.cr.usgs.gov/api/docs/json/>`_.
+
+    Notes:
+         Remember to call `.disconnect()` to avoid blocked IP's on USGS Server.
     """
 
-    api: API
+    api: LandsatApi
 
     def __init__(self, **kwargs):
         """Create instance of USGS provider."""
@@ -77,39 +83,16 @@ class USGS(BaseProvider):
         if lazy:
             self.api = None
         else:
-            self.api = API(self.kwargs['username'], self.kwargs['password'])
+            self.api = LandsatApi(self.kwargs['username'], self.kwargs['password'])
 
     def _api(self):
         """Lazy API instance."""
         if self.api is None:
-            self.api = API(self.kwargs['username'], self.kwargs['password'])
-
-    def __del__(self):
-        """Logout in USGS on exit."""
-        if self.api:
-            self.api.logout()
-
-    def _search(self, query, **options):
-        if options.get('additionalCriteria'):
-            params = dict(
-                datasetName=query,
-                maxResults=options['max_results'],
-                maxCloudCover=100,
-                additionalCriteria=options['additionalCriteria']
-            )
-            if options.get('start_date'):
-                params['temporalFilter'] = temporal_filter(options['start_date'], options.get('end_date'))
-            if options.get('max_cloud_cover'):
-                params['maxCloudCover'] = options['max_cloud_cover']
-
-            response = self.api.request('search', **params)
-
-            return response['results']
-        return self.api.search(query, **options)
+            self.api = LandsatApi(self.kwargs['username'], self.kwargs['password'])
 
     @staticmethod
     def _criteria(value: str, filter_type: str = 'value', operand: str = '=', field_id=None, **opts) -> dict:
-        options = dict(filterType=filter_type, fieldId=field_id)
+        options = dict(filterType=filter_type, filterId=field_id)
 
         if filter_type == 'between':
             options['firstValue'] = value
@@ -125,42 +108,64 @@ class USGS(BaseProvider):
         self._api()
 
         options = dict(
-            max_cloud_cover=kwargs.get('cloud_cover', 100),
-            start_date=kwargs.get('start_date'),
-            end_date=kwargs.get('end_date'),
-            max_results=kwargs.get('max_results', 50000)
+            datasetName=query,
+            maxResults=kwargs.get('max_results', 50000),
+            sceneFilter=dict(
+                spatialFilter=None
+            )
         )
 
-        if kwargs.get('additionalCriteria'):
-            options['additionalCriteria'] = kwargs['additionalCriteria']
-        elif 'bbox' in kwargs and kwargs['bbox'] is not None:
-            bbox = kwargs['bbox']
-            # w,s,e,n  => s,w,n,e due bug https://github.com/yannforget/landsatxplore/blob/master/landsatxplore/datamodels.py#L49
-            options['bbox'] = [bbox[1], bbox[0], bbox[3], bbox[2]]
-        elif kwargs.get('filename') or kwargs.get('scene_id'):
-            scene_id = kwargs.get('filename') or kwargs.get('scene_id')
+        if kwargs.get('sceneFilter'):
+            options['sceneFilter'] = kwargs['sceneFilter']
+        else:
+            options.setdefault('sceneFilter', dict())
 
-            field_map = FIELD_SEARCH_MAP[query]
+            if kwargs.get('start_date'):
+                options['sceneFilter']['acquisitionFilter'] = dict(
+                    start=kwargs['start_date'],
+                    end=kwargs['end_date']
+                )
 
-            criteria = self._criteria(scene_id.replace('*', ''), field_id=field_map['scene'])
-            options['additionalCriteria'] = criteria
-        elif kwargs.get('tile'):
-            path, row = kwargs['tile'][:3], kwargs['tile'][-3:]
+            if kwargs.get('cloudCoverFilter'):
+                options['sceneFilter']['cloudCoverFilter'] = kwargs['cloudCoverFilter']
+            else:
+                options['sceneFilter']['cloudCoverFilter'] = dict(
+                    min=0,
+                    max=kwargs.get('cloud_cover', 100),
+                    includeUnknown=True
+                )
 
-            field_map = FIELD_SEARCH_MAP[query]
+            if 'bbox' in kwargs and kwargs['bbox'] is not None:
+                bbox = kwargs['bbox']
+                options['sceneFilter']['spatialFilter'] = dict(
+                    filterType='mbr',
+                    lowerLeft=dict(latitude=bbox[1], longitude=bbox[0]),
+                    upperRight=dict(latitude=bbox[3], longitude=bbox[2]),
+                )
+            elif kwargs.get('filename') or kwargs.get('scene_id'):
+                scene_id = kwargs.get('filename') or kwargs.get('scene_id')
 
-            path_criteria = self._criteria(path, filter_type='between',
-                                           field_id=field_map['path'], secondValue=path)
+                field_map = FIELD_SEARCH_MAP[query]
 
-            row_criteria = self._criteria(row, filter_type='between',
-                                          field_id=field_map['row'], secondValue=row)
+                criteria = self._criteria(scene_id.replace('*', ''), field_id=field_map['scene'])
+                options['sceneFilter']['metadataFilter'] = criteria
+            elif kwargs.get('tile'):
+                path, row = kwargs['tile'][:3], kwargs['tile'][-3:]
 
-            options['additionalCriteria'] = dict(
-                filterType='and',
-                childFilters=[path_criteria, row_criteria]
-            )
+                field_map = FIELD_SEARCH_MAP[query]
 
-        results = self._search(query, **options)
+                path_criteria = self._criteria(int(path), filter_type='between',
+                                               field_id=field_map['path'], secondValue=int(path))
+
+                row_criteria = self._criteria(int(row), filter_type='between',
+                                              field_id=field_map['row'], secondValue=int(row))
+
+                options['sceneFilter']['metadataFilter'] = dict(
+                    filterType='and',
+                    childFilters=[path_criteria, row_criteria]
+                )
+
+        results = self.api.search(**options)
 
         valid_scene = self._valid_scene
 
@@ -171,7 +176,7 @@ class USGS(BaseProvider):
                 raise ValueError(f'Invalid validate. Expected a callable(scene:dict), but got {valid_scene}')
 
         return [
-            SceneResult(scene['displayId'], scene['cloudCover'], link=scene['downloadUrl'], **scene)
+            SceneResult(scene['displayId'], scene['cloudCover'], **scene)
             for scene in results if valid_scene(scene)
         ]
 
@@ -183,7 +188,8 @@ class USGS(BaseProvider):
         if scene['displayId'].endswith('RT') or scene['displayId'].startswith('LO08'):
             return False
 
-        xmin, ymin, xmax, ymax = [float(value) for value in scene['sceneBounds'].split(',')]
+        bounds_geom = shape(scene['spatialBounds'])
+        xmin, ymin, xmax, ymax = bounds_geom.bounds
 
         # TODO: Check data integrity
         # Sometimes the USGS responds invalid bounding box scenes while searching in EarthExplorer Catalog.
@@ -203,11 +209,15 @@ class USGS(BaseProvider):
 
         destination = kwargs.get('output')
 
-        explorer = EarthExplorer(self.kwargs['username'], self.kwargs['password'])
+        earth_explorer = EarthExplorer(self.kwargs['username'], self.kwargs['password'])
 
         try:
-            file_name = explorer.download(scene_id, destination)
+            file_name = earth_explorer.download(scene_id, destination)
+
+            return file_name
         except EarthExplorerError as e:
             raise DownloadError(str(e))
 
-        return file_name
+    def disconnect(self):
+        """Disconnect from the USGS server."""
+        self.api.logout()
