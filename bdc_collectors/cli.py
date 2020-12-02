@@ -7,8 +7,9 @@
 #
 
 """Command line for BDC-Collectors."""
-
+import json
 import logging
+from pathlib import Path
 
 import click
 from bdc_catalog.models import Collection
@@ -31,6 +32,7 @@ def cli():
 @click.option('-u', '--username', help='User', required=False)
 @click.option('--password', help='Password (if needed)', required=False)
 @click.option('--platform', help='Platform sensor (if required)', required=False)
+@click.option('-o', '--output', help='Output to a file', type=click.Path(dir_okay=True), required=False)
 @with_appcontext
 def search(provider, dataset, bbox, time, username=None, password=None, **kwargs):
     """Search for data set in the given provider.
@@ -43,6 +45,8 @@ def search(provider, dataset, bbox, time, username=None, password=None, **kwargs
         username - Optional username used to search in provider.
         password - Optional password used to search in provider.
     """
+    context = locals()
+
     # Get BDC-Collectors extension and then seek for provider support.
     ext = current_app.extensions['bdc:collector']
 
@@ -57,13 +61,38 @@ def search(provider, dataset, bbox, time, username=None, password=None, **kwargs
 
     bbox = [float(elm) for elm in bbox.split(',')]
 
+    output = kwargs.pop('output', None)
+
     times = time.split('/')
 
     start_date, end_date = times
 
     res = p.search(query=dataset, bbox=bbox, start_date=start_date, end_date=end_date, **kwargs)
 
-    print(res)
+    click.secho(f'Total scenes found: {len(res)}')
+
+    for scene in res:
+        click.secho(f'\t{scene.scene_id}')
+
+    if output:
+        click.secho(f'Saving output in {output}')
+
+        file_path = Path(output)
+
+        file_path.parent.mkdir(exist_ok=True, parents=True)
+
+        with file_path.open('w') as f:
+            context.pop('username', None)
+            context.pop('password', None)
+
+            f.write(json.dumps(
+                dict(
+                    total=len(res),
+                    query=context,
+                    result=res
+                ),
+                indent=4
+            ))
 
 
 @cli.command()
