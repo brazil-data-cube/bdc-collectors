@@ -10,10 +10,8 @@
 Changes
 =======
 
-Version 0.2.0
--------------
-
-Released 2020-12-02
+Version 0.2.0 (2020-12-02)
+--------------------------
 
 - Add support to search and download data product from the following providers:
 
