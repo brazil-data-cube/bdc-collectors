@@ -38,13 +38,13 @@ class DGICollection(BaseCollection):
             name = 'default'
 
             if 'risco' in self.pattern:
-                name = 'risco'
+                name = 'Fire_Risk'
             elif 'prec' in self.pattern:
-                name = 'prec'
+                name = 'PREC_IMERG'
             elif 'umid' in self.pattern:
-                name = 'umid'
+                name = 'RH2M'
             elif 'temperature' in self.pattern:
-                name = 'temperature'
+                name = 'TEMP2M'
 
             glob = list(path.glob(f'{self.parser.scene_id}*'))
 
