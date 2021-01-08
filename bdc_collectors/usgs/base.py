@@ -47,7 +47,7 @@ class BaseLandsat(BaseCollection):
                 band_name = f.stem.replace(f'{scene_id}_', '')
 
                 if (band_name.startswith('sr_') and band_name != 'sr_aerosol') or band_name == 'Fmask4' or \
-                        band_name.startswith('NBAR_') or \
+                        band_name.startswith('nbar_') or \
                         any(filter(lambda band_ext: band_name in band_ext, internal_bands)):
                     output[band_name] = f
 
