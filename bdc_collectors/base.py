@@ -92,7 +92,11 @@ class BaseCollection:
         return scene_path
 
     def compressed_file(self, collection: Collection, prefix=None) -> Path:
-        """Retrieve the path to the compressed file L1."""
+        """Retrieve the path to the compressed file L1.
+
+        TODO: This function will be deprecated in the next release.
+              The compressed files will be stored in `.path`.
+        """
         raise NotImplementedError()
 
     def __str__(self):

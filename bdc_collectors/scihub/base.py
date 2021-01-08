@@ -73,17 +73,16 @@ class SentinelCollection(BaseCollection):
         if prefix is None:
             prefix = current_app.config.get('DATA_DIR')
 
-        year_month = self.parser.sensing_date().strftime('%Y-%m')
+        year = str(self.parser.sensing_date().year)
+        tile = self.parser.tile_id()
+        version = 'v{0:03d}'.format(collection.version)
+        scene_id = self.parser.scene_id
 
-        source = self.parser.source()
+        relative = Path(collection.name) / version / tile[:2] / tile[2] / tile[3:] / year / scene_id
 
-        sensor = self.parser.fragments[1][:3]
+        scene_path = Path(prefix or '') / 'Repository/Archive' / relative
 
-        folder = '{}_{}'.format(source[:2], sensor)
-
-        scene_path = Path(prefix or '') / 'Repository/Archive' / folder / year_month
-
-        return scene_path / '{}.zip'.format(self.parser.scene_id)
+        return scene_path / f'{scene_id}.zip'
 
     def path(self, collection: Collection, prefix=None) -> Path:
         """Retrieve the relative path to the Collection on Brazil Data Cube cluster."""
