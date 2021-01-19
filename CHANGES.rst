@@ -10,6 +10,13 @@
 Changes
 =======
 
+Version 0.2.1 (2021-01-19)
+--------------------------
+
+- Fix base url for Landsat and Sentinel-2 products `#16 <https://github.com/brazil-data-cube/bdc-collectors/issues/16>`_
+- Add Drone CI support `#17 <https://github.com/brazil-data-cube/bdc-collectors/issues/17>`_.
+
+
 Version 0.2.0 (2020-12-02)
 --------------------------
 

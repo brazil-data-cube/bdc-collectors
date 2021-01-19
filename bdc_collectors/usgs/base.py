@@ -40,26 +40,21 @@ class BaseLandsat(BaseCollection):
         output = dict()
         scene_id = self.parser.scene_id
 
+        internal_bands = self.bands or []
+
         for f in path.iterdir():
             if f.is_file() and f.suffix.lower() == '.tif':
                 band_name = f.stem.replace(f'{scene_id}_', '')
 
                 if (band_name.startswith('sr_') and band_name != 'sr_aerosol') or band_name == 'Fmask4' or \
-                        band_name.startswith('nbar_'):
+                        band_name.startswith('nbar_') or \
+                        any(filter(lambda band_ext: band_name in band_ext, internal_bands)):
                     output[band_name] = f
 
         return output
 
     def path(self, collection: Collection, prefix=None) -> Path:
-        """Retrieve the relative path to the Collection on Brazil Data Cube cluster.
-
-        Example:
-            >>> collection = Collection.query().filter(Collection.name == 'LC8_DN').first_or_404()
-            >>> landsat_parser = LandsatScene('LC08_L1TP_223064_20200831_20200906_01_T1')
-            >>> scene = BaseCollection(collection=collection, landsat_parser)
-            >>> print(str(scene.path(prefix='/gfs')))
-            ... '/gfs/Repository/Archive/LC8_DN/2015-07/223064/'
-        """
+        """Retrieve the relative path to the Collection on Brazil Data Cube cluster."""
         if prefix is None:
             prefix = current_app.config.get('DATA_DIR')
 
@@ -76,15 +71,21 @@ class BaseLandsat(BaseCollection):
         if prefix is None:
             prefix = current_app.config.get('DATA_DIR')
 
-        year_month = self.parser.sensing_date().strftime('%Y-%m')
+        year = self.parser.sensing_date().strftime('%Y')
 
-        product_version = int(self.parser.satellite())
+        base = Path(prefix or '')
 
-        folder = '{}{}'.format(self.parser.source()[:2], product_version)
+        version = 'v{0:03d}'.format(collection.version)
 
-        scene_path = Path(prefix or '') / 'Repository/Archive' / folder / year_month / self.parser.tile_id()
+        scene_id = self.parser.scene_id
 
-        return scene_path / '{}.tar.gz'.format(self.parser.scene_id)
+        tile_id = self.parser.tile_id()
+
+        path, row = tile_id[:3], tile_id[-3:]
+
+        scene_path = base / 'Repository/Archive' / collection.name / version / path / row / year / scene_id
+
+        return scene_path / f'{scene_id}.tar.gz'
 
     def get_assets(self, collection, path=None, prefix=None) -> dict:
         """Retrieve the map of MTL and ANG assets of Landsat product."""

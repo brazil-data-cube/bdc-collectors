@@ -20,7 +20,7 @@ Pre-Requirements
 
 The ``Brazil Data Cube Collectors`` (``BDC-Collectors``) depends essentially on:
 
-- `Python Client Library for STAC (stac.py) <https://github.com/brazil-data-cube/stac.py>`
+- `Python Client Library for STAC (stac.py) <https://github.com/brazil-data-cube/stac.py>`_
 
 - `Flask <https://palletsprojects.com/p/flask/>`_
 
