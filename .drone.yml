@@ -21,17 +21,6 @@ steps:
       - pip install -e .[tests,docs]
       - ./run-tests.sh
 
-  - name: coverage
-
-    image: plugins/codecov
-
-    when:
-      event:
-        - push
-    settings:
-      token:
-        from_secret: CODECOV_TOKEN
-
       files:
         - coverage.xml
         - .coverage
