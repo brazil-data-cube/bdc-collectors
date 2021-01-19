@@ -54,15 +54,7 @@ class BaseLandsat(BaseCollection):
         return output
 
     def path(self, collection: Collection, prefix=None) -> Path:
-        """Retrieve the relative path to the Collection on Brazil Data Cube cluster.
-
-        Example:
-            >>> collection = Collection.query().filter(Collection.name == 'LC8_DN').first_or_404()
-            >>> landsat_parser = LandsatScene('LC08_L1TP_223064_20200831_20200906_01_T1')
-            >>> scene = BaseCollection(collection=collection, landsat_parser)
-            >>> print(str(scene.path(prefix='/gfs')))
-            ... '/gfs/Repository/Archive/LC8_DN/2015-07/223064/'
-        """
+        """Retrieve the relative path to the Collection on Brazil Data Cube cluster."""
         if prefix is None:
             prefix = current_app.config.get('DATA_DIR')
 

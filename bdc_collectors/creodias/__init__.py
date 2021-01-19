@@ -69,11 +69,6 @@ class CREODIAS(BaseProvider):
         You can also specify the processing level `processingLevel` to filter which data set should retrieve.
         For Sentinel2, use `LEVEL1C` for L1 data, `LEVEL2A` as L2, etc.
 
-        Examples:
-            >>> from bdc_collectors.creodias import CREODIAS
-            >>> provider = CREODIAS(username='theuser@email.com', password='thepass')
-            >>> result = provider.search('Sentinel2', bbox=[-54,-12,-52,-10], start_date='2020-01-01', end_date='2020-01-31')
-
         Args:
             query - The collection name
             **kwargs
@@ -93,13 +88,6 @@ class CREODIAS(BaseProvider):
 
         Raises:
             DataOfflineError when scene is not available/offline.
-
-        Examples:
-            >>> from bdc_collectors.creodias import CREODIAS
-            >>> provider = CREODIAS(username='theuser@email.com', password='thepass')
-            >>> output_file = provider.download('S2A_MSIL1C_20201006T132241_N0209_R038_T23KLT_20201006T151824', output='/tmp')
-            >>> output_file
-            ... '/tmp/S2A_MSIL1C_20201006T132241_N0209_R038_T23KLT_20201006T151824.zip'
         """
         collection = self._guess_collection(scene_id)
 
@@ -135,12 +123,6 @@ class CREODIAS(BaseProvider):
 
     def download_all(self, scenes: List[SceneResult], output: str, **kwargs):
         """Bulk download from CREODIAS provider in parallel.
-
-        Examples:
-            >>> from bdc_collectors.creodias import CREODIAS
-            >>> provider = CREODIAS(username='theuser@email.com', password='thepass')
-            >>> scenes = provider.search('Sentinel2', bbox=[-54,-12,-52,-10], start_date='2020-01-01', end_date='2020-01-31')
-            >>> provider.download_all(scenes, output='/tmp')
 
         Args:
             scenes - List of SceneResult to download
