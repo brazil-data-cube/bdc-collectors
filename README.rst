@@ -16,14 +16,9 @@ BDC Collectors Extension for Brazil Data Cube Applications and Services
         :alt: Software License
 
 
-.. image:: https://travis-ci.org/brazil-data-cube/bdc-collectors.svg?branch=master
-        :target: https://travis-ci.org/brazil-data-cube/bdc-collectors
+.. image:: https://drone.dpi.inpe.br/api/badges/brazil-data-cube/bdc-collectors/status.svg?branch=master
+        :target: https://drone.dpi.inpe.br/brazil-data-cube/bdc-collectors
         :alt: Build Status
-
-
-.. image:: https://coveralls.io/repos/github/brazil-data-cube/bdc-collectors/badge.svg?branch=master
-        :target: https://coveralls.io/github/brazil-data-cube/bdc-collectors?branch=master
-        :alt: Code Coverage Test
 
 
 .. image:: https://readthedocs.org/projects/bdc-collectors/badge/?version=latest
@@ -31,8 +26,8 @@ BDC Collectors Extension for Brazil Data Cube Applications and Services
         :alt: Documentation Status
 
 
-.. image:: https://img.shields.io/badge/lifecycle-experimental-orange.svg
-        :target: https://www.tidyverse.org/lifecycle/#experimental
+.. image:: https://img.shields.io/badge/lifecycle-maturing-blue.svg
+        :target: https://www.tidyverse.org/lifecycle/#maturing
         :alt: Software Life Cycle
 
 

@@ -21,8 +21,9 @@ def create_app() -> Flask:
     app = Flask(__name__)
 
     # TODO: We should remove the BDC-Catalog initialization and pass to the invoker.
-    BDCCatalog(app)
-    CollectorExtension(app)
+    with app.app_context():
+        BDCCatalog(app)
+        CollectorExtension(app)
 
     return app
 
