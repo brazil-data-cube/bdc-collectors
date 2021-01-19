@@ -20,7 +20,3 @@ steps:
       - pip install --upgrade setuptools
       - pip install -e .[tests,docs]
       - ./run-tests.sh
-
-      files:
-        - coverage.xml
-        - .coverage
