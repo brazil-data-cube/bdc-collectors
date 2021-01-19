@@ -114,6 +114,9 @@ class SciHub(BaseProvider):
         if platform == 'Sentinel-2' and cloud_cover:
             options['cloudcoverpercentage'] = (0, cloud_cover)
 
+        if options.get('tile'):
+            options['filename'] = f'*{options.pop("tile")}*'
+
         scenes = self.api.query(**options)
 
         return [

@@ -25,7 +25,6 @@ docs_require = [
 
 tests_require = [
     'coverage>=4.5',
-    'coveralls>=1.8',
     'pytest>=5.2',
     'pytest-cov>=2.8',
     'pytest-pep8>=1.0',
@@ -47,7 +46,7 @@ setup_requires = [
 ]
 
 install_requires = [
-    'bdc-catalog @ git+git://github.com/brazil-data-cube/bdc-catalog@v0.6.4',
+    'bdc-catalog @ git+git://github.com/brazil-data-cube/bdc-catalog@v0.8.0',
     'Flask>=1.1.0',
     'google-cloud-storage>=1.28,<2',
     'landsatxplore>=0.6,<1',
