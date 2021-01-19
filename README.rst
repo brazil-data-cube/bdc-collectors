@@ -16,7 +16,7 @@ BDC Collectors Extension for Brazil Data Cube Applications and Services
         :alt: Software License
 
 
-.. image:: https://drone.dpi.inpe.br/api/badges/brazil-data-cube/bdc-collectors/status.svg?branch=master
+.. image:: https://drone.dpi.inpe.br/api/badges/brazil-data-cube/bdc-collectors/status.svg?branch=main
         :target: https://drone.dpi.inpe.br/brazil-data-cube/bdc-collectors
         :alt: Build Status
 
