@@ -92,9 +92,9 @@ class USGS(BaseProvider):
             self.ee = EarthExplorer(self.kwargs['username'], self.kwargs['password'])
 
     def get_collector(self, collection: str) -> Type[BaseCollection]:
-        if collection not in self.collections:
+        if collection.lower() not in self.collections:
             return USGSCollection
-        return super().get_collector(collection)
+        return super().get_collector(collection.lower())
 
     @staticmethod
     def _criteria(value: str, filter_type: str = 'value', operand: str = '=', field_id=None, **opts) -> dict:
