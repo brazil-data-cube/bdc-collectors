@@ -49,7 +49,7 @@ install_requires = [
     'bdc-catalog @ git+git://github.com/brazil-data-cube/bdc-catalog@v0.8.0',
     'Flask>=1.1.0',
     'google-cloud-storage>=1.28,<2',
-    'landsatxplore>=0.6,<1',
+    'beautifulsoup4>=4.9,<5',
     'rasterio>=1.1,<1.2',
     'redis>=3.5,<4',
     'sentinelsat>=0.14,<1',

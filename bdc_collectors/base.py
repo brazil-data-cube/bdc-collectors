@@ -45,6 +45,10 @@ class SceneParser:
         """Define meta information for scene_id."""
         raise NotImplementedError()
 
+    def level(self) -> str:
+        """Retrieve the collection level."""
+        raise NotImplementedError()
+
 
 class BaseCollection:
     """Define the collection signature of a Provider."""
@@ -60,7 +64,12 @@ class BaseCollection:
 
     def get_files(self, collection: Collection, path=None, prefix=None) -> Dict[str, Path]:
         """List all files in the collection."""
-        return dict()
+        if path is None:
+            path = self.path(collection, prefix=prefix)
+
+        entries = list(path.rglob(f'*{self.parser.scene_id}*'))
+
+        return {i: entry for i, entry in enumerate(entries)}
 
     def get_assets(self, collection: Collection, path=None, prefix=None) -> Dict[str, str]:
         """Get a list of extra assets contained in collection path.
@@ -85,7 +94,7 @@ class BaseCollection:
 
         year_month = sensing_date.strftime('%Y-%m')
 
-        scene_path = Path(prefix or '') / 'Repository/Archive' / collection.name / year_month / self.parser.tile_id()
+        scene_path = Path(prefix or '') / 'Repository/Archive' / collection / year_month / self.parser.tile_id()
 
         scene_path = scene_path / self.parser.scene_id
 

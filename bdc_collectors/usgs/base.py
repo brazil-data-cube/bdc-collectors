@@ -17,7 +17,35 @@ from ..base import BaseCollection
 from .parser import LandsatScene
 
 
-class BaseLandsat(BaseCollection):
+class USGSCollection(BaseCollection):
+    def compressed_file(self, collection, prefix=None):
+        """Retrieve path to the compressed scene .zip."""
+        scene_id = self.parser.scene_id
+        return self.path(collection, prefix=prefix) / f'{scene_id}.tar.gz'
+
+    def path(self, collection: Collection, prefix=None) -> Path:
+        """Retrieve the relative path to the Collection on Brazil Data Cube cluster."""
+        if prefix is None:
+            prefix = current_app.config.get('DATA_DIR')
+
+        year = self.parser.sensing_date().strftime('%Y')
+
+        base = Path(prefix or '')
+
+        version = 'v{0:03d}'.format(collection.version)
+
+        scene_id = self.parser.scene_id
+
+        tile_id = self.parser.tile_id()
+
+        path, row = tile_id[:3], tile_id[-3:]
+
+        scene_path = base / 'Repository/Archive' / collection.name / version / path / row / year / scene_id
+
+        return scene_path
+
+
+class BaseLandsat(USGSCollection):
     """Define base Landsat Collection."""
 
     parser_class = LandsatScene
@@ -26,7 +54,9 @@ class BaseLandsat(BaseCollection):
         'MTL.txt', 'ANG.txt', 'radsat_qa.tif',
         'sr_aerosol.tif', 'pixel_qa.tif',
         'sensor_azimuth_band4.tif', 'sensor_zenith_band4.tif',
-        'solar_azimuth_band4.tif', 'solar_zenith_band4.tif'
+        'solar_azimuth_band4.tif', 'solar_zenith_band4.tif',
+        # Collection 2
+        'MTL.xml', 'SR_QA_RADSAT.TIF', 'SR_QA_AEROSOL.TIF'
     ]
 
     def get_files(self, collection, path=None, prefix=None):
@@ -66,27 +96,6 @@ class BaseLandsat(BaseCollection):
 
         return scene_path
 
-    def compressed_file(self, collection, prefix=None):
-        """Retrieve path to the compressed scene .zip."""
-        if prefix is None:
-            prefix = current_app.config.get('DATA_DIR')
-
-        year = self.parser.sensing_date().strftime('%Y')
-
-        base = Path(prefix or '')
-
-        version = 'v{0:03d}'.format(collection.version)
-
-        scene_id = self.parser.scene_id
-
-        tile_id = self.parser.tile_id()
-
-        path, row = tile_id[:3], tile_id[-3:]
-
-        scene_path = base / 'Repository/Archive' / collection.name / version / path / row / year / scene_id
-
-        return scene_path / f'{scene_id}.tar.gz'
-
     def get_assets(self, collection, path=None, prefix=None) -> dict:
         """Retrieve the map of MTL and ANG assets of Landsat product."""
         if path is None:
@@ -96,10 +105,16 @@ class BaseLandsat(BaseCollection):
 
         output = dict()
 
+        assets_name = [Path(asset).stem for asset in self.assets]
+
+        collection_level = int(self.parser.level())
+
         for p in path.glob('*'):
             for asset in self.assets:
                 if p.name.endswith(asset):
-                    output[asset.split('.')[0]] = str(p)
+                    _name = asset.split('.')[0]
+                    # Special case for duplicated asset name
+                    output[_name if assets_name.count(_name) == 1 or collection_level == 1 else asset] = str(p)
                     break
 
         return output

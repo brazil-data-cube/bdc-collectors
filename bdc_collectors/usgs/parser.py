@@ -51,3 +51,7 @@ class LandsatScene(_SceneParser):
     def source(self):
         """Retrieve first parameter of scene_id (LC08, etc.)."""
         return self.fragments[0]
+
+    def level(self) -> str:
+        """Retrieve the collection level."""
+        return self.fragments[-2]
