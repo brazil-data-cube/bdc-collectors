@@ -56,7 +56,7 @@ class BaseLandsat(USGSCollection):
         'sensor_azimuth_band4.tif', 'sensor_zenith_band4.tif',
         'solar_azimuth_band4.tif', 'solar_zenith_band4.tif',
         # Collection 2
-        'MTL.xml', 'SR_QA_RADSAT.TIF', 'SR_QA_AEROSOL.TIF'
+        'MTL.xml', 'SR_QA_RADSAT.TIF', 'SR_QA_AEROSOL.TIF', 'MD5.txt', 'GCP.txt', 'VER.jpg', 'VER.txt'
     ]
 
     def get_files(self, collection, path=None, prefix=None):
@@ -77,7 +77,7 @@ class BaseLandsat(USGSCollection):
                 band_name = f.stem.replace(f'{scene_id}_', '')
 
                 if (band_name.startswith('sr_') and band_name != 'sr_aerosol') or band_name == 'Fmask4' or \
-                        band_name.startswith('nbar_') or \
+                        band_name.startswith('nbar_') or band_name.lower().startswith('sr_') or \
                         any(filter(lambda band_ext: band_name in band_ext, internal_bands)):
                     output[band_name] = f
 
