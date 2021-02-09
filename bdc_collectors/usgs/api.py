@@ -222,8 +222,9 @@ class EarthExplorer:
 
         TODO: Implement link_resolver to the other supported collections.It only supports Landsat collections.
         """
+        timeout_seconds = int(os.getenv('DOWNLOAD_TIMEOUT', 600))
         response = self.session.get(f'https://earthexplorer.usgs.gov/scene/downloadoptions/{product_id}/{entity_id}',
-                                    timeout=90)
+                                    timeout=timeout_seconds)
 
         if response.status_code != 200:
             raise DownloadError(f'Download Error - Could not get download options for {entity_id}.')
@@ -237,7 +238,7 @@ class EarthExplorer:
         product_id = link_resolver(soup)
 
         response = self.session.get(f'https://earthexplorer.usgs.gov/download/{product_id}/{entity_id}/EE',
-                                    timeout=90, stream=True)
+                                    timeout=timeout_seconds, stream=True)
 
         local_filename = response.headers['Content-Disposition'].split('=')[-1]
         local_filename = local_filename.replace("\"", "")

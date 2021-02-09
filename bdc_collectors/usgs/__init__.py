@@ -117,13 +117,13 @@ class USGS(BaseProvider):
                 raise RuntimeError(f'Filter Error. {field}, {context}')
 
             if context == 'path' and any(regex.match(entry[field]) for regex in PATH_ENTRIES):
-                return entry[field]
+                return entry['id']
 
             if context == 'row' and any(regex.match(entry[field]) for regex in ROW_ENTRIES):
-                return entry[field]
+                return entry['id']
 
             if context == 'scene' and any(regex.match(entry[field]) for regex in SCENE_ENTRIES):
-                return entry[field]
+                return entry['id']
 
         return None
 
