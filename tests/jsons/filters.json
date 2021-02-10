@@ -1,0 +1,272 @@
+[
+    {
+        "id": "5e81f14fe3c40983",
+        "legacyFieldId": 27678,
+        "dictionaryLink": "https://lta.cr.usgs.gov/DD/landsat_c2_dictionary.html#landsat_product_id",
+        "fieldConfig": {
+            "type": "Text",
+            "filters": [
+                {
+                    "type": "Application\\Filter\\Like",
+                    "options": []
+                }
+            ],
+            "options": {
+                "size": "45"
+            },
+            "validators": [],
+            "numElements": "5",
+            "displayListId": null
+        },
+        "fieldLabel": "Landsat Product Identifier L1",
+        "searchSql": "LANDSAT_PRODUCT_ID_L1 like ?"
+    },
+    {
+        "id": "5e81f14f8faf8048",
+        "legacyFieldId": 27679,
+        "dictionaryLink": "https://lta.cr.usgs.gov/DD/landsat_c2_dictionary.html#wrs_path",
+        "fieldConfig": {
+            "type": "Range",
+            "filters": [],
+            "options": [],
+            "validators": [],
+            "numElements": 1,
+            "displayListId": null
+        },
+        "fieldLabel": "WRS Path",
+        "searchSql": "WRS_PATH between ?"
+    },
+    {
+        "id": "5e81f14f8d2a7c24",
+        "legacyFieldId": 27680,
+        "dictionaryLink": "https://lta.cr.usgs.gov/DD/landsat_c2_dictionary.html#wrs_row",
+        "fieldConfig": {
+            "type": "Range",
+            "filters": [],
+            "options": [],
+            "validators": [],
+            "numElements": 1,
+            "displayListId": null
+        },
+        "fieldLabel": "WRS Row",
+        "searchSql": "WRS_ROW between ?"
+    },
+    {
+        "id": "5e81f14f85d499dc",
+        "legacyFieldId": 27685,
+        "dictionaryLink": "https://lta.cr.usgs.gov/DD/landsat_c2_dictionary.html#sensor_id",
+        "fieldConfig": {
+            "type": "Select",
+            "filters": [
+                {
+                    "type": "StringToUpper",
+                    "options": []
+                }
+            ],
+            "options": {
+                "size": "4",
+                "multiple": true
+            },
+            "validators": [],
+            "numElements": 1,
+            "displayListId": "2773"
+        },
+        "fieldLabel": "Sensor Identifier",
+        "searchSql": "SENSOR_ID = ?",
+        "valueList": {
+            "": "All",
+            "OLI": "OLI",
+            "OLI_TIRS": "OLI_TIRS",
+            "TIRS": "TIRS"
+        }
+    },
+    {
+        "id": "5e81f14f61bda7c4",
+        "legacyFieldId": 27686,
+        "dictionaryLink": "https://lta.cr.usgs.gov/DD/landsat_c2_dictionary.html#day_or_night",
+        "fieldConfig": {
+            "type": "Select",
+            "filters": [
+                {
+                    "type": "StringToUpper",
+                    "options": []
+                }
+            ],
+            "options": {
+                "size": "3",
+                "multiple": true
+            },
+            "validators": [],
+            "numElements": 1,
+            "displayListId": "2836"
+        },
+        "fieldLabel": "Day/Night Indicator",
+        "searchSql": "DAY_NIGHT = ?",
+        "valueList": {
+            "": "All",
+            "DAY": "Day",
+            "NIGHT": "Night"
+        }
+    },
+    {
+        "id": "5e81f150e42bc489",
+        "legacyFieldId": 27690,
+        "dictionaryLink": "https://lta.cr.usgs.gov/DD/landsat_c2_dictionary.html#nadir_offnadir",
+        "fieldConfig": {
+            "type": "Select",
+            "filters": [
+                {
+                    "type": "StringToUpper",
+                    "options": []
+                }
+            ],
+            "options": {
+                "size": "3",
+                "multiple": true
+            },
+            "validators": [],
+            "numElements": 1,
+            "displayListId": "2768"
+        },
+        "fieldLabel": "Nadir/Off Nadir",
+        "searchSql": "NADIR_OFFNADIR = ?",
+        "valueList": {
+            "": "All",
+            "NADIR": "Nadir",
+            "OFFNADIR": "Off Nadir"
+        }
+    },
+    {
+        "id": "5e81f150c2f58f31",
+        "legacyFieldId": 27790,
+        "dictionaryLink": "https://lta.cr.usgs.gov/DD/landsat_c2_dictionary.html#sun_elevation_lora",
+        "fieldConfig": {
+            "type": "Range",
+            "filters": [],
+            "options": [],
+            "validators": [],
+            "numElements": 1,
+            "displayListId": null
+        },
+        "fieldLabel": "Sun Elevation L0RA",
+        "searchSql": "SUN_ELEVATION_L0RA between ?"
+    },
+    {
+        "id": "5f6aa1a4e0985d4c",
+        "legacyFieldId": null,
+        "dictionaryLink": "https://lta.cr.usgs.gov/DD/Landsat_4_5_C1.html#land_cloud_cover",
+        "fieldConfig": {
+            "type": "Range",
+            "filters": [],
+            "options": {},
+            "validators": [],
+            "displayListId": ""
+        },
+        "fieldLabel": "Land Cloud Cover",
+        "searchSql": "CLOUD_COVER_LAND BETWEEN ?"
+    },
+    {
+        "id": "5e81f14fcf660794",
+        "legacyFieldId": 27684,
+        "dictionaryLink": "https://lta.cr.usgs.gov/DD/landsat_c2_dictionary.html#data_type_l1",
+        "fieldConfig": {
+            "type": "Select",
+            "filters": [],
+            "options": {
+                "size": "4",
+                "multiple": true
+            },
+            "validators": [],
+            "numElements": 1,
+            "displayListId": "2833"
+        },
+        "fieldLabel": "Data Type L1",
+        "searchSql": "RIGHT(DATA_TYPE_L1, 4) = ?",
+        "valueList": {
+            "": "All",
+            "L1TP": "Level 1TP",
+            "L1GT": "Level 1GT",
+            "L1GS": "Level 1GS"
+        }
+    },
+    {
+        "id": "5e81f14fff5055a3",
+        "legacyFieldId": 27683,
+        "dictionaryLink": "https://lta.cr.usgs.gov/DD/landsat_c2_dictionary.html#collection_category",
+        "fieldConfig": {
+            "type": "Select",
+            "filters": [],
+            "options": {
+                "size": "4",
+                "multiple": true
+            },
+            "validators": [],
+            "numElements": 1,
+            "displayListId": "2837"
+        },
+        "fieldLabel": "Collection Category",
+        "searchSql": "COLLECTION_CATEGORY = ?",
+        "valueList": {
+            "": "All",
+            "T1": "Tier 1",
+            "T2": "Tier 2",
+            "RT": "Real-Time"
+        }
+    },
+    {
+        "id": "5e81f15023925fb4",
+        "legacyFieldId": 27688,
+        "dictionaryLink": "https://lta.cr.usgs.gov/DD/landsat_c2_dictionary.html#date_l1_generated",
+        "fieldConfig": {
+            "type": "Range",
+            "filters": [],
+            "options": [],
+            "validators": [],
+            "numElements": 1,
+            "displayListId": null
+        },
+        "fieldLabel": "Date Product Generated L1 (YYYY/MM/DD)",
+        "searchSql": "to_char(DATE_L1_GENERATED,'YYYY/MM/DD') between ?"
+    },
+    {
+        "id": "5e81f14f830b749b",
+        "legacyFieldId": 27689,
+        "dictionaryLink": "https://lta.cr.usgs.gov/DD/landsat_c2_dictionary.html#geometric_rmse_model",
+        "fieldConfig": {
+            "type": "Range",
+            "filters": [],
+            "options": [],
+            "validators": [],
+            "numElements": 1,
+            "displayListId": null
+        },
+        "fieldLabel": "Geometric RMSE Model (meters)",
+        "searchSql": "GEOMETRIC_RMSE_MODEL between ?"
+    },
+    {
+        "id": "5e81f14fbba2e223",
+        "legacyFieldId": 27691,
+        "dictionaryLink": "https://lta.cr.usgs.gov/DD/landsat_c2_dictionary.html#landsat_scene_id",
+        "fieldConfig": {
+            "type": "Text",
+            "filters": [
+                {
+                    "type": "StringToUpper",
+                    "options": []
+                },
+                {
+                    "type": "Application\\Filter\\Like",
+                    "options": []
+                }
+            ],
+            "options": {
+                "size": "25"
+            },
+            "validators": [],
+            "numElements": "5",
+            "displayListId": null
+        },
+        "fieldLabel": "Landsat Scene Identifier",
+        "searchSql": "ENTITY_ID like ?"
+    }
+]

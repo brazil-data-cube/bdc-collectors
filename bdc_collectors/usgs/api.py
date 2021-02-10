@@ -12,7 +12,7 @@ import os
 import re
 from json.decoder import JSONDecodeError
 from random import randint
-from typing import Any, Callable, List, Optional, Dict
+from typing import Any, Callable, Dict, List, Optional
 
 import bs4
 import requests
@@ -197,6 +197,11 @@ class EarthExplorer:
     @property
     def authenticated(self):
         """Check if the log-in has been successfully based on session cookies."""
+        # Skip for testing since we cant mock cookies into session
+        # TODO: Remove when the issue https://github.com/jamielennox/requests-mock/issues/17 is done
+        if os.getenv('TESTING'):
+            return True
+
         eros_sso = self.session.cookies.get("EROS_SSO_production_secure")
         return bool(eros_sso)
 

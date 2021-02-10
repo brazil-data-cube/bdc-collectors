@@ -18,6 +18,8 @@ from .parser import LandsatScene
 
 
 class USGSCollection(BaseCollection):
+    """Define a generic way to deal with USGS collections."""
+
     def compressed_file(self, collection, prefix=None):
         """Retrieve path to the compressed scene .zip."""
         scene_id = self.parser.scene_id

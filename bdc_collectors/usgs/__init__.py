@@ -14,11 +14,11 @@ from typing import List, Type
 
 from shapely.geometry import shape
 
-from ._collections import get_resolver
-from .base import USGSCollection
-from ..base import BaseProvider, SceneResult, BaseCollection
+from ..base import BaseCollection, BaseProvider, SceneResult
 from ..exceptions import DownloadError
+from ._collections import get_resolver
 from .api import EarthExplorer, LandsatApi
+from .base import USGSCollection
 from .landsat5 import Landsat5
 from .landsat7 import Landsat7
 from .landsat8 import Landsat8
@@ -92,6 +92,7 @@ class USGS(BaseProvider):
             self.ee = EarthExplorer(self.kwargs['username'], self.kwargs['password'])
 
     def get_collector(self, collection: str) -> Type[BaseCollection]:
+        """Retrieve a data definition supported by USGS provider."""
         if collection.lower() not in self.collections:
             return USGSCollection
         return super().get_collector(collection.lower())
