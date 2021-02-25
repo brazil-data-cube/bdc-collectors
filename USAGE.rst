@@ -96,6 +96,7 @@ To search for Landsat-8 Digital Number in `USGS Earth Explorer <https://earthexp
 
         - ``Landsat-4/5 Collection 1 L1``, use ``dataset=LANDSAT_TM_C1``
         - ``Landsat-7 Collection 1 L1``, use ``dataset=LANDSAT_ETM_C1``
+        - ``Landsat-8 Collection 1 L1``, use ``dataset=LANDSAT_8_C1``
         - ``Landsat-4/5 Collection 2 L1``, use ``dataset=landsat_tm_c2_l1``
         - ``Landsat-4/5 Collection 2 L2``, use ``dataset=landsat_tm_c2_l2``
         - ``Landsat-7 Collection 2 L1``, use ``dataset=landsat_etm_c2_l1``
@@ -103,7 +104,9 @@ To search for Landsat-8 Digital Number in `USGS Earth Explorer <https://earthexp
         - ``Landsat-8 Collection 2 L1``, use ``dataset=landsat_ot_c2_l1``
         - ``Landsat-8 Collection 2 L2``, use ``dataset=landsat_ot_c2_l2``
 
-    We still do not support others data sets like MODIS, Sentinel-2 from USGS.
+    For collections like ``MODIS`` and ``Sentinel-2`` from USGS, we only support to search for data and download we are still
+    working in progress.
+
 
 Download scenes
 +++++++++++++++
