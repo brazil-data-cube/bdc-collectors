@@ -9,15 +9,16 @@
 """Define the structures for USGS Earth Explorer Provider access."""
 
 import logging
-from typing import List
+import re
+from typing import List, Type
 
-from landsatxplore.earthexplorer import EarthExplorer
-from landsatxplore.exceptions import EarthExplorerError
 from shapely.geometry import shape
 
-from ..base import BaseProvider, SceneResult
+from ..base import BaseCollection, BaseProvider, SceneResult
 from ..exceptions import DownloadError
-from .api import LandsatApi
+from ._collections import get_resolver
+from .api import EarthExplorer, LandsatApi
+from .base import USGSCollection
 from .landsat5 import Landsat5
 from .landsat7 import Landsat7
 from .landsat8 import Landsat8
@@ -33,25 +34,18 @@ def init_provider():
     )
 
 
-FIELD_SEARCH_MAP = dict(
-    LANDSAT_8_C1=dict(
-        scene='5e83d0b84d321b85',
-        path='5e83d0b81d20cee8',
-        row='5e83d0b849ed5ee7'
-    ),
-    LANDSAT_ETM_C1=dict(
-        scene='5e83a507ba68271e',
-        path='5e83a507b9aa5140',
-        row='5e83a5074670b94e'
-    ),
-    LANDSAT_TM_C1=dict(
-        scene='5e83d08fd4594aae',
-        path='5e83d08f6487afc7',
-        row='5e83d08ffa032790'
-    )
-)
-"""Type which maps the supported field filters on EarthExplorer.
-TODO: Implement following `DataSet filters <https://m2m.cr.usgs.gov/api/docs/reference/#dataset-filters>`_."""
+PATH_ENTRIES = [
+    re.compile('WRS Path'),
+    re.compile('Horizontal Tile')
+]
+ROW_ENTRIES = [
+    re.compile('WRS Row'),
+    re.compile('Vertical Tile')
+]
+SCENE_ENTRIES = [
+    re.compile('Landsat Product Identifier'),
+    re.compile('Entity ID')
+]
 
 
 class USGS(BaseProvider):
@@ -69,9 +63,9 @@ class USGS(BaseProvider):
 
     def __init__(self, **kwargs):
         """Create instance of USGS provider."""
-        self.collections['LANDSAT_TM_C1'] = Landsat5
-        self.collections['LANDSAT_ETM_C1'] = Landsat7
-        self.collections['LANDSAT_8_C1'] = Landsat8
+        self._set_default_collections(['landsat_tm_c1', 'landsat_tm_c2_l1', 'landsat_tm_c2_l2'], Landsat5)
+        self._set_default_collections(['landsat_etm_c1', 'landsat_etm_c2_l1', 'landsat_etm_c2_l2'], Landsat7)
+        self._set_default_collections(['landsat_8_c1', 'landsat_ot_c2_l1', 'landsat_ot_c2_l2'], Landsat8)
 
         lazy = kwargs.get('lazy')
 
@@ -84,11 +78,24 @@ class USGS(BaseProvider):
             self.api = None
         else:
             self.api = LandsatApi(self.kwargs['username'], self.kwargs['password'])
+            self.ee = EarthExplorer(self.kwargs['username'], self.kwargs['password'])
+
+    def _set_default_collections(self, datasets, data_type):
+        for dataset in datasets:
+            self.collections[dataset.lower()] = data_type
+            self.collections[dataset.upper()] = data_type
 
     def _api(self):
         """Lazy API instance."""
         if self.api is None:
             self.api = LandsatApi(self.kwargs['username'], self.kwargs['password'])
+            self.ee = EarthExplorer(self.kwargs['username'], self.kwargs['password'])
+
+    def get_collector(self, collection: str) -> Type[BaseCollection]:
+        """Retrieve a data definition supported by USGS provider."""
+        if collection.lower() not in self.collections:
+            return USGSCollection
+        return super().get_collector(collection.lower())
 
     @staticmethod
     def _criteria(value: str, filter_type: str = 'value', operand: str = '=', field_id=None, **opts) -> dict:
@@ -103,6 +110,24 @@ class USGS(BaseProvider):
 
         return options
 
+    def _get_filter(self, dataset, field: str = 'fieldLabel', context: str = None):
+        filters = self.api.filters(dataset)
+
+        for entry in filters:
+            if field not in entry:
+                raise RuntimeError(f'Filter Error. {field}, {context}')
+
+            if context == 'path' and any(regex.match(entry[field]) for regex in PATH_ENTRIES):
+                return entry['id']
+
+            if context == 'row' and any(regex.match(entry[field]) for regex in ROW_ENTRIES):
+                return entry['id']
+
+            if context == 'scene' and any(regex.match(entry[field]) for regex in SCENE_ENTRIES):
+                return entry['id']
+
+        return None
+
     def search(self, query, *args, **kwargs) -> List[SceneResult]:
         """Search for data set in USGS catalog."""
         self._api()
@@ -114,6 +139,9 @@ class USGS(BaseProvider):
                 spatialFilter=None
             )
         )
+
+        # Look for all filters
+        self.api.filters(query)
 
         if kwargs.get('sceneFilter'):
             options['sceneFilter'] = kwargs['sceneFilter']
@@ -145,20 +173,24 @@ class USGS(BaseProvider):
             elif kwargs.get('filename') or kwargs.get('scene_id'):
                 scene_id = kwargs.get('filename') or kwargs.get('scene_id')
 
-                field_map = FIELD_SEARCH_MAP[query]
+                filter_name = self._get_filter(dataset=query, context='scene')
 
-                criteria = self._criteria(scene_id.replace('*', ''), field_id=field_map['scene'])
+                criteria = self._criteria(scene_id.replace('*', ''), field_id=filter_name)
                 options['sceneFilter']['metadataFilter'] = criteria
             elif kwargs.get('tile'):
-                path, row = kwargs['tile'][:3], kwargs['tile'][-3:]
+                if query.lower().startswith('landsat'):
+                    path, row = kwargs['tile'][:3], kwargs['tile'][-3:]
+                elif query.lower().startswith('modis'):
+                    path, row = kwargs['tile'][1:3], kwargs['tile'][-2:]
 
-                field_map = FIELD_SEARCH_MAP[query]
+                path_filter = self._get_filter(dataset=query, context='path')
+                row_filter = self._get_filter(dataset=query, context='row')
 
                 path_criteria = self._criteria(int(path), filter_type='between',
-                                               field_id=field_map['path'], secondValue=int(path))
+                                               field_id=path_filter, secondValue=int(path))
 
                 row_criteria = self._criteria(int(row), filter_type='between',
-                                              field_id=field_map['row'], secondValue=int(row))
+                                              field_id=row_filter, secondValue=int(row))
 
                 options['sceneFilter']['metadataFilter'] = dict(
                     filterType='and',
@@ -177,14 +209,18 @@ class USGS(BaseProvider):
 
         return [
             SceneResult(scene['displayId'], scene['cloudCover'], **scene)
-            for scene in results if valid_scene(scene)
+            for scene in results if valid_scene(scene, dataset=query)
         ]
 
-    def _valid_scene(self, scene: dict) -> bool:
+    def _valid_scene(self, scene: dict, dataset=None) -> bool:
         """Filter validator for invalid scenes.
 
         Sometimes, the USGS Catalog returns wrong scene_ids and this functions removes that holes.
         """
+        # Only validate scene for Landsat products
+        if dataset and not dataset.lower().startswith('landsat'):
+            return True
+
         if scene['displayId'].endswith('RT') or scene['displayId'].startswith('LO08'):
             return False
 
@@ -209,15 +245,29 @@ class USGS(BaseProvider):
 
         destination = kwargs.get('output')
 
-        earth_explorer = EarthExplorer(self.kwargs['username'], self.kwargs['password'])
+        id_field = kwargs.get('idFilter', 'displayId')
+
+        if scene_id.startswith('LGN'):
+            id_field = 'entityId'
+
+        data_set = kwargs['dataset']
 
         try:
-            file_name = earth_explorer.download(scene_id, destination)
+            looks = self.api.lookup(data_set, entity_ids=[scene_id], field_id=id_field)
+
+            entity_id = looks[0]['entityId']
+
+            meta = self.api.get_data_set_meta(data_set_name=data_set)
+
+            resolver = get_resolver(data_set)
+
+            file_name = self.ee.download(meta['datasetId'], entity_id, destination, link_resolver=resolver)
 
             return file_name
-        except EarthExplorerError as e:
+        except Exception as e:
             raise DownloadError(str(e))
 
     def disconnect(self):
         """Disconnect from the USGS server."""
         self.api.logout()
+        self.ee.logout()

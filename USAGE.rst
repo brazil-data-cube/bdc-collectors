@@ -94,10 +94,18 @@ To search for Landsat-8 Digital Number in `USGS Earth Explorer <https://earthexp
 
     You can also search for others Landsat products:
 
-      - ``Landsat-4/5``, use ``dataset=LANDSAT_TM_C1``
-      - ``Landsat-7``, use ``dataset=LANDSAT_ETM_C1``
+        - ``Landsat-4/5 Collection 1 L1``, use ``dataset=LANDSAT_TM_C1``
+        - ``Landsat-7 Collection 1 L1``, use ``dataset=LANDSAT_ETM_C1``
+        - ``Landsat-8 Collection 1 L1``, use ``dataset=LANDSAT_8_C1``
+        - ``Landsat-4/5 Collection 2 L1``, use ``dataset=landsat_tm_c2_l1``
+        - ``Landsat-4/5 Collection 2 L2``, use ``dataset=landsat_tm_c2_l2``
+        - ``Landsat-7 Collection 2 L1``, use ``dataset=landsat_etm_c2_l1``
+        - ``Landsat-7 Collection 2 L2``, use ``dataset=landsat_etm_c2_l2``
+        - ``Landsat-8 Collection 2 L1``, use ``dataset=landsat_ot_c2_l1``
+        - ``Landsat-8 Collection 2 L2``, use ``dataset=landsat_ot_c2_l2``
 
-    In the future, we will implement a way to request for L8 Surface Reflectance data sets.
+    For collections like ``MODIS`` and ``Sentinel-2`` from USGS, we only support to search for data and download we are still
+    working in progress.
 
 
 Download scenes
@@ -130,6 +138,7 @@ To download Landsat-8 Digital Number from `USGS Earth Explorer <https://earthexp
 
     bdc-collector download --provider=USGS \
                            --scene-id=LC08_L1TP_223064_20200831_20200906_01_T1 \
+                           --dataset=LANDSAT_8_C1 \
                            --output=. \
                            --username=user \
                            --password=password
@@ -223,7 +232,7 @@ discover and load libraries dynamically.
 
 Basically, the ``BDC-Collectors`` has the following entry points to deal with dynamic data provider:
 
-- ``bdc_db.providers``: The alembic migration folders.
+- ``bdc_db.providers``: Entry point to configure the default Catalog Providers. Append new values in your application and make sure to initialize `CollectorExtension` to make your own providers available.
 
 
 .. note::
