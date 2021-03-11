@@ -20,13 +20,7 @@ from .parser import LandsatScene
 class USGSCollection(BaseCollection):
     """Define a generic way to deal with USGS collections."""
 
-    def compressed_file(self, collection, prefix=None):
-        """Retrieve path to the compressed scene .zip."""
-        scene_id = self.parser.scene_id
-        return self.path(collection, prefix=prefix) / f'{scene_id}.tar.gz'
-
-    def path(self, collection: Collection, prefix=None) -> Path:
-        """Retrieve the relative path to the Collection on Brazil Data Cube cluster."""
+    def _path(self, collection: Collection, prefix=None) -> Path:
         if prefix is None:
             prefix = current_app.config.get('DATA_DIR')
 
@@ -45,6 +39,15 @@ class USGSCollection(BaseCollection):
         scene_path = base / 'Repository/Archive' / collection.name / version / path / row / year / scene_id
 
         return scene_path
+
+    def compressed_file(self, collection, prefix=None):
+        """Retrieve path to the compressed scene .zip."""
+        scene_id = self.parser.scene_id
+        return self._path(collection, prefix=prefix) / f'{scene_id}.tar.gz'
+
+    def path(self, collection: Collection, prefix=None) -> Path:
+        """Retrieve the relative path to the Collection on Brazil Data Cube cluster."""
+        return self._path(collection, prefix=prefix)
 
 
 class BaseLandsat(USGSCollection):
