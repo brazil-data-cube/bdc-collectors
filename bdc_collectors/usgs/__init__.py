@@ -126,6 +126,9 @@ class USGS(BaseProvider):
             if context == 'scene' and any(regex.match(entry[field]) for regex in SCENE_ENTRIES):
                 return entry['id']
 
+            if entry[field] == context:
+                return entry['id']
+
         return None
 
     def search(self, query, *args, **kwargs) -> List[SceneResult]:
@@ -163,6 +166,8 @@ class USGS(BaseProvider):
                     includeUnknown=True
                 )
 
+            options['sceneFilter'].setdefault('metadataFilter', dict(filterType='and', childFilters=[]))
+
             if 'bbox' in kwargs and kwargs['bbox'] is not None:
                 bbox = kwargs['bbox']
                 options['sceneFilter']['spatialFilter'] = dict(
@@ -170,13 +175,15 @@ class USGS(BaseProvider):
                     lowerLeft=dict(latitude=bbox[1], longitude=bbox[0]),
                     upperRight=dict(latitude=bbox[3], longitude=bbox[2]),
                 )
+                self._check_day_indicator(query, options, **kwargs)
+
             elif kwargs.get('filename') or kwargs.get('scene_id'):
                 scene_id = kwargs.get('filename') or kwargs.get('scene_id')
 
                 filter_name = self._get_filter(dataset=query, context='scene')
 
                 criteria = self._criteria(scene_id.replace('*', ''), field_id=filter_name)
-                options['sceneFilter']['metadataFilter'] = criteria
+                options['sceneFilter']['metadataFilter']['childFilters'].append(criteria)
             elif kwargs.get('tile'):
                 if query.lower().startswith('landsat'):
                     path, row = kwargs['tile'][:3], kwargs['tile'][-3:]
@@ -196,6 +203,8 @@ class USGS(BaseProvider):
                     filterType='and',
                     childFilters=[path_criteria, row_criteria]
                 )
+
+                self._check_day_indicator(query, options, **kwargs)
 
         results = self.api.search(**options)
 
@@ -238,6 +247,37 @@ class USGS(BaseProvider):
             return False
 
         return True
+
+    def _check_day_indicator(self, query, options, **kwargs):
+        """Check the dataset Day/Night Indicator.
+
+        By default, the new USGS API display the products day/night indicate as All.
+        For Brazil Data Cube Context, it should only display only the 'Day'.
+        You can skip this step just giving the parameter::
+
+            # Using BDC Alias (Same values supported by USGS API - Day/Night/All)
+            dict(day_night_indicator='Day')
+            # or
+            # The entire USGS API request
+            dict(
+                sceneFilter=dict(
+                    metadataFilter(
+                        # ... field criteria
+                    )
+                )
+            )
+        """
+        day_night_indicator = kwargs.get('day_night_indicator', 'Day')
+        day_night_filter_id = self._get_filter(dataset=query, context='Day/Night Indicator')
+
+        # When no filter specified or no meta filter for Day/Night indicator, use day only.
+        if len(options['sceneFilter']['metadataFilter']['childFilters']) == 0 or \
+                not any([_filter for _filter in options['sceneFilter']['metadataFilter']['childFilters'] if
+                         _filter['filterId'] == day_night_filter_id]):
+            day_night_filter = self._criteria(day_night_indicator, filter_type='value', field_id=day_night_filter_id)
+            options['sceneFilter']['metadataFilter']['childFilters'].append(day_night_filter)
+
+        return options
 
     def download(self, scene_id: str, *args, **kwargs):
         """Download Landsat product from USGS."""
