@@ -107,6 +107,10 @@ To search for Landsat-8 Digital Number in `USGS Earth Explorer <https://earthexp
     For collections like ``MODIS`` and ``Sentinel-2`` from USGS, we only support to search for data and download we are still
     working in progress.
 
+    We have created a few BDC Alias for parameters:
+
+        - ``day_night_indicator='Day'``: The day indicator to search for scenes in the given region. Default is 'Day'. The supported values are defined by USGS JSON API `'All'`, `'Day'` and `'Night'`
+
 
 Download scenes
 +++++++++++++++
