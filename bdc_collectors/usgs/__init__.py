@@ -252,13 +252,12 @@ class USGS(BaseProvider):
         """Check the dataset Day/Night Indicator.
 
         By default, the new USGS API display the products day/night indicate as All.
-        For Brazil Data Cube Context, it should only display only the 'Day'.
+        For Brazil Data Cube Context, it should only display the 'Day'.
         You can skip this step just giving the parameter::
 
             # Using BDC Alias (Same values supported by USGS API - Day/Night/All)
             dict(day_night_indicator='Day')
-            # or
-            # The entire USGS API request
+            # or the entire USGS API request
             dict(
                 sceneFilter=dict(
                     metadataFilter(
