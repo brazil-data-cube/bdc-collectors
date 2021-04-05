@@ -1,10 +1,8 @@
-import json
-import re
 from typing import Type
 from unittest import mock
 
 import pytest
-from pkg_resources import EntryPoint, resource_string
+from pkg_resources import EntryPoint
 from werkzeug.utils import import_string
 
 from bdc_collectors.base import BaseProvider, SceneResult

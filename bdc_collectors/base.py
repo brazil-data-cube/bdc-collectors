@@ -145,6 +145,7 @@ ScheduledResult = List[str]
 FailureResult = List[str]
 BulkDownloadResult = Tuple[DownloadResult, ScheduledResult, FailureResult]
 """Type to identify Bulk download result, which represents Success, scheduled (offline) and failure."""
+SceneResults = List[SceneResult]
 
 
 class BaseProvider:
@@ -160,7 +161,7 @@ class BaseProvider:
         """Retrieve the data type of the given data collection."""
         return self.collections.get(collection)
 
-    def search(self, query, *args, **kwargs) -> List[SceneResult]:
+    def search(self, query, *args, **kwargs) -> SceneResults:
         """Search for data set in Provider.
 
         Args:
