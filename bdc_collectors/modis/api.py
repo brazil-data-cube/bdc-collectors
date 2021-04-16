@@ -14,7 +14,6 @@ import shutil
 from operator import itemgetter
 from tempfile import TemporaryDirectory
 
-import pymodis
 import shapely.geometry
 
 from ..base import BaseProvider, SceneResult, SceneResults
@@ -130,6 +129,8 @@ class ModisAPI(BaseProvider):
         return downloaded_file
 
     def _get_client(self, **options):
+        import pymodis
+
         options.setdefault('user', self._auth[0])
         options.setdefault('password', self._auth[1])
 
@@ -147,7 +148,7 @@ class ModisAPI(BaseProvider):
 
         return f'{scene.source()}.{scene.version()}'
 
-    def _search(self, date_reference, api: pymodis.downmodis.downModis, **kwargs):
+    def _search(self, date_reference, api, **kwargs):
         files = api.getFilesList(date_reference)
 
         scenes = []
