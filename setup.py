@@ -37,6 +37,9 @@ tests_require = [
 extras_require = {
     'docs': docs_require,
     'tests': tests_require,
+    'modis': [
+        'pymodis>=2.1,<2.2'
+    ]
 }
 
 extras_require['all'] = [req for _, reqs in extras_require.items() for req in reqs]
@@ -50,7 +53,6 @@ install_requires = [
     'Flask>=1.1.0',
     'google-cloud-storage>=1.28,<2',
     'beautifulsoup4>=4.9,<5',
-    'pymodis>=2.1,<2.2',
     'rasterio>=1.1,<1.2',
     'redis>=3.5,<4',
     'sentinelsat>=0.14,<1',

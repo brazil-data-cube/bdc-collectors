@@ -67,7 +67,7 @@ class BaseCollection:
         if path is None:
             path = self.path(collection, prefix=prefix)
 
-        entries = list(path.rglob(f'*{self.parser.scene_id}*'))
+        entries = list(Path(path).rglob(f'*{self.parser.scene_id}*'))
 
         return {i: entry for i, entry in enumerate(entries)}
 
