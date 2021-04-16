@@ -37,6 +37,9 @@ tests_require = [
 extras_require = {
     'docs': docs_require,
     'tests': tests_require,
+    'modis': [
+        'pymodis>=2.1,<2.2'
+    ]
 }
 
 extras_require['all'] = [req for _, reqs in extras_require.items() for req in reqs]
@@ -91,6 +94,7 @@ setup(
             'onda = bdc_collectors.onda',
             'scihub = bdc_collectors.scihub',
             'dgi = bdc_collectors.dgi',
+            'modis = bdc_collectors.modis',
         ],
         'bdc_db.scripts': [
             'bdc_collectors = bdc_collectors.scripts'
