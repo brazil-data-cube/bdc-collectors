@@ -11,12 +11,15 @@
 import concurrent.futures
 import os
 import shutil
+from datetime import date, datetime
 from operator import itemgetter
 from tempfile import TemporaryDirectory
+from typing import Type
 
 import shapely.geometry
 
-from ..base import BaseProvider, SceneResult, SceneResults
+from ..base import BaseCollection, BaseProvider, SceneResult, SceneResults
+from .collection import ModisCollection
 from .parser import ModisScene
 
 CATALOG_SEARCH_MAX_WORKERS = int(os.getenv('CATALOG_SEARCH_MAX_WORKERS', 4))
@@ -42,6 +45,12 @@ class ModisAPI(BaseProvider):
             self._tmp = kwargs.get('directory', TemporaryDirectory())
             self.directory = self._tmp.name
 
+        self.collections['MOD13Q1.006'] = ModisCollection
+
+    def get_collector(self, collection: str) -> Type[BaseCollection]:
+        """Represent the structure to deal with Provider API."""
+        return ModisCollection
+
     def search(self, query, *args, **kwargs) -> SceneResults:
         """Search for MODIS product on NASA Catalog."""
         options = dict(
@@ -49,10 +58,10 @@ class ModisAPI(BaseProvider):
         )
 
         if kwargs.get('start_date'):
-            options['today'] = kwargs['start_date']
+            options['today'] = self._parse_date(kwargs['start_date']).strftime('%Y-%m-%d')
 
         if kwargs.get('end_date'):
-            options['enddate'] = kwargs['end_date']
+            options['enddate'] = self._parse_date(kwargs['end_date']).strftime('%Y-%m-%d')
 
         if kwargs.get('tile'):
             options['tiles'] = kwargs['tile']
@@ -127,6 +136,15 @@ class ModisAPI(BaseProvider):
             downloaded_file = output_file
 
         return downloaded_file
+
+    def _parse_date(self, dt) -> date:
+        if isinstance(dt, str):
+            return datetime.fromisoformat(dt).date()
+        elif isinstance(dt, datetime):
+            return dt.date()
+        elif isinstance(dt, date):
+            return dt
+        raise TypeError('Invalid date')
 
     def _get_client(self, **options):
         import pymodis
