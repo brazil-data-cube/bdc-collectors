@@ -41,7 +41,7 @@ class Google(BaseProvider):
 
     Currently, we support both `Sentinel-2` and `Landsat` products.
 
-    Notes:
+    Note:
         This provider requires `GOOGLE_APPLICATION_CREDENTIALS` to work properly.
         Make sure to set in terminal or pass as variable in constructor.
     """

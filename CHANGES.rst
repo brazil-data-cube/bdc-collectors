@@ -10,6 +10,16 @@
 Changes
 =======
 
+
+Version 0.4.0 (2021-04-27)
+--------------------------
+
+- Add support to search and download MODIS products (`#28 <https://github.com/brazil-data-cube/bdc-collectors/issues/28>`_).
+- Add option to download Day/Night data acquisition for Landsat products, Set default as Day only. (`#25 <https://github.com/brazil-data-cube/bdc-collectors/issues/25>`_).
+- Add support the latest USGS API 1.5, which supports Landsat Collection 2 (`#22 <https://github.com/brazil-data-cube/bdc-collectors/issues/22>`_).
+- Improve documentation for ReadTheDocs.
+
+
 Version 0.2.1 (2021-01-19)
 --------------------------
 

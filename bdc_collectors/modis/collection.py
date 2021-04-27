@@ -37,7 +37,7 @@ class ModisCollection(BaseCollection):
         """
         return dict()
 
-    def path(self, collection: Collection, prefix=None) -> Path:
+    def path(self, collection: Collection, prefix=None, cube_prefix=None) -> Path:
         """Retrieve the relative path to the Collection on Brazil Data Cube cluster."""
         if prefix is None:
             prefix = current_app.config.get('DATA_DIR')
@@ -49,7 +49,10 @@ class ModisCollection(BaseCollection):
 
         relative = Path(collection.name) / version / tile[:3] / tile[3:] / year / scene_id
 
-        scene_path = Path(prefix or '') / 'Repository/Archive' / relative
+        if cube_prefix is None:
+            cube_prefix = 'Mosaic' if collection.collection_type == 'cube' else 'Archive'
+
+        scene_path = Path(prefix or '') / f'Repository/{cube_prefix}' / relative
 
         return scene_path
 

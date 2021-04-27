@@ -50,7 +50,7 @@ class Api:
             Exception when scene is offline
             RuntimeError when scene not found.
 
-        Notes:
+        Note:
             The scene may not be available. In this case, you must order
             using "Api.order()". Make sure to set credentials.
 

@@ -126,7 +126,7 @@ class Api:
     def download(self, scene: SceneResult, output: str, max_retry: int = 10, force: bool = False) -> str:
         """Download the scene of CREODIAS server.
 
-        Notes:
+        Note:
             We cant resume download since the CREODIAS given file size does not match with downloaded file.
         """
         access_token = self.access_token

@@ -172,7 +172,7 @@ class EarthExplorer:
         authenticate using HTML parser.
         Once login worked, the session is kept until method `logout()` is invoked.
 
-        Notes:
+        Note:
             This method may changes when there is update on USGS platform.
             Make sure to call `logout()` before terminate the application since there API Rate limit on platform.
         """

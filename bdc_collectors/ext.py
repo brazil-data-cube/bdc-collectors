@@ -130,7 +130,7 @@ class CollectorExtension:
 
         ext.get_provider('providerName')
 
-    Notes:
+    Note:
         Make sure to initialize the CollectorExtension before.
 
     We also the a command line `bdc-collectors` which provides a way to
@@ -183,7 +183,7 @@ class CollectorExtension:
     def get_provider_order(self, collection: Collection, include_inactive=False, **kwargs) -> List[DataCollector]:
         """Retrieve a list of providers which the bdc_catalog.models.Collection is associated.
 
-        Notes:
+        Note:
             This method requires the initialization of extension `bdc_catalog.ext.BDCCatalog`.
 
         With a given collection, it seeks in `bdc_catalog.models.Provider`

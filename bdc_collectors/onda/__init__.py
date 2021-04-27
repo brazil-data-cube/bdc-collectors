@@ -31,7 +31,7 @@ class ONDA(BaseProvider):
 
     This providers consumes the `ONDA Open Catalogue <https://www.onda-dias.eu/cms/knowledge-base/catal-open-the-catalogue/>`_.
 
-    Notes:
+    Note:
         This provider requires `username` and `password`, respectively.
         You can create an account `ONDA Registration <https://onda-dias.eu/userportal/self-registration>`_
     """
