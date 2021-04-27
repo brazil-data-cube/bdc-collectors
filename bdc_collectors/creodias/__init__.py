@@ -34,7 +34,7 @@ class CREODIAS(BaseProvider):
 
     This providers consumes the `CREODIAS API <https://creodias.eu/eo-data-finder-api-manual>`_.
 
-    Notes:
+    Note:
         This provider requires `username` and `password`, respectively.
         You can create an account `CREODIAS Registration <https://portal.creodias.eu/register.php>`_.
 

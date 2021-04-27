@@ -134,7 +134,7 @@ class SceneResult(dict):
     def link(self) -> str:
         """Retrieve the link of scene id.
 
-        Notes:
+        Note:
             It usually points to download url.
         """
         return self['link']

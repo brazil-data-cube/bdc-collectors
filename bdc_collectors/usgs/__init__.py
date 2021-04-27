@@ -55,7 +55,7 @@ class USGS(BaseProvider):
 
     This module follows the new experimental `API 1.5 <https://m2m.cr.usgs.gov/api/docs/json/>`_.
 
-    Notes:
+    Note:
          Remember to call `.disconnect()` to avoid blocked IP's on USGS Server.
     """
 

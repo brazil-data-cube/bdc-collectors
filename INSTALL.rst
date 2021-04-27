@@ -51,7 +51,7 @@ Go to the source code folder::
 
 Install in development mode::
 
-    pip3 install -e .[all]
+    pip3 install -e .[docs,tests]
 
 
 .. note::
@@ -75,6 +75,7 @@ Install in development mode::
         pip3 install --upgrade setuptools
 
 
+
 Build the Documentation
 +++++++++++++++++++++++
 
@@ -84,9 +85,7 @@ You can generate the documentation based on Sphinx with the following command::
     python setup.py build_sphinx
 
 
-The above command will generate the documentation in HTML and it will place it under:
-
-.. code-block:: shell
+The above command will generate the documentation in HTML and it will place it under::
 
     doc/sphinx/_build/html/
 
@@ -99,3 +98,4 @@ The above command will generate the documentation in HTML and it will place it u
 You can open the above documentation in your favorite browser, as::
 
     firefox docs/sphinx/_build/html/index.html
+
