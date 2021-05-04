@@ -58,6 +58,6 @@ class ModisCollection(BaseCollection):
 
     def compressed_file(self, collection: Collection, prefix=None) -> Path:
         """Show the path to the MODIS HDF file."""
-        path = self.path(collection=collection, prefix=prefix)
+        path = self.path(collection=collection, prefix=prefix, cube_prefix='Archive')
 
         return path / f'{self.parser.scene_id}.hdf'
