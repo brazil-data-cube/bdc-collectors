@@ -11,7 +11,7 @@ Changes
 =======
 
 
-Version 0.4.0 (2021-04-27)
+Version 0.4.0 (2021-05-04)
 --------------------------
 
 - Add support to search and download MODIS products (`#28 <https://github.com/brazil-data-cube/bdc-collectors/issues/28>`_).
