@@ -70,7 +70,11 @@ class SciHub(BaseProvider):
             self.parallel = True
             auth = users[0]
 
-        self.api = SentinelAPI(auth['username'], auth['password'], show_progressbars=show_progress)
+        options = dict()
+        if auth.get('api_url'):
+            options['api_url'] = auth['api_url']
+
+        self.api = SentinelAPI(auth['username'], auth['password'], show_progressbars=show_progress, **options)
 
         if self.parallel:
             self.clients = UserClients(users_context)
