@@ -16,6 +16,7 @@ import dateutil.parser
 import requests
 
 from ..base import SceneResult
+from ..exceptions import DownloadError
 from ..utils import download_stream
 
 DateT = Union[str, datetime]
