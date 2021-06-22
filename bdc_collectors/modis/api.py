@@ -46,6 +46,7 @@ class ModisAPI(BaseProvider):
             self.directory = self._tmp.name
 
         self.collections['MOD13Q1.006'] = ModisCollection
+        self.collections['MYD13Q1.006'] = ModisCollection
 
     def get_collector(self, collection: str) -> Type[BaseCollection]:
         """Represent the structure to deal with Provider API."""
@@ -56,6 +57,10 @@ class ModisAPI(BaseProvider):
         options = dict(
             product=query
         )
+        path = kwargs.get('path')
+        if path is None:
+            path = self._guess_path(query)
+        options['path'] = path
 
         if kwargs.get('start_date'):
             options['today'] = self._parse_date(kwargs['start_date']).strftime('%Y-%m-%d')
@@ -106,6 +111,7 @@ class ModisAPI(BaseProvider):
             **kwargs - Extra parameters used to download
         """
         dataset = self._guess_dataset(scene_id, **kwargs)
+        path = self._guess_path(dataset)
         scene = self.search(dataset, scene_id=scene_id)[0]
         output = kwargs.get('output')
 
@@ -114,7 +120,8 @@ class ModisAPI(BaseProvider):
         options = dict(
             today=parse.sensing_date().strftime('%Y-%m-%d'),
             tiles=parse.tile_id(),
-            product=dataset
+            product=dataset,
+            path=path
         )
         options['enddate'] = options['today']
 
@@ -166,6 +173,21 @@ class ModisAPI(BaseProvider):
 
         return f'{scene.source()}.{scene.version()}'
 
+    def _guess_path(self, dataset: str):
+        """Try to identify remote server path prefix according to data set information.
+
+        TODO: We should list all entries and filter on remote host.
+        """
+        if dataset.startswith('MYD'):
+            return 'MOLA'
+        if dataset.startswith('MOD'):
+            return 'MOLT'
+        if dataset.startswith('MCD'):
+            return 'MOTA'
+        if dataset.startswith('VNP'):
+            return 'VIIRS'
+        raise RuntimeError(f'Dataset {dataset} not supported.')
+
     def _search(self, date_reference, api, **kwargs):
         files = api.getFilesList(date_reference)
 
@@ -185,7 +207,6 @@ class ModisAPI(BaseProvider):
                 scenes.append(
                     SceneResult(scene, cloud_cover=float(meta['QAPercentCloudCover']), link=link, **meta)
                 )
-
         return scenes
 
     def _read_meta(self, meta_file: str):
