@@ -145,8 +145,11 @@ class SciHub(BaseProvider):
         # When parallel support set, get an available client from Redis
         if self.parallel:
             client = self.clients.get_user()
+            options = dict(show_progressbars=self.progress)
+            if self.kwargs.get('api_url'):
+                options['api_url'] = self.kwargs['api_url']
 
-            api = SentinelAPI(client.username, client.password, show_progressbars=self.progress)
+            api = SentinelAPI(client.username, client.password, **options)
 
         uuid = list(meta)[0]
 
