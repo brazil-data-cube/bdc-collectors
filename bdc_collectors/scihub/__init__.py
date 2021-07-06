@@ -148,6 +148,7 @@ class SciHub(BaseProvider):
             options = dict(show_progressbars=self.progress)
             if self.kwargs.get('api_url'):
                 options['api_url'] = self.kwargs['api_url']
+            options.setdefault('api_url', api.api_url)
 
             api = SentinelAPI(client.username, client.password, **options)
 
