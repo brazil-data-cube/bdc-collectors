@@ -8,7 +8,7 @@
 
 """Defines the structures for CREODIAS API."""
 
-import concurrent
+import concurrent.futures
 import os
 from typing import List
 
