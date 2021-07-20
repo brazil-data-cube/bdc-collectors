@@ -11,7 +11,7 @@ Changes
 =======
 
 
-Version 0.4.1 (2021-07-06)
+Version 0.4.1 (2021-07-20)
 --------------------------
 
 - Fix bug related to customize API URL for Sentinel-2 `33 <https://github.com/brazil-data-cube/bdc-collectors/issues/33>`_.
