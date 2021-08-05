@@ -89,13 +89,13 @@ class SentinelCollection(BaseCollection):
         if prefix is None:
             prefix = current_app.config.get('DATA_DIR')
 
-        sensing_date = self.parser.sensing_date()
+        tile = self.parser.tile_id()
+        version = 'v{0:03d}'.format(collection.version)
+        year = str(self.parser.sensing_date().year)
 
-        year_month = sensing_date.strftime('%Y-%m')
+        relative = Path(collection.name) / version / tile[:2] / tile[2] / tile[3:] / year / self.parser.scene_id
 
-        scene_path = Path(prefix or '') / 'Repository/Archive' / collection.name / year_month
-
-        scene_path = scene_path / self.parser.scene_id
+        scene_path = Path(prefix or '') / 'Repository/Archive' / relative
 
         return scene_path
 
