@@ -69,6 +69,8 @@ class SciHub(BaseProvider):
         else:
             self.parallel = True
             auth = users[0]
+            self.kwargs = auth
+            self.kwargs.update(**kwargs)
 
         options = dict()
         if auth.get('api_url'):
