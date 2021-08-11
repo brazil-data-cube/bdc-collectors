@@ -36,7 +36,7 @@ class USGSCollection(BaseCollection):
 
         path, row = tile_id[:3], tile_id[-3:]
 
-        scene_path = base / 'Repository/Archive' / collection.name / version / path / row / year / scene_id
+        scene_path = base / collection.name / version / path / row / year / scene_id
 
         return scene_path
 
@@ -97,7 +97,7 @@ class BaseLandsat(USGSCollection):
 
         year_month = sensing_date.strftime('%Y-%m')
 
-        scene_path = Path(prefix or '') / 'Repository/Archive' / collection.name / year_month / self.parser.tile_id()
+        scene_path = Path(prefix or '') / collection.name / year_month / self.parser.tile_id()
 
         return scene_path
 

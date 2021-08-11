@@ -80,7 +80,7 @@ class SentinelCollection(BaseCollection):
 
         relative = Path(collection.name) / version / tile[:2] / tile[2] / tile[3:] / year / scene_id
 
-        scene_path = Path(prefix or '') / 'Repository/Archive' / relative
+        scene_path = Path(prefix or '') / relative
 
         return scene_path / f'{scene_id}.zip'
 
@@ -95,7 +95,7 @@ class SentinelCollection(BaseCollection):
 
         relative = Path(collection.name) / version / tile[:2] / tile[2] / tile[3:] / year / self.parser.scene_id
 
-        scene_path = Path(prefix or '') / 'Repository/Archive' / relative
+        scene_path = Path(prefix or '') / relative
 
         return scene_path
 

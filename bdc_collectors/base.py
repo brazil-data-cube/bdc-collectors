@@ -94,7 +94,7 @@ class BaseCollection:
 
         year_month = sensing_date.strftime('%Y-%m')
 
-        scene_path = Path(prefix or '') / 'Repository/Archive' / collection.name / year_month / self.parser.tile_id()
+        scene_path = Path(prefix or '') / collection.name / year_month / self.parser.tile_id()
 
         scene_path = scene_path / self.parser.scene_id
 
