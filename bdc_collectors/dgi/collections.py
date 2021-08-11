@@ -68,7 +68,7 @@ class DGICollection(BaseCollection):
 
         version = 'v{0:03d}'.format(collection.version)
 
-        scene_path = Path(prefix or '') / 'Repository/Archive' / collection.name / version / year_month
+        scene_path = Path(prefix or '') / collection.name / version / year_month
 
         return scene_path
 
