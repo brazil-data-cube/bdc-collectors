@@ -88,19 +88,6 @@ class BaseLandsat(USGSCollection):
 
         return output
 
-    def path(self, collection: Collection, prefix=None) -> Path:
-        """Retrieve the relative path to the Collection on Brazil Data Cube cluster."""
-        if prefix is None:
-            prefix = current_app.config.get('DATA_DIR')
-
-        sensing_date = self.parser.sensing_date()
-
-        year_month = sensing_date.strftime('%Y-%m')
-
-        scene_path = Path(prefix or '') / collection.name / year_month / self.parser.tile_id()
-
-        return scene_path
-
     def get_assets(self, collection, path=None, prefix=None) -> dict:
         """Retrieve the map of MTL and ANG assets of Landsat product."""
         if path is None:
