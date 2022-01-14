@@ -61,7 +61,7 @@ class AtomicUser:
 class UserClients:
     """Global user client for Sentinel Accounts."""
 
-    def __init__(self, users: List[dict], redis_url=None, lock_name='user-clients'):
+    def __init__(self, users: List[dict], redis_url=None, lock_name='user-clients', limit: int = 2):
         """Build user clients interface."""
         import redis
 
@@ -69,6 +69,7 @@ class UserClients:
             user['count'] = 0
 
         self._key = 'bdc_collection_builder:users'
+        self._limit = limit
 
         if redis_url is None:
             redis_url = current_app.config.get('REDIS_URL', os.getenv('REDIS_URL'))
@@ -96,7 +97,7 @@ class UserClients:
             users = self.users
 
             for user in users:
-                if user['count'] < 2:
+                if user['count'] < self._limit:
                     logging.debug('User {} - {}'.format(user['username'], user['count']))
                     user['count'] += 1
 

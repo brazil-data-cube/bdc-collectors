@@ -50,6 +50,7 @@ setup_requires = [
 
 install_requires = [
     'bdc-catalog @ git+git://github.com/brazil-data-cube/bdc-catalog@v0.8.1',
+    'python-dateutil>=2',
     'Flask>=1.1.0',
     'google-cloud-storage>=1.28,<2',
     'beautifulsoup4>=4.9,<5',
