@@ -19,6 +19,7 @@ from typing import Type
 import shapely.geometry
 
 from ..base import BaseCollection, BaseProvider, SceneResult, SceneResults
+from ..exceptions import DataOfflineError
 from .collection import ModisCollection
 from .parser import ModisScene
 
@@ -130,7 +131,12 @@ class ModisAPI(BaseProvider):
 
         api = self._get_client(**options)
 
-        api.downloadsAllDay()
+        try:
+            api.downloadsAllDay()
+        except AttributeError:
+            # Aborted connection by remote server. In this case, raise a DataOfflineError
+            # to make 3rdparty library identify
+            raise DataOfflineError(scene_id)
 
         downloaded_file = os.path.join(self.directory, f'{scene.scene_id}.hdf')
 
