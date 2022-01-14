@@ -51,6 +51,7 @@ class SciHub(BaseProvider):
 
         show_progress = kwargs.get('progress', False)
         parallel = kwargs.get('parallel', False)
+        max_connections = kwargs.get('max_connections', 2)
 
         self.progress = show_progress
 
@@ -79,7 +80,7 @@ class SciHub(BaseProvider):
         self.api = SentinelAPI(auth['username'], auth['password'], show_progressbars=show_progress, **options)
 
         if self.parallel:
-            self.clients = UserClients(users_context)
+            self.clients = UserClients(users_context, limit=max_connections)
 
         self.collections['Sentinel-1'] = Sentinel1
         self.collections['GRD'] = Sentinel1
