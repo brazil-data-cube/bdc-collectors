@@ -25,7 +25,7 @@ class LandsatScene(_SceneParser):
 
         fragments = scene_id.split('_')
 
-        if len(fragments) != 7 or fragments[0] not in ('LC08', 'LO08', 'LE07', 'LT05', 'LT04'):
+        if len(fragments) != 7 or fragments[0] not in ('LC09', 'LC08', 'LO08', 'LE07', 'LT05', 'LT04'):
             raise RuntimeError(f'Invalid Landsat scene {scene_id}')
 
         self.fragments = fragments
