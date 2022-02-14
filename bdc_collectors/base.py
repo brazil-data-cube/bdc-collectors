@@ -10,7 +10,7 @@
 
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Iterator, List, Tuple, Type
+from typing import Dict, List, Tuple, Type
 
 from bdc_catalog.models import Collection
 from flask import current_app

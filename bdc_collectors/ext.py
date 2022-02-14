@@ -23,7 +23,7 @@ from .base import BaseProvider
 class CollectorState:
     """Class for holding Collector state of the extension."""
 
-    providers: Dict[str, BaseProvider]
+    providers: Dict[str, Type[BaseProvider]]
 
     lock: Lock = Lock()
 
@@ -31,19 +31,18 @@ class CollectorState:
         """Create the state."""
         self.providers = dict()
 
-    def add_provider(self, provider_name: str, provider: BaseProvider):
+    def add_provider(self, provider_name: str, provider: Type[BaseProvider]):
         """Add a new provider to supports."""
         with self.lock:
             assert provider_name not in self.providers
 
             self.providers[provider_name] = provider
 
-    def get_provider(self, provider: str) -> BaseProvider:
+    def get_provider(self, provider: str) -> Type[BaseProvider]:
         """Try to retrieve the data provider type."""
         with self.lock:
             if provider in self.providers:
                 return self.providers[provider]
-            return None
 
 
 class DataCollector:
