@@ -11,10 +11,9 @@
 import logging
 import warnings
 from threading import Lock
-from typing import Dict, List, Type
+from typing import Any, Dict, List, Type
 
 import pkg_resources
-from bdc_catalog.models import Collection, CollectionsProviders, Provider, db
 from flask import Flask
 
 from .base import BaseProvider
@@ -48,11 +47,11 @@ class CollectorState:
 class DataCollector:
     """Data wrapper to store the given instance `bdc_catalog.models.Provider` and the data collector factory."""
 
-    _db_provider: Provider
+    _db_provider: Any
     _provider: BaseProvider
-    _collection_provider: CollectionsProviders
+    _collection_provider: Any
 
-    def __init__(self, instance: Provider, provider: Type[BaseProvider], collection_provider: CollectionsProviders, **kwargs):
+    def __init__(self, instance, provider: Type[BaseProvider], collection_provider: Any, **kwargs):
         """Create a data collector instance."""
         self._db_provider = instance
 
@@ -81,7 +80,7 @@ class DataCollector:
         return self._collection_provider.priority
 
     @property
-    def instance(self) -> Provider:
+    def instance(self):
         """Retrieve the database instance of bdc_catalog.models.Provider."""
         return self._db_provider
 
@@ -179,7 +178,7 @@ class CollectorExtension:
         """Retrieve a provider class."""
         return self.state.get_provider(provider)
 
-    def get_provider_order(self, collection: Collection, include_inactive=False, **kwargs) -> List[DataCollector]:
+    def get_provider_order(self, collection: Any, include_inactive=False, **kwargs) -> List[DataCollector]:
         """Retrieve a list of providers which the bdc_catalog.models.Collection is associated.
 
         Note:
@@ -190,13 +189,14 @@ class CollectorExtension:
         look for provider supported in the entry point `bdc_collectors.providers`.
 
         Args:
-            collection - A collection instance
+            collection - An instance of bdc_catalog.models.Collection
             include_inactive - List also the inactive providers. Default=False
             **kwargs - Extra parameters to pass to the Provider instance.
 
         Returns:
             A list of DataCollector, ordered by priority.
         """
+        from bdc_catalog.models import CollectionsProviders, Provider, db
         where = []
 
         if not include_inactive:

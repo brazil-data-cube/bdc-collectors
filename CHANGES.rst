@@ -11,6 +11,17 @@ Changes
 =======
 
 
+Version 0.6.0 (2022-03-25)
+--------------------------
+
+- Remove dependency bdc-catalog and move as `extras` `57 <https://github.com/brazil-data-cube/bdc-collectors/issues/57>`_.
+- Add support to download Landsat-9 scenes `55 <https://github.com/brazil-data-cube/bdc-collectors/issues/55>`_.
+- Improve way to deal with parallel download in Sentinel-2 `53 <https://github.com/brazil-data-cube/bdc-collectors/issues/53>`_.
+- Improve error handling for MODIS download `52 <https://github.com/brazil-data-cube/bdc-collectors/issues/52>`_.
+- Fix path for Landsat-8 SR collections `50 <https://github.com/brazil-data-cube/bdc-collectors/issues/50>`_.
+- Review path for Sentinel-2 SR collections `46 <https://github.com/brazil-data-cube/bdc-collectors/issues/46>`_.
+
+
 Version 0.4.1 (2021-07-20)
 --------------------------
 
