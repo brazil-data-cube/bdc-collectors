@@ -39,6 +39,9 @@ extras_require = {
     'tests': tests_require,
     'modis': [
         'pymodis>=2.1,<2.2'
+    ],
+    'catalog': [
+        'bdc-catalog @ git+https://github.com/brazil-data-cube/bdc-catalog@v0.8.2',
     ]
 }
 
@@ -49,12 +52,11 @@ setup_requires = [
 ]
 
 install_requires = [
-    'bdc-catalog @ git+git://github.com/brazil-data-cube/bdc-catalog@v0.8.1',
     'python-dateutil>=2',
     'Flask>=1.1.0',
     'google-cloud-storage>=1.28,<2',
     'beautifulsoup4>=4.9,<5',
-    'rasterio>=1.1,<1.2',
+    'rasterio>=1.1,<1.3',
     'redis>=3.5,<4',
     'sentinelsat>=0.14,<1',
     'Shapely>=1.7,<2',
