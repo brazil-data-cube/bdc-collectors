@@ -11,6 +11,12 @@ Changes
 =======
 
 
+Version 0.6.1 (2022-04-04)
+--------------------------
+
+- Fix Landsat Download data from EarthExplorer (USGS) `59 <https://github.com/brazil-data-cube/bdc-collectors/issues/59>`_.
+
+
 Version 0.6.0 (2022-03-25)
 --------------------------
 

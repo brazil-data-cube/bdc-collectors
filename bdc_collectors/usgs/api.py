@@ -180,13 +180,12 @@ class EarthExplorer:
         # Get HTML form information
         response = self.session.get(_login_url)
         # Parse the Login Form and retrieve CSRF_TOKEN and Form Secret
-        form_secret, csrf_token = self._get_login_html_form_info(response.text)
+        csrf_token = self._get_login_html_form_info(response.text)
 
         body_data = dict(
             username=username,
             password=password,
             csrf=csrf_token,
-            __ncforminfo=form_secret
         )
         # Authenticate the user into request Session and keep it open
         _ = self.session.post(_login_url, data=body_data, allow_redirects=True)
@@ -206,13 +205,12 @@ class EarthExplorer:
         return bool(eros_sso)
 
     def _get_login_html_form_info(self, html: str):
-        form_secret = re.findall(r'name="__ncforminfo" value="(.+?)"', html)[0]
         csrf_token = re.findall(r'name="csrf" value="(.+?)"', html)[0]
 
-        if not form_secret and not csrf_token:
+        if not csrf_token:
             raise RuntimeError('Missing "csrf"/"nc_form" property in login page. Is EarthExplorer online?')
 
-        return form_secret, csrf_token
+        return csrf_token
 
     def download(self, product_id: str, entity_id: str, output: str, link_resolver: Callable[[Any], str] = None) -> str:
         """Download data from USGS Server.
