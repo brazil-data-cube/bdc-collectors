@@ -13,6 +13,7 @@ from pathlib import Path
 from flask import current_app
 
 from ..base import BaseCollection
+from ..utils import entry_version
 from .parser import LandsatScene
 
 
@@ -27,7 +28,7 @@ class USGSCollection(BaseCollection):
 
         base = Path(prefix or '')
 
-        version = 'v{0:03d}'.format(collection.version)
+        version = entry_version(collection.version)
 
         scene_id = self.parser.scene_id
 

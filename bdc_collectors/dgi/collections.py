@@ -14,6 +14,7 @@ from typing import Dict
 from flask import current_app
 
 from ..base import BaseCollection
+from ..utils import entry_version
 from .parser import DGICommonScene
 
 
@@ -65,7 +66,7 @@ class DGICollection(BaseCollection):
 
         year_month = sensing_date.strftime('%Y-%m')
 
-        version = 'v{0:03d}'.format(collection.version)
+        version = entry_version(collection.version)
 
         scene_path = Path(prefix or '') / collection.name / version / year_month
 

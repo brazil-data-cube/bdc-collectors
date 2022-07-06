@@ -14,6 +14,7 @@ from typing import Dict
 from flask import current_app
 
 from ..base import BaseCollection
+from ..utils import entry_version
 from .parser import ModisScene
 
 
@@ -43,7 +44,7 @@ class ModisCollection(BaseCollection):
 
         year = str(self.parser.sensing_date().year)
         tile = self.parser.tile_id()
-        version = 'v{0:03d}'.format(collection.version)
+        version = entry_version(collection.version)
         scene_id = self.parser.scene_id
 
         relative = Path(collection.name) / version / tile[:3] / tile[3:] / year / scene_id
