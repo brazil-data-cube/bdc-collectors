@@ -14,7 +14,6 @@ from .parser import ModisScene
 
 def init_provider():
     """Register the NASA Modis provider."""
-    # TODO: Register in bdc_catalog.models.Provider
     return dict(
         MODIS=ModisAPI
     )

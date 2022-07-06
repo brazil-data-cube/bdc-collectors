@@ -40,9 +40,6 @@ extras_require = {
     'modis': [
         'pymodis>=2.1,<2.2'
     ],
-    'catalog': [
-        'bdc-catalog @ git+https://github.com/brazil-data-cube/bdc-catalog@v0.8.2',
-    ],
     'raster': [
         'rasterio>=1.1'
     ]
@@ -60,7 +57,7 @@ install_requires = [
     'google-cloud-storage>=1.28,<2',
     'beautifulsoup4>=4.9,<5',
     'redis>=3.5,<4',
-    'sentinelsat>=0.14,<1',
+    'sentinelsat>=0.14',
     'Shapely>=1.7,<2',
     'tqdm>=4.50'
 ]

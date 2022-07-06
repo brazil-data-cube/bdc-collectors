@@ -22,8 +22,6 @@ from .api import Api
 
 def init_provider():
     """Register the CREODIAS provider."""
-    # TODO: Register in bdc_catalog.models.Provider
-
     return dict(
         CREODIAS=CREODIAS
     )

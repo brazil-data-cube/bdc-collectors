@@ -27,8 +27,6 @@ from .parser import LandsatScene
 
 def init_provider():
     """Register the USGS provider."""
-    # TODO: Register in bdc_catalog.models.Provider
-
     return dict(
         USGS=USGS
     )

@@ -23,7 +23,6 @@ from .sentinel2 import Sentinel1, Sentinel2
 
 def init_provider():
     """Register sentinel provider."""
-    # TODO: Register in bdc_catalog.models.Provider
     return dict(
         SciHub=SciHub
     )

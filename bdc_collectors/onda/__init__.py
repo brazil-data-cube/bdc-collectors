@@ -19,8 +19,6 @@ from .api import Api
 
 def init_provider():
     """Register the ONDA provider."""
-    # TODO: Register in bdc_catalog.models.Provider
-
     return dict(
         ONDA=ONDA
     )

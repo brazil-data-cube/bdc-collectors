@@ -22,8 +22,6 @@ The ``BDC-Collectors`` extension installs a command line tool named ``bdc-collec
 
 - ``download``: Download scenes from remote server.
 
-- ``priority``: Download scenes associated with ``bdc_catalog.models.Collection`` and ``bdc_catalog.models.Provider``.
-
 
 Search Data sets
 ++++++++++++++++

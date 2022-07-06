@@ -10,9 +10,8 @@
 
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Tuple, Type
+from typing import Any, Dict, List, Tuple, Type
 
-from bdc_catalog.models import Collection
 from flask import current_app
 
 
@@ -55,14 +54,14 @@ class BaseCollection:
 
     parser_class: Type[SceneParser]
     parser: SceneParser
-    collection: Collection
+    collection: Any
 
-    def __init__(self, scene_id: str, collection: Collection = None):
+    def __init__(self, scene_id: str, collection=None):
         """Create the data collection definition."""
         self.parser = self.parser_class(scene_id)
         self.collection = collection
 
-    def get_files(self, collection: Collection, path=None, prefix=None) -> Dict[str, Path]:
+    def get_files(self, collection, path=None, prefix=None) -> Dict[str, Path]:
         """List all files in the collection."""
         if path is None:
             path = self.path(collection, prefix=prefix)
@@ -71,7 +70,7 @@ class BaseCollection:
 
         return {i: entry for i, entry in enumerate(entries)}
 
-    def get_assets(self, collection: Collection, path=None, prefix=None) -> Dict[str, str]:
+    def get_assets(self, collection, path=None, prefix=None) -> Dict[str, str]:
         """Get a list of extra assets contained in collection path.
 
         Args:
@@ -85,7 +84,7 @@ class BaseCollection:
         """
         return dict()
 
-    def path(self, collection: Collection, prefix=None) -> Path:
+    def path(self, collection, prefix=None) -> Path:
         """Retrieve the relative path to the Collection on Brazil Data Cube cluster."""
         if prefix is None:
             prefix = current_app.config.get('DATA_DIR')
@@ -100,7 +99,7 @@ class BaseCollection:
 
         return scene_path
 
-    def compressed_file(self, collection: Collection, prefix=None) -> Path:
+    def compressed_file(self, collection, prefix=None) -> Path:
         """Retrieve the path to the compressed file L1.
 
         TODO: This function will be deprecated in the next release.
