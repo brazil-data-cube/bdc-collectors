@@ -89,7 +89,6 @@ setup(
         ],
         'bdc_collectors.providers': [
             'creodias = bdc_collectors.creodias',
-            'earth_search = bdc_collectors.earth_search',
             'google = bdc_collectors.google',
             'usgs = bdc_collectors.usgs',
             'onda = bdc_collectors.onda',
