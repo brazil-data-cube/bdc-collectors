@@ -12,7 +12,14 @@ from datetime import datetime
 from typing import List
 
 import dateutil.parser
-from sentinelsat import SentinelAPI, SentinelAPILTAError
+from sentinelsat import SentinelAPI
+
+try:
+    # for sentinelsat < 1
+    from sentinelsat.exceptions import SentinelAPILTAError as SentinelAPIError
+except ImportError:
+    from sentinelsat.exceptions import SentinelAPIError
+
 from shapely.geometry import box
 
 from ..base import BaseProvider, SceneResult
@@ -177,5 +184,5 @@ class SciHub(BaseProvider):
             res = self.api.download_all(uuid_scenes_map, directory_path=output, **kwargs)
 
             return res
-        except SentinelAPILTAError as e:
+        except SentinelAPIError as e:
             raise DownloadError(f'Error in Sentinel LongTermArchive - {str(e)}')

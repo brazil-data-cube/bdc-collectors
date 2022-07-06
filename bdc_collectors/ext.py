@@ -10,7 +10,7 @@
 
 import warnings
 from threading import Lock
-from typing import Any, Dict, List, Type
+from typing import Dict, List, Type
 
 import pkg_resources
 from flask import Flask
@@ -51,7 +51,8 @@ class CollectorExtension:
         app = Flask(__name__)
         ext = CollectorExtension(app)
 
-    This extension use the `Python Entry points specification <https://packaging.python.org/specifications/entry-points/>`_
+    This extension use the
+    `Python Entry points specification <https://packaging.python.org/specifications/entry-points/>`_
     for load data providers dynamically.
     By default, we use the entrypoint `bdc_collectors.providers` as defined in `setup.py`::
 
@@ -68,14 +69,14 @@ class CollectorExtension:
 
         from flask import current_app
 
-        ext = current_app.extensions['bdc:collector']
+        ext = current_app.extensions['bdc_collector']
 
         ext.get_provider('providerName')
 
     Note:
         Make sure to initialize the CollectorExtension before.
 
-    We also the a command line `bdc-collectors` which provides a way to
+    We also the command line `bdc-collectors` which provides a way to
     consume those providers in terminal::
 
         bdc-collectors --help
@@ -94,7 +95,7 @@ class CollectorExtension:
         """Initialize the BDC-Collector extension, loading supported providers dynamically."""
         from .cli import cli
 
-        extension_name = 'bdc:collector'
+        extension_name = 'bdc_collector'
 
         if extension_name in app.extensions:
             warnings.warn(f'The module {extension_name} was already initialized before.')
@@ -111,8 +112,7 @@ class CollectorExtension:
             for base_entry in pkg_resources.iter_entry_points(entry_point):
                 provider = base_entry.load()
 
-                if hasattr(provider, 'init_provider') and \
-                    callable(provider.init_provider):
+                if hasattr(provider, 'init_provider') and callable(provider.init_provider):
                     entry = provider.init_provider()
 
                     for provider_name, provider in entry.items():

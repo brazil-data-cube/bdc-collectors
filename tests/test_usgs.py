@@ -13,7 +13,7 @@ from bdc_collectors.ext import CollectorExtension
 
 
 def _provider(app, name='USGS') -> Type[BaseProvider]:
-    ext: CollectorExtension = app.extensions['bdc:collector']
+    ext: CollectorExtension = app.extensions['bdc_collector']
 
     return ext.get_provider(name)
 

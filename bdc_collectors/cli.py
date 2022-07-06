@@ -46,7 +46,7 @@ def search(provider, dataset, bbox, time, username=None, password=None, **kwargs
     context = locals()
 
     # Get BDC-Collectors extension and then seek for provider support.
-    ext = current_app.extensions['bdc:collector']
+    ext = current_app.extensions['bdc_collector']
 
     provider_class = ext.get_provider(provider)
 
@@ -112,7 +112,7 @@ def download(provider, scene_id, output, **kwargs):
         username - Optional username used to download from provider.
         password - Optional password used to download from provider.
     """
-    ext = current_app.extensions['bdc:collector']
+    ext = current_app.extensions['bdc_collector']
 
     provider_class = ext.get_provider(provider)
 
@@ -129,7 +129,7 @@ def download(provider, scene_id, output, **kwargs):
 @with_appcontext
 def show_providers():
     """List the supported providers of BDC-Collectors."""
-    ext = current_app.extensions['bdc:collector']
+    ext = current_app.extensions['bdc_collector']
 
     click.secho('Supported providers: ', bold=True, fg='green')
     for provider_name in ext.list_providers():
