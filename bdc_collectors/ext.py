@@ -74,7 +74,7 @@ class CollectorExtension:
         ext.get_provider('providerName')
 
     Note:
-        Make sure to initialize the CollectorExtension before.
+        Make sure to initialize the ``CollectorExtension`` before.
 
     We also the command line `bdc-collectors` which provides a way to
     consume those providers in terminal::
@@ -85,7 +85,7 @@ class CollectorExtension:
     state: CollectorState
 
     def __init__(self, app: Flask, **kwargs):
-        """Create a instance of extension."""
+        """Create an instance of extension."""
         self.state = CollectorState()
 
         if app:
@@ -119,7 +119,7 @@ class CollectorExtension:
                         self.state.add_provider(provider_name, provider)
 
     def get_provider(self, provider: str) -> Type[BaseProvider]:
-        """Retrieve a provider class."""
+        """Retrieve a provider class loaded in module."""
         return self.state.get_provider(provider)
 
     def list_providers(self) -> List[str]:

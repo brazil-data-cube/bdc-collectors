@@ -11,6 +11,13 @@ Changes
 =======
 
 
+Version 0.6.1 (2022-09-16)
+--------------------------
+
+- Improve docs usage/setup
+- Fix readthedocs build
+
+
 Version 0.6.1 (2022-04-04)
 --------------------------
 
