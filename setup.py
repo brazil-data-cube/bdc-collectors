@@ -57,7 +57,7 @@ install_requires = [
     'google-cloud-storage>=1.28,<2',
     'beautifulsoup4>=4.9,<5',
     'redis>=3.5,<4',
-    'sentinelsat>=0.14',
+    'sentinelsat>=0.14,<1.2',
     'Shapely>=1.7,<2',
     'tqdm>=4.50'
 ]

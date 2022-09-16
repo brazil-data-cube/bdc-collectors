@@ -16,7 +16,7 @@ from sentinelsat import SentinelAPI
 
 try:
     # for sentinelsat < 1
-    from sentinelsat.exceptions import SentinelAPILTAError as SentinelAPIError
+    from sentinelsat.sentinel import SentinelAPILTAError as SentinelAPIError
 except ImportError:
     from sentinelsat.exceptions import SentinelAPIError
 
