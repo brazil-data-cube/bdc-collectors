@@ -21,7 +21,7 @@ search_url = base_url + 'search'
 
 @pytest.fixture
 def requests_mock(requests_mock):
-    requests_mock.get(re.compile('https://geojson.org/'))
+    requests_mock.get(re.compile(base_url))
     yield requests_mock
 
 

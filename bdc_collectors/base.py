@@ -50,7 +50,14 @@ class SceneParser:
 
 
 class BaseCollection:
-    """Define the collection signature of a Provider."""
+    """Define the collection signature of a Provider.
+
+    A collection essentially represents an Item briefing, in other words,
+    a path to the scene identifier.
+    Each collection item has custom path resolver which is resolved by
+    :func:`~bdc_collectors.base.BaseCollection.path`. You may implement
+    this method in your impl class for custom directory location.
+    """
 
     parser_class: Type[SceneParser]
     parser: SceneParser
@@ -62,7 +69,12 @@ class BaseCollection:
         self.collection = collection
 
     def get_files(self, collection, path=None, prefix=None) -> Dict[str, Path]:
-        """List all files in the collection."""
+        """List all files in the collection.
+
+        Returns:
+            Dict[str,Path]
+                Map of found files in resolved path location.
+        """
         if path is None:
             path = self.path(collection, prefix=prefix)
 
@@ -74,18 +86,26 @@ class BaseCollection:
         """Get a list of extra assets contained in collection path.
 
         Args:
-            collection - A instance of bdc_catalog.models.Collection context.
-            path - Path to seek for the files
-            prefix - Extra prefix. By default, used the Brazil Data Cube Cluster.
+            collection: A instance of bdc_catalog.models.Collection context.
+            path (Path): Path to seek for the files. Default is ``None``.
+            prefix (str): Extra prefix. By default, used the Brazil Data Cube Cluster.
 
         Returns:
             Dict[str, str]
-            Map of asset_name and the absolute asset in disk.
+                Map of ``asset_name`` and the ``absolute asset`` in disk.
         """
         return dict()
 
     def path(self, collection, prefix=None) -> Path:
-        """Retrieve the relative path to the Collection on Brazil Data Cube cluster."""
+        """Retrieve the relative path to the Collection on Brazil Data Cube cluster.
+
+        Note:
+            When prefix is not set, this func tries to get value from env ``DATA_DIR``.
+
+        Args:
+            collection: Instance of BDC Collection model
+            prefix (str): Path prefix
+        """
         if prefix is None:
             prefix = current_app.config.get('DATA_DIR')
 
@@ -102,8 +122,9 @@ class BaseCollection:
     def compressed_file(self, collection, prefix=None) -> Path:
         """Retrieve the path to the compressed file L1.
 
-        TODO: This function will be deprecated in the next release.
-              The compressed files will be stored in `.path`.
+        .. deprecated:: 0.6.2
+            This function will be deprecated in the next release.
+            Use :func:`~bdc_collectors.base.BaseCollection.path` instead with own extension method.
         """
         raise NotImplementedError()
 
@@ -153,7 +174,12 @@ class BaseProvider:
     collections: Dict[str, Type[BaseCollection]] = dict()
 
     def collections_supported(self):
-        """Retrieve the collections supported by the Provider instance."""
+        """Retrieve the collections supported by the Provider instance.
+
+        Returns:
+            Dict[str, Type[BaseCollection]]
+                List of Well-known collection in ``Provider``.
+        """
         return self.collections
 
     def get_collector(self, collection: str) -> Type[BaseCollection]:
