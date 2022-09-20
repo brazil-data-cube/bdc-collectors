@@ -11,6 +11,16 @@ Changes
 =======
 
 
+Version 0.8.0 (2022-09-16)
+--------------------------
+
+- Improve docs usage/setup
+- Fix readthedocs build
+- Remove ``bdc-catalog`` dependency
+- Remove legacy providers: ``STAC`` and ``EarthSearch``.
+- Set deprecation warning for methods: ``compressed_files``.
+
+
 Version 0.6.1 (2022-04-04)
 --------------------------
 

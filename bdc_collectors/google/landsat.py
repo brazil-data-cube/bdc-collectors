@@ -8,16 +8,17 @@
 
 """Define the data set of Google for Landsat products."""
 
+import logging
 import shutil
 import tarfile
 from pathlib import Path
 
-import rasterio
+try:
+    import rasterio
+except ImportError:
+    rasterio = None
 
-from ..usgs.base import BaseLandsat, LandsatScene
-from ..usgs.landsat5 import Landsat5
-from ..usgs.landsat7 import Landsat7
-from ..usgs.landsat8 import Landsat8
+from ..usgs.base import BaseLandsat
 from ..utils import working_directory
 
 
@@ -50,6 +51,10 @@ class GoogleLandsat(BaseLandsat):
         to be similar USGS scene.
         """
         if file_path.suffix.lower() == '.tif':
+            if rasterio is None:
+                logging.warning('Missing "rasterio" dependency to remove compression of entry file. Skipping.')
+                return
+
             with rasterio.open(str(file_path), 'r') as source_data_set:
                 profile = source_data_set.profile
                 raster = source_data_set.read(1)

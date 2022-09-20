@@ -8,11 +8,9 @@
 
 """Command line for BDC-Collectors."""
 import json
-import logging
 from pathlib import Path
 
 import click
-from bdc_catalog.models import Collection
 from flask import current_app
 from flask.cli import FlaskGroup, with_appcontext
 
@@ -48,7 +46,7 @@ def search(provider, dataset, bbox, time, username=None, password=None, **kwargs
     context = locals()
 
     # Get BDC-Collectors extension and then seek for provider support.
-    ext = current_app.extensions['bdc:collector']
+    ext = current_app.extensions['bdc_collector']
 
     provider_class = ext.get_provider(provider)
 
@@ -114,7 +112,7 @@ def download(provider, scene_id, output, **kwargs):
         username - Optional username used to download from provider.
         password - Optional password used to download from provider.
     """
-    ext = current_app.extensions['bdc:collector']
+    ext = current_app.extensions['bdc_collector']
 
     provider_class = ext.get_provider(provider)
 
@@ -131,40 +129,11 @@ def download(provider, scene_id, output, **kwargs):
 @with_appcontext
 def show_providers():
     """List the supported providers of BDC-Collectors."""
-    ext = current_app.extensions['bdc:collector']
+    ext = current_app.extensions['bdc_collector']
 
     click.secho('Supported providers: ', bold=True, fg='green')
     for provider_name in ext.list_providers():
         click.secho(f'\t{provider_name}', bold=True, fg='green')
-
-
-@cli.command()
-@click.option('-c', '--collection-id', required=True)
-@click.option('-s', '--scene-id', required=True)
-@click.option('-o', '--output', help='Save output directory', required=True)
-@with_appcontext
-def priority(collection_id, scene_id, output):
-    """Download a scene seeking in CollectionProviders.
-
-    Notes:
-        You must configure the BDC-Catalog.
-
-    Args:
-        collection_id - Collection Identifier
-        scene_id - A scene identifier (Landsat Scene Id/Sentinel Scene Id, etc)
-        output - Directory to save.
-    """
-    ext = current_app.extensions['bdc:collector']
-
-    collection = Collection.query().get(collection_id)
-
-    order = ext.get_provider_order(collection)
-
-    for driver in order:
-        try:
-            file_destination = driver.download(scene_id, output=output)
-        except Exception as e:
-            logging.warning(f'Download error for provider {driver.provider_name} - {str(e)}')
 
 
 def main(as_module=False):

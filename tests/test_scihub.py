@@ -10,18 +10,18 @@ from bdc_collectors.ext import CollectorExtension
 
 
 def _provider(app, name='SciHub') -> Type[BaseProvider]:
-    ext: CollectorExtension = app.extensions['bdc:collector']
+    ext: CollectorExtension = app.extensions['bdc_collector']
 
     return ext.get_provider(name)
 
 
-base_url = 'https://scihub.copernicus.eu/apihub/'
+base_url = 'https://apihub.copernicus.eu/apihub/'
 search_url = base_url + 'search'
 
 
 @pytest.fixture
 def requests_mock(requests_mock):
-    requests_mock.get(re.compile('https://geojson.org/'))
+    requests_mock.get(re.compile(base_url))
     yield requests_mock
 
 

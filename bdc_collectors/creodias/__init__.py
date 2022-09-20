@@ -6,7 +6,21 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 #
 
-"""Defines the structures for CREODIAS API."""
+"""Defines the structures for CREODIAS API.
+
+The CREODIAS API is an alternative to download Earth Observation datasets related with Copernicus
+program. It serves the Sentinel-2 and others datasets in their platform.
+
+Basic usage::
+
+    from flask import current_app
+
+    ext = current_app.extensions['bdc_collector']
+    provider_klass = ext.get_provider("CREODIAS")
+
+    provider = provider_klass("user", "passwd")
+    provider.search(...)
+"""
 
 import concurrent.futures
 import os
@@ -21,9 +35,11 @@ from .api import Api
 
 
 def init_provider():
-    """Register the CREODIAS provider."""
-    # TODO: Register in bdc_catalog.models.Provider
+    """Register the CREODIAS provider.
 
+    Note:
+        Called once by ``CollectorExtension``.
+    """
     return dict(
         CREODIAS=CREODIAS
     )
@@ -57,21 +73,28 @@ class CREODIAS(BaseProvider):
 
         Based in CREODIAS EO-Data-Finder API, the following products are available in catalog:
 
-            - Sentinel1
-            - Sentinel2
-            - Sentinel3
-            - Sentinel5P
-            - Landsat8
-            - Landsat7
-            - Landsat5
-            - Envisat
+            - ``Sentinel1``
+            - ``Sentinel2``
+            - ``Sentinel3``
+            - ``Sentinel5P``
+            - ``Landsat8``
+            - ``Landsat7``
+            - ``Landsat5``
+            - ``Envisat``
 
-        You can also specify the processing level `processingLevel` to filter which data set should retrieve.
-        For Sentinel2, use `LEVEL1C` for L1 data, `LEVEL2A` as L2, etc.
+        You can also specify the processing level ``processingLevel`` to filter which data set should retrieve.
+        For Sentinel2, use ``LEVEL1C`` for L1 data, ``LEVEL2A`` as L2, etc.
 
         Args:
             query - The collection name
-            **kwargs
+
+        Keyword Args:
+            start_date (str|datetime): Start date time filter
+            end_date (str|datetime): End date time filter
+            geom (str): Region of Interest (WKT)
+            bbox (Tuple[float,float,float,float]): The bounding box values ordened as
+                ``west``, ``south``, ``east``, ``north``.
+            status (str): CREODIAS API Status for data sets. Defaults to ``all``.
         """
         bbox = kwargs.pop('bbox', None)
 
@@ -86,8 +109,21 @@ class CREODIAS(BaseProvider):
     def download(self, scene_id: str, output: str, **kwargs):
         """Download scene from CREODIAS API.
 
+        Note:
+            When download is interrupted, the file is not removed.
+            The ``temporary`` file is defined by ``.tmp`` in the end of filename.
+            Whenever a download is triggered and there is already a ``temp`` file,
+            the module will try to resume download.
+
+        Args:
+            scene_id: The Scene Identifier to download
+            output: The base output directory
+
+        Keyword Args:
+            force (bool): Flag to re-download file (do not use cache). Defaults to ``False``.
+
         Raises:
-            DataOfflineError when scene is not available/offline.
+            DataOfflineError: when scene is not available/offline.
         """
         collection = self._guess_collection(scene_id)
 
@@ -127,12 +163,13 @@ class CREODIAS(BaseProvider):
         Args:
             scenes - List of SceneResult to download
             output - Directory to save
-            **kwargs - Optional parameters. You can also set ``max_workers``, which is 2 by default.
+        Keyword Args:
+            max_workers (int): Number of parallel download. Defaults to ``2``.
+            collection (str): The CREODIAS Collection name.
 
         Returns:
             Tuple[List[SceneResult], List[str], List[Exception]]
-
-            Returns the list of Success downloaded, scheduled files and download errors, respectively.
+                Returns the list of ``success`` downloaded, ``scheduled`` files and download ``errors``, respectively.
         """
         max_workers = kwargs.pop('max_workers', 2)
 

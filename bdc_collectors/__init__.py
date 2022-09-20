@@ -16,13 +16,10 @@ from .version import __version__
 
 def create_app() -> Flask:
     """Create instance of Flask application for BDC-Collectors."""
-    from bdc_catalog.ext import BDCCatalog
-
     app = Flask(__name__)
 
     # TODO: We should remove the BDC-Catalog initialization and pass to the invoker.
     with app.app_context():
-        BDCCatalog(app)
         CollectorExtension(app)
 
     return app

@@ -10,10 +10,10 @@
 
 from pathlib import Path
 
-from bdc_catalog.models import Collection
 from flask import current_app
 
 from ..base import BaseCollection
+from ..utils import entry_version
 from .parser import Sentinel2Scene
 
 
@@ -22,7 +22,7 @@ class SentinelCollection(BaseCollection):
 
     parser_class = Sentinel2Scene
 
-    def get_files(self, collection: Collection, path=None, prefix=None):
+    def get_files(self, collection, path=None, prefix=None):
         """List all files in the collection."""
         if path is None:
             path = self.path(collection, prefix)
@@ -75,7 +75,7 @@ class SentinelCollection(BaseCollection):
 
         year = str(self.parser.sensing_date().year)
         tile = self.parser.tile_id()
-        version = 'v{0:03d}'.format(collection.version)
+        version = entry_version(collection.version)
         scene_id = self.parser.scene_id
 
         relative = Path(collection.name) / version / tile[:2] / tile[2] / tile[3:] / year / scene_id
@@ -84,13 +84,13 @@ class SentinelCollection(BaseCollection):
 
         return scene_path / f'{scene_id}.zip'
 
-    def path(self, collection: Collection, prefix=None) -> Path:
+    def path(self, collection, prefix=None) -> Path:
         """Retrieve the relative path to the Collection on Brazil Data Cube cluster."""
         if prefix is None:
             prefix = current_app.config.get('DATA_DIR')
 
         tile = self.parser.tile_id()
-        version = 'v{0:03d}'.format(collection.version)
+        version = entry_version(collection.version)
         year = str(self.parser.sensing_date().year)
 
         relative = Path(collection.name) / version / tile[:2] / tile[2] / tile[3:] / year / self.parser.scene_id

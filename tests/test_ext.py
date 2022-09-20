@@ -16,7 +16,7 @@ def _provider(app, name='USGS') -> Type[BaseProvider]:
 
 
 def _extension(app) -> CollectorExtension:
-    return app.extensions['bdc:collector']
+    return app.extensions['bdc_collector']
 
 
 class MockEntryPoint(EntryPoint):

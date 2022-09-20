@@ -11,6 +11,7 @@
 import contextlib
 import logging
 import os
+from typing import Any
 
 import requests
 from tqdm import tqdm
@@ -92,3 +93,10 @@ def download_stream(file_path: str, response: requests.Response, chunk_size=1024
     if file_size != total_size:
         os.remove(file_path)
         raise DownloadError(f'Download file is corrupt. Expected {total_size} bytes, got {file_size}')
+
+
+def entry_version(version: Any) -> str:
+    """Retrieve the string representation of collection version for folders."""
+    if (isinstance(version, str) and '.' in version) or isinstance(version, float):
+        return f'v{version}'
+    return 'v{0:03d}'.format(int(version))

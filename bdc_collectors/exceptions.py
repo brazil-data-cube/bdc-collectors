@@ -26,7 +26,7 @@ class DownloadError(Exception):
 class DataOfflineError(DownloadError):
     """Indicate that the scene_id is not available (Offline).
 
-    Frequently used by Sentinel SciHub Provider.
+    Frequently used by Sentinel ``SciHub`` Provider.
     """
 
     scene_id: str

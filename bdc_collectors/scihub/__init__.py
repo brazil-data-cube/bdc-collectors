@@ -12,7 +12,14 @@ from datetime import datetime
 from typing import List
 
 import dateutil.parser
-from sentinelsat import SentinelAPI, SentinelAPILTAError
+from sentinelsat import SentinelAPI
+
+try:
+    # for sentinelsat < 1
+    from sentinelsat.sentinel import SentinelAPILTAError as SentinelAPIError
+except ImportError:
+    from sentinelsat.exceptions import SentinelAPIError
+
 from shapely.geometry import box
 
 from ..base import BaseProvider, SceneResult
@@ -23,7 +30,6 @@ from .sentinel2 import Sentinel1, Sentinel2
 
 def init_provider():
     """Register sentinel provider."""
-    # TODO: Register in bdc_catalog.models.Provider
     return dict(
         SciHub=SciHub
     )
@@ -178,5 +184,5 @@ class SciHub(BaseProvider):
             res = self.api.download_all(uuid_scenes_map, directory_path=output, **kwargs)
 
             return res
-        except SentinelAPILTAError as e:
+        except SentinelAPIError as e:
             raise DownloadError(f'Error in Sentinel LongTermArchive - {str(e)}')

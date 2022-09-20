@@ -10,17 +10,17 @@
 
 from pathlib import Path
 
-from bdc_catalog.models import Collection
 from flask import current_app
 
 from ..base import BaseCollection
+from ..utils import entry_version
 from .parser import LandsatScene
 
 
 class USGSCollection(BaseCollection):
     """Define a generic way to deal with USGS collections."""
 
-    def _path(self, collection: Collection, prefix=None) -> Path:
+    def _path(self, collection, prefix=None) -> Path:
         if prefix is None:
             prefix = current_app.config.get('DATA_DIR')
 
@@ -28,7 +28,7 @@ class USGSCollection(BaseCollection):
 
         base = Path(prefix or '')
 
-        version = 'v{0:03d}'.format(collection.version)
+        version = entry_version(collection.version)
 
         scene_id = self.parser.scene_id
 
@@ -45,7 +45,7 @@ class USGSCollection(BaseCollection):
         scene_id = self.parser.scene_id
         return self._path(collection, prefix=prefix) / f'{scene_id}.tar.gz'
 
-    def path(self, collection: Collection, prefix=None) -> Path:
+    def path(self, collection, prefix=None) -> Path:
         """Retrieve the relative path to the Collection on Brazil Data Cube cluster."""
         return self._path(collection, prefix=prefix)
 

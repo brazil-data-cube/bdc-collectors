@@ -11,10 +11,10 @@
 from pathlib import Path
 from typing import Dict
 
-from bdc_catalog.models import Collection
 from flask import current_app
 
 from ..base import BaseCollection
+from ..utils import entry_version
 from .parser import ModisScene
 
 
@@ -23,7 +23,7 @@ class ModisCollection(BaseCollection):
 
     parser_class = ModisScene
 
-    def get_assets(self, collection: Collection, path=None, prefix=None) -> Dict[str, str]:
+    def get_assets(self, collection, path=None, prefix=None) -> Dict[str, str]:
         """Get a list of extra assets contained in collection path.
 
         Args:
@@ -37,14 +37,14 @@ class ModisCollection(BaseCollection):
         """
         return dict()
 
-    def path(self, collection: Collection, prefix=None, cube_prefix=None) -> Path:
+    def path(self, collection, prefix=None, cube_prefix=None) -> Path:
         """Retrieve the relative path to the Collection on Brazil Data Cube cluster."""
         if prefix is None:
             prefix = current_app.config.get('DATA_DIR')
 
         year = str(self.parser.sensing_date().year)
         tile = self.parser.tile_id()
-        version = 'v{0:03d}'.format(collection.version)
+        version = entry_version(collection.version)
         scene_id = self.parser.scene_id
 
         relative = Path(collection.name) / version / tile[:3] / tile[3:] / year / scene_id
@@ -53,7 +53,7 @@ class ModisCollection(BaseCollection):
 
         return scene_path
 
-    def compressed_file(self, collection: Collection, prefix=None) -> Path:
+    def compressed_file(self, collection, prefix=None) -> Path:
         """Show the path to the MODIS HDF file."""
         path = self.path(collection=collection, prefix=prefix, cube_prefix='Archive')
 

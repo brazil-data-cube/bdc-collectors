@@ -22,8 +22,6 @@ The ``BDC-Collectors`` extension installs a command line tool named ``bdc-collec
 
 - ``download``: Download scenes from remote server.
 
-- ``priority``: Download scenes associated with ``bdc_catalog.models.Collection`` and ``bdc_catalog.models.Provider``.
-
 
 Search Data sets
 ++++++++++++++++
@@ -94,9 +92,6 @@ To search for Landsat-8 Digital Number in `USGS Earth Explorer <https://earthexp
 
     You can also search for others Landsat products:
 
-        - ``Landsat-4/5 Collection 1 L1``, use ``dataset=LANDSAT_TM_C1``
-        - ``Landsat-7 Collection 1 L1``, use ``dataset=LANDSAT_ETM_C1``
-        - ``Landsat-8 Collection 1 L1``, use ``dataset=LANDSAT_8_C1``
         - ``Landsat-4/5 Collection 2 L1``, use ``dataset=landsat_tm_c2_l1``
         - ``Landsat-4/5 Collection 2 L2``, use ``dataset=landsat_tm_c2_l2``
         - ``Landsat-7 Collection 2 L1``, use ``dataset=landsat_etm_c2_l1``
@@ -171,6 +166,13 @@ To download L2A::
 Google Public Data Sets
 ~~~~~~~~~~~~~~~~~~~~~~~
 
+.. warning::
+
+    Google Public Data Sets only supports ``Landsat Collection 1`` and ``Sentinel-2 L1C/L2A)``. The
+    ``Landsat Collection 2`` is only available in provider ``USGS`` (`EarthExplorer <https://earthexplorer.usgs.gov/>`_)
+    If you really want to download ``Landsat Collection 1``, continue in this example.
+
+
 You can also download both Landsat Digital Number and Sentinel-2 (L1C/L2A) from `Google Public Data Sets <https://cloud.google.com/storage/docs/public-datasets>`_.
 In order to do that, you will need to create an `Google Service Account Key <https://console.cloud.google.com/projectselector2/iam-admin/serviceaccounts>`_ and export
 the variable ``GOOGLE_APPLICATION_CREDENTIALS=path/to/google/your_service_account_key.json``.::
@@ -183,7 +185,7 @@ the variable ``GOOGLE_APPLICATION_CREDENTIALS=path/to/google/your_service_accoun
                            --output=.
 
 
-You can download Sentinel-2 produts with::
+You can download Sentinel-2 products with::
 
     export GOOGLE_APPLICATION_CREDENTIALS=path/to/google/your_service_account_key.json
 

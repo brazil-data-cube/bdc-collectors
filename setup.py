@@ -40,8 +40,8 @@ extras_require = {
     'modis': [
         'pymodis>=2.1,<2.2'
     ],
-    'catalog': [
-        'bdc-catalog @ git+https://github.com/brazil-data-cube/bdc-catalog@v0.8.2',
+    'raster': [
+        'rasterio>=1.1'
     ]
 }
 
@@ -56,11 +56,9 @@ install_requires = [
     'Flask>=1.1.0',
     'google-cloud-storage>=1.28,<2',
     'beautifulsoup4>=4.9,<5',
-    'rasterio>=1.1,<1.3',
     'redis>=3.5,<4',
-    'sentinelsat>=0.14,<1',
+    'sentinelsat>=0.14,<1.2',
     'Shapely>=1.7,<2',
-    'stac.py>=0.9',
     'tqdm>=4.50'
 ]
 
@@ -91,7 +89,6 @@ setup(
         ],
         'bdc_collectors.providers': [
             'creodias = bdc_collectors.creodias',
-            'earth_search = bdc_collectors.earth_search',
             'google = bdc_collectors.google',
             'usgs = bdc_collectors.usgs',
             'onda = bdc_collectors.onda',

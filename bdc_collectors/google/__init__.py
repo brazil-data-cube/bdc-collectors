@@ -27,8 +27,6 @@ from .sentinel import GoogleSentinel
 
 def init_provider():
     """Register the provider Google."""
-    # TODO: Register in bdc_catalog.models.Provider
-
     return dict(
         Google=Google
     )
