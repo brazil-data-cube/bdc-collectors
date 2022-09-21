@@ -85,7 +85,7 @@ setup(
     description=__doc__,
     long_description=readme + '\n\n' + history,
     keywords=['database', 'postgresql'],
-    license='MIT',
+    license='GPLv3',
     author='Brazil Data Cube Team',
     author_email='brazildatacube@inpe.br',
     url='https://github.com/brazil-data-cube/bdc-collectors',
