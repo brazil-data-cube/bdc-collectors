@@ -11,9 +11,10 @@ Changes
 =======
 
 
-Version 0.8.0 (2022-09-16)
+Version 0.8.0 (2022-09-21)
 --------------------------
 
+- Change LICENSE to GPL v3 and headers source code
 - Improve docs usage/setup
 - Fix readthedocs build
 - Remove ``bdc-catalog`` dependency
