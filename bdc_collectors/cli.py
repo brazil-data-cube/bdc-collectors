@@ -1,18 +1,26 @@
 #
-# This file is part of BDC-Collectors.
-# Copyright (C) 2020 INPE.
+# This file is part of Brazil Data Cube BDC-Collectors.
+# Copyright (C) 2022 INPE.
 #
-# BDC-Collectors is free software; you can redistribute it and/or modify it
-# under the terms of the MIT License; see LICENSE file for more details.
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 #
 
 """Command line for BDC-Collectors."""
 import json
-import logging
 from pathlib import Path
 
 import click
-from bdc_catalog.models import Collection
 from flask import current_app
 from flask.cli import FlaskGroup, with_appcontext
 
@@ -22,6 +30,10 @@ from . import create_app
 @click.group(cls=FlaskGroup, create_app=create_app)
 def cli():
     """Command line for BDC-Collectors."""
+    click.secho("""BDC-Collectors  Copyright (C) 2022  INPE
+This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+This is free software, and you are welcome to redistribute it
+under certain conditions; type `show c' for details.""", bold=True)
 
 
 @cli.command()
@@ -48,7 +60,7 @@ def search(provider, dataset, bbox, time, username=None, password=None, **kwargs
     context = locals()
 
     # Get BDC-Collectors extension and then seek for provider support.
-    ext = current_app.extensions['bdc:collector']
+    ext = current_app.extensions['bdc_collector']
 
     provider_class = ext.get_provider(provider)
 
@@ -114,7 +126,7 @@ def download(provider, scene_id, output, **kwargs):
         username - Optional username used to download from provider.
         password - Optional password used to download from provider.
     """
-    ext = current_app.extensions['bdc:collector']
+    ext = current_app.extensions['bdc_collector']
 
     provider_class = ext.get_provider(provider)
 
@@ -131,40 +143,11 @@ def download(provider, scene_id, output, **kwargs):
 @with_appcontext
 def show_providers():
     """List the supported providers of BDC-Collectors."""
-    ext = current_app.extensions['bdc:collector']
+    ext = current_app.extensions['bdc_collector']
 
     click.secho('Supported providers: ', bold=True, fg='green')
     for provider_name in ext.list_providers():
         click.secho(f'\t{provider_name}', bold=True, fg='green')
-
-
-@cli.command()
-@click.option('-c', '--collection-id', required=True)
-@click.option('-s', '--scene-id', required=True)
-@click.option('-o', '--output', help='Save output directory', required=True)
-@with_appcontext
-def priority(collection_id, scene_id, output):
-    """Download a scene seeking in CollectionProviders.
-
-    Notes:
-        You must configure the BDC-Catalog.
-
-    Args:
-        collection_id - Collection Identifier
-        scene_id - A scene identifier (Landsat Scene Id/Sentinel Scene Id, etc)
-        output - Directory to save.
-    """
-    ext = current_app.extensions['bdc:collector']
-
-    collection = Collection.query().get(collection_id)
-
-    order = ext.get_provider_order(collection)
-
-    for driver in order:
-        try:
-            file_destination = driver.download(scene_id, output=output)
-        except Exception as e:
-            logging.warning(f'Download error for provider {driver.provider_name} - {str(e)}')
 
 
 def main(as_module=False):

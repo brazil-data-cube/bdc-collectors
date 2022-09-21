@@ -1,19 +1,29 @@
 #
-# This file is part of BDC-Collectors.
-# Copyright (C) 2020 INPE.
+# This file is part of Brazil Data Cube BDC-Collectors.
+# Copyright (C) 2022 INPE.
 #
-# BDC-Collectors is free software; you can redistribute it and/or modify it
-# under the terms of the MIT License; see LICENSE file for more details.
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 #
 
 """Defines the base structure of SciHub api."""
 
 from pathlib import Path
 
-from bdc_catalog.models import Collection
 from flask import current_app
 
 from ..base import BaseCollection
+from ..utils import entry_version
 from .parser import Sentinel2Scene
 
 
@@ -22,7 +32,7 @@ class SentinelCollection(BaseCollection):
 
     parser_class = Sentinel2Scene
 
-    def get_files(self, collection: Collection, path=None, prefix=None):
+    def get_files(self, collection, path=None, prefix=None):
         """List all files in the collection."""
         if path is None:
             path = self.path(collection, prefix)
@@ -75,7 +85,7 @@ class SentinelCollection(BaseCollection):
 
         year = str(self.parser.sensing_date().year)
         tile = self.parser.tile_id()
-        version = 'v{0:03d}'.format(collection.version)
+        version = entry_version(collection.version)
         scene_id = self.parser.scene_id
 
         relative = Path(collection.name) / version / tile[:2] / tile[2] / tile[3:] / year / scene_id
@@ -84,13 +94,13 @@ class SentinelCollection(BaseCollection):
 
         return scene_path / f'{scene_id}.zip'
 
-    def path(self, collection: Collection, prefix=None) -> Path:
+    def path(self, collection, prefix=None) -> Path:
         """Retrieve the relative path to the Collection on Brazil Data Cube cluster."""
         if prefix is None:
             prefix = current_app.config.get('DATA_DIR')
 
         tile = self.parser.tile_id()
-        version = 'v{0:03d}'.format(collection.version)
+        version = entry_version(collection.version)
         year = str(self.parser.sensing_date().year)
 
         relative = Path(collection.name) / version / tile[:2] / tile[2] / tile[3:] / year / self.parser.scene_id

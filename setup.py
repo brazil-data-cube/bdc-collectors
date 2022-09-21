@@ -1,9 +1,19 @@
 #
-# This file is part of BDC-Collectors.
-# Copyright (C) 2020 INPE.
+# This file is part of Brazil Data Cube BDC-Collectors.
+# Copyright (C) 2022 INPE.
 #
-# BDC-Collectors is free software; you can redistribute it and/or modify it
-# under the terms of the MIT License; see LICENSE file for more details.
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 #
 
 """Setup for BDC-Collectors."""
@@ -40,8 +50,8 @@ extras_require = {
     'modis': [
         'pymodis>=2.1,<2.2'
     ],
-    'catalog': [
-        'bdc-catalog @ git+https://github.com/brazil-data-cube/bdc-catalog@v0.8.2',
+    'raster': [
+        'rasterio>=1.1'
     ]
 }
 
@@ -56,11 +66,9 @@ install_requires = [
     'Flask>=1.1.0',
     'google-cloud-storage>=1.28,<2',
     'beautifulsoup4>=4.9,<5',
-    'rasterio>=1.1,<1.3',
     'redis>=3.5,<4',
-    'sentinelsat>=0.14,<1',
+    'sentinelsat>=0.14,<1.2',
     'Shapely>=1.7,<2',
-    'stac.py>=0.9',
     'tqdm>=4.50'
 ]
 
@@ -91,7 +99,6 @@ setup(
         ],
         'bdc_collectors.providers': [
             'creodias = bdc_collectors.creodias',
-            'earth_search = bdc_collectors.earth_search',
             'google = bdc_collectors.google',
             'usgs = bdc_collectors.usgs',
             'onda = bdc_collectors.onda',

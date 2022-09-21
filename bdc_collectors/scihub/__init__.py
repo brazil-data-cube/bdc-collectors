@@ -1,9 +1,19 @@
 #
-# This file is part of BDC-Collectors.
-# Copyright (C) 2020 INPE.
+# This file is part of Brazil Data Cube BDC-Collectors.
+# Copyright (C) 2022 INPE.
 #
-# BDC-Collectors is free software; you can redistribute it and/or modify it
-# under the terms of the MIT License; see LICENSE file for more details.
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 #
 
 """Define the implementation of Sentinel Provider."""
@@ -12,7 +22,14 @@ from datetime import datetime
 from typing import List
 
 import dateutil.parser
-from sentinelsat import SentinelAPI, SentinelAPILTAError
+from sentinelsat import SentinelAPI
+
+try:
+    # for sentinelsat < 1
+    from sentinelsat.sentinel import SentinelAPILTAError as SentinelAPIError
+except ImportError:
+    from sentinelsat.exceptions import SentinelAPIError
+
 from shapely.geometry import box
 
 from ..base import BaseProvider, SceneResult
@@ -23,7 +40,6 @@ from .sentinel2 import Sentinel1, Sentinel2
 
 def init_provider():
     """Register sentinel provider."""
-    # TODO: Register in bdc_catalog.models.Provider
     return dict(
         SciHub=SciHub
     )
@@ -178,5 +194,5 @@ class SciHub(BaseProvider):
             res = self.api.download_all(uuid_scenes_map, directory_path=output, **kwargs)
 
             return res
-        except SentinelAPILTAError as e:
+        except SentinelAPIError as e:
             raise DownloadError(f'Error in Sentinel LongTermArchive - {str(e)}')
