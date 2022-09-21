@@ -29,7 +29,7 @@ import sphinx_rtd_theme
 # -- Project information -----------------------------------------------------
 
 project = 'BDC-Collectors'
-copyright = '2019-2020, INPE'
+copyright = '2022, INPE'
 author = 'Brazil Data Cube Team'
 release = bdc_collectors.__version__
 
