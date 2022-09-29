@@ -105,9 +105,6 @@ setup(
             'scihub = bdc_collectors.scihub',
             'dgi = bdc_collectors.dgi',
             'modis = bdc_collectors.modis',
-        ],
-        'bdc_db.scripts': [
-            'bdc_collectors = bdc_collectors.scripts'
         ]
     },
     extras_require=extras_require,
