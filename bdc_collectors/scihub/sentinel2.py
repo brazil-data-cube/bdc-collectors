@@ -17,6 +17,9 @@
 #
 
 """Defines the structure for Collections on remote SciHub server."""
+from pathlib import Path
+
+from flask import current_app
 
 from .base import SentinelCollection
 from .parser import Sentinel1Scene
@@ -26,6 +29,26 @@ class Sentinel1(SentinelCollection):
     """Simple abstraction for Sentinel-1."""
 
     parser_class = Sentinel1Scene
+
+    def path(self, collection, prefix=None) -> Path:
+        if prefix is None:
+            prefix = current_app.config.get('DATA_DIR')
+
+        date = self.parser.sensing_date()
+        year = str(date.year)
+        month = date.strftime('%MM')
+        relative = f'{collection.name}/v{collection.version}/{year}/{month}/{self.parser.scene_id}'
+
+        return Path(prefix or '') / relative
+
+    def get_files(self, collection, path=None, prefix=None):
+        globber = Path(path or self.path(collection, prefix)).rglob('*')
+        output = {}
+        for entry in globber:
+            if entry.suffix.lower() == '.tif':
+                name = '_'.join(entry.stem.split('_')[-2:])
+                output[name] = entry
+        return output
 
 
 class Sentinel2(SentinelCollection):
