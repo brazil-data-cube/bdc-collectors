@@ -106,7 +106,7 @@ class BaseCollection:
         """
         return dict()
 
-    def path(self, collection, prefix=None) -> Path:
+    def path(self, collection, prefix=None, path_include_month=False) -> Path:
         """Retrieve the relative path to the Collection on Brazil Data Cube cluster.
 
         Note:
@@ -129,7 +129,7 @@ class BaseCollection:
 
         return scene_path
 
-    def compressed_file(self, collection, prefix=None) -> Path:
+    def compressed_file(self, collection, prefix=None, path_include_month=False) -> Path:
         """Retrieve the path to the compressed file L1.
 
         .. deprecated:: 0.6.2
