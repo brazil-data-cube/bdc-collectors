@@ -42,8 +42,9 @@ class SentinelCollection(BaseCollection):
         output = dict()
 
         # For Sen2cor files, use recursive and seek for jp2 files
-        if collection._metadata and collection._metadata.get('processors'):
-            processors = collection._metadata['processors']
+        metadata = getattr(collection, '_metadata', getattr(collection, 'metadata_', None))
+        if metadata and metadata.get('processors'):
+            processors = metadata['processors']
 
             processors = [proc['name'].lower() for proc in processors]
 

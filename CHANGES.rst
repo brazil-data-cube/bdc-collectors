@@ -11,6 +11,14 @@ Changes
 =======
 
 
+Version 0.9.0 (2023-01-26)
+--------------------------
+
+- Review dependencies for collections
+- Minor bugs related API provider for Landsat
+- Minimal support for Sentinel-1
+
+
 Version 0.8.0 (2022-09-21)
 --------------------------
 
