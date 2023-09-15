@@ -69,7 +69,8 @@ install_requires = [
     'redis>=4',
     'sentinelsat>=0.14,<1.3',
     'Shapely>=1.8',
-    'tqdm>=4.50'
+    'tqdm>=4.50',
+    'pystac-client>=0.6'
 ]
 
 packages = find_packages()
@@ -105,6 +106,7 @@ setup(
             'scihub = bdc_collectors.scihub',
             'dgi = bdc_collectors.dgi',
             'modis = bdc_collectors.modis',
+            'dataspace = bdc_collectors.dataspace'
         ]
     },
     extras_require=extras_require,

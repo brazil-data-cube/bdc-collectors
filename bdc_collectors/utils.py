@@ -21,8 +21,10 @@
 import contextlib
 import logging
 import os
-from typing import Any
+import typing as t
+from datetime import datetime
 
+import dateutil
 import requests
 from tqdm import tqdm
 
@@ -105,8 +107,16 @@ def download_stream(file_path: str, response: requests.Response, chunk_size=1024
         raise DownloadError(f'Download file is corrupt. Expected {total_size} bytes, got {file_size}')
 
 
-def entry_version(version: Any) -> str:
+def entry_version(version: t.Any) -> str:
     """Retrieve the string representation of collection version for folders."""
     if (isinstance(version, str) and '.' in version) or isinstance(version, float):
         return f'v{version}'
     return 'v{0:03d}'.format(int(version))
+
+
+def get_date_time(date: t.Union[datetime, str]) -> datetime:
+    """Get a datetime object from entry."""
+    if isinstance(date, datetime):
+        return date
+
+    return dateutil.parser.isoparse(date)
