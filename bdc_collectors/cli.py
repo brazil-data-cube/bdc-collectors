@@ -45,8 +45,9 @@ under certain conditions; type `show c' for details.""", bold=True)
 @click.option('--password', help='Password (if needed)', required=False)
 @click.option('--platform', help='Platform sensor (if required)', required=False)
 @click.option('-o', '--output', help='Output to a file', type=click.Path(dir_okay=True), required=False)
+@click.option('--config', help='Path to the Provider configuration file', type=click.Path(exists=True, readable=True), required=False)
 @with_appcontext
-def search(provider, dataset, bbox, time, username=None, password=None, **kwargs):
+def search(provider, dataset, bbox, time, username=None, password=None, config=None, **kwargs):
     """Search for data set in the given provider.
 
     Args:
@@ -56,6 +57,7 @@ def search(provider, dataset, bbox, time, username=None, password=None, **kwargs
         time - Time interval. (start/end). Format should be (YYYY-mm-dd)
         username - Optional username used to search in provider.
         password - Optional password used to search in provider.
+        config - Optional Provider configuration file.
     """
     context = locals()
 
@@ -67,9 +69,7 @@ def search(provider, dataset, bbox, time, username=None, password=None, **kwargs
     if provider_class is None:
         raise RuntimeError(f'Provider {provider} not supported.')
 
-    # Create an instance of supported provider. We pass progress=True for
-    # providers which support progress bar (SciHub).
-    p = provider_class(username=username, password=password, progress=True)
+    p = _make_provider(provider_class, username, password, config)
 
     bbox = [float(elm) for elm in bbox.split(',')]
 
@@ -78,6 +78,8 @@ def search(provider, dataset, bbox, time, username=None, password=None, **kwargs
     times = time.split('/')
 
     start_date, end_date = times
+    if kwargs.get("platform") is None:
+        kwargs.pop("platform", None)
 
     res = p.search(query=dataset, bbox=bbox, start_date=start_date, end_date=end_date, **kwargs)
 
@@ -114,8 +116,9 @@ def search(provider, dataset, bbox, time, username=None, password=None, **kwargs
 @click.option('-d', '--dataset', help='Data set', required=False)
 @click.option('-u', '--username', help='User', required=False)
 @click.option('-P', '--password', help='Password (if needed)', required=False)
+@click.option('--config', help='Path to the Provider configuration file', type=click.Path(exists=True, readable=True), required=False)
 @with_appcontext
-def download(provider, scene_id, output, **kwargs):
+def download(provider, scene_id, output, config=None, **kwargs):
     """Search for data set in the given provider.
 
     Args:
@@ -132,7 +135,7 @@ def download(provider, scene_id, output, **kwargs):
 
     kwargs.setdefault('progress', True)
 
-    p = provider_class(**kwargs)
+    p = _make_provider(provider_class, config=config, **kwargs)
 
     result = p.download(scene_id, output=output, force=False, **kwargs)
 
@@ -154,3 +157,14 @@ def main(as_module=False):
     """Load Brazil Data Cube (bdc_collection_builder) as module."""
     import sys
     cli.main(args=sys.argv[1:], prog_name="python -m bdc_collectors" if as_module else None)
+
+
+def _make_provider(provider_cls, username=None, password=None, config=None, **kwargs):
+    options = {}
+    if username and password:
+        options.update(username=username, password=password, progress=True)
+    elif config:
+        with open(config) as fd:
+            config_data = json.load(fd)
+            options.update(config_data)
+    return provider_cls(**options)

@@ -23,16 +23,26 @@ import os
 from flask import Flask
 from bdc_collectors import CollectorExtension
 
+from bdc_collectors.dataspace.stac import StacStrategy
+
 
 app = Flask(__name__)
 
 ext = CollectorExtension(app)
 
-provider = ext.get_provider('Dataspace')(username=os.getenv('BDC_USER', 'user@email.com'), password=os.getenv('BDC_PASSWORD', 'pass'))
+print("Using ODATA")
+odata_provider = ext.get_provider('Dataspace')(
+    username=os.getenv('BDC_USER', 'user@email.com'),
+    password=os.getenv('BDC_PASSWORD', 'pass'),
+    progress=True
+)
+entries_odata = odata_provider.search("SENTINEL-2", start_date="2023-06-01", end_date="2023-06-30", bbox=(-54, -12, -52, -10), product="S2MSI2A")
 
-entries = provider.search("SENTINEL-2", start_date="2023-06-01", end_date="2023-06-30", bbox=(-54, -12, -52, -10))
+# Uncomment the next lines to use STAC Strategy instead ODATA method. 
+# print("Using STAC method")
+# stac = StacStrategy()
+# provider = ext.get_provider('Dataspace')(username=os.getenv('BDC_USER', 'user@email.com'), password=os.getenv('BDC_PASSWORD', 'pass'), strategy=stac)
+# entries = provider.search("SENTINEL-2", start_date="2023-06-01", end_date="2023-06-30", bbox=(-54, -12, -52, -10), product="S2MSI2A")
 
-print(entries)
-
-for entry in entries:
-    provider.download(entry, output="examples")
+for entry in entries_odata:
+    odata_provider.download(entry, output="examples")
