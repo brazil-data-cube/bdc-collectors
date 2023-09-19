@@ -45,4 +45,4 @@ entries_odata = odata_provider.search("SENTINEL-2", start_date="2023-06-01", end
 # entries = provider.search("SENTINEL-2", start_date="2023-06-01", end_date="2023-06-30", bbox=(-54, -12, -52, -10), product="S2MSI2A")
 
 for entry in entries_odata:
-    odata_provider.download(entry, output="examples")
+    odata_provider.download(entry.scene_id, output="examples")

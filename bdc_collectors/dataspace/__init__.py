@@ -30,6 +30,7 @@ from urllib.parse import ParseResult, urlparse
 import requests
 
 from ..base import BaseProvider, BulkDownloadResult, SceneResult, SceneResults
+from ..exceptions import DataOfflineError
 from ..utils import download_stream
 from .odata import ODATAStrategy
 from .utils import get_access_token
@@ -113,6 +114,10 @@ class DataspaceProvider(BaseProvider):
                 raise RuntimeError(f"No product found to download using {query} and {item_ids}")
             query = entries[0]
 
+        # ODATAStrategy only
+        if "Online" in query and not query.get("Online"):
+            raise DataOfflineError(query.scene_id)
+
         # Temporary workaround:
         # It seems like catalogue.dataspace.copernicus.eu is not being resolved
         # through Python requests library.
@@ -126,6 +131,9 @@ class DataspaceProvider(BaseProvider):
         headers = {"Authorization": f"Bearer {token}"}
         self.session.headers = headers
         response = self.session.get(download_url, stream=True, timeout=600, allow_redirects=True)
+
+        # TODO: Validate Offline/Exception to retry later
+
         tmp_file = f"/tmp/{query.scene_id}.zip"
         target_file = os.path.join(output, f"{query.scene_id}.zip")
         os.makedirs(os.path.dirname(target_file), exist_ok=True)

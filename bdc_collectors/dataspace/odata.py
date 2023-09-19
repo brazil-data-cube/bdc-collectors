@@ -44,10 +44,18 @@ class ODATAStrategy(BaseProvider):
         """Search for data products in Copernicus Dataspace program."""
         data = deepcopy(kwargs)
 
-        data["Collection/Name"] = f"eq '{query}'"
-
-        data.pop("end_date")
         filters = []
+        if data.get("ids"):
+            products = []
+            for item_id in data["ids"]:
+                safe_id = f"{item_id}.SAFE" if not item_id.endswith(".SAFE") else item_id
+                products_found = self._retrieve_products(f"Name eq '{safe_id}'")
+                products.extend(products_found)
+
+            return products
+        else:
+            filters.append(f"Collection/Name eq '{query}'")
+
         if data.get("bbox"):
             bbox = box(*data.pop("bbox"))
             filters.append(f"OData.CSC.Intersects(area=geography'SRID=4326;{bbox.wkt}')")
@@ -59,11 +67,19 @@ class ODATAStrategy(BaseProvider):
         if data.get("product"):
             filters.append(f"Attributes/OData.CSC.StringAttribute/any(att:att/Name eq 'productType' and att/OData.CSC.StringAttribute/Value eq '{data.pop('product')}')")
 
+        return self._retrieve_products(*filters)
+
+    def _retrieve_products(self, *filters):
         filter_expression = " and ".join(filters)
         params = {
             "$filter": filter_expression
         }
+
         response = self.session.get(PRODUCTS_URL, params=params)
+        if response.status_code != 200:
+            raise RuntimeError(f"Error {response.status_code}: {response.content}")
+
+        # TODO: validate code/output
         products = response.json()["value"]
 
         return [
