@@ -63,13 +63,14 @@ setup_requires = [
 
 install_requires = [
     'python-dateutil>=2',
-    'Flask>=1.1.0',
+    'Flask>=1.1.0,<2.3',
     'google-cloud-storage>=1.28,<2',
     'beautifulsoup4>=4.9,<5',
-    'redis>=3.5,<4',
-    'sentinelsat>=0.14,<1.2',
-    'Shapely>=1.7,<2',
-    'tqdm>=4.50'
+    'redis>=4',
+    'sentinelsat>=0.14,<1.3',
+    'Shapely>=1.8',
+    'tqdm>=4.50',
+    'pystac-client>=0.6,<0.7'
 ]
 
 packages = find_packages()
@@ -105,6 +106,7 @@ setup(
             'scihub = bdc_collectors.scihub',
             'dgi = bdc_collectors.dgi',
             'modis = bdc_collectors.modis',
+            'dataspace = bdc_collectors.dataspace'
         ]
     },
     extras_require=extras_require,
@@ -118,7 +120,7 @@ setup(
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Scientific/Engineering :: GIS',
     ],
