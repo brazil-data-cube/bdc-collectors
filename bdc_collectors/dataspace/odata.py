@@ -22,13 +22,14 @@ import typing as t
 from copy import deepcopy
 
 from requests import Session
-from shapely.geometry import box
+from shapely.geometry import base, box, shape
+from shapely.wkt import loads as wkt_loads
 
 from ..base import BaseProvider, SceneResult, SceneResults
 from ..utils import get_date_time
 
 ODATA_URL: str = "https://catalogue.dataspace.copernicus.eu/odata"
-PRODUCTS_URL = f"{ODATA_URL}/v1/Products"
+PRODUCTS_URL = "{url}/v1/Products"
 STAC_RFC_DATETIME: str = "%Y-%m-%dT%H:%M:%SZ"
 
 
@@ -38,7 +39,7 @@ class ODATAStrategy(BaseProvider):
     def __init__(self, api_url: str = ODATA_URL, **kwargs):
         """Build an instance of ODATA strategy method."""
         self.session = Session()
-        self.collections = []
+        self.api_url = api_url
 
     def search(self, query, *args, **kwargs) -> SceneResults:
         """Search for data products in Copernicus Dataspace program."""
@@ -56,6 +57,9 @@ class ODATAStrategy(BaseProvider):
         else:
             filters.append(f"Collection/Name eq '{query}'")
 
+        if data.get("geom"):
+            geom = _get_geom(data["geom"])
+            filters.append(f"OData.CSC.Intersects(area=geography'SRID=4326;{geom.wkt}')")
         if data.get("bbox"):
             bbox = box(*data.pop("bbox"))
             filters.append(f"OData.CSC.Intersects(area=geography'SRID=4326;{bbox.wkt}')")
@@ -69,13 +73,15 @@ class ODATAStrategy(BaseProvider):
 
         return self._retrieve_products(*filters)
 
-    def _retrieve_products(self, *filters):
+    def _retrieve_products(self, *filters, **options):
         filter_expression = " and ".join(filters)
         params = {
-            "$filter": filter_expression
+            "$filter": filter_expression,
+            "$top": 1000
         }
+        params.update(**options)
 
-        response = self.session.get(PRODUCTS_URL, params=params)
+        response = self.session.get(PRODUCTS_URL.format(url=self.api_url), params=params)
         if response.status_code != 200:
             raise RuntimeError(f"Error {response.status_code}: {response.content}")
 
@@ -90,5 +96,18 @@ class ODATAStrategy(BaseProvider):
         cloud_cover = 0  # TODO: Get it from STAC??
         return SceneResult(product["Name"].replace(".SAFE", ""),
                            cloud_cover,
-                           link=f"{PRODUCTS_URL}({product['Id']})/$value",
+                           link=f"{PRODUCTS_URL.format(url=self.api_url)}({product['Id']})/$value",
                            **product)
+
+
+
+def _get_geom(geom: t.Any) -> base.BaseGeometry:
+    if isinstance(geom, str):
+        return wkt_loads(geom)
+    elif isinstance(geom, dict):
+        return shape(geom)
+    elif isinstance(geom, base.BaseGeometry):
+        return geom
+
+    raise ValueError(f"Invalid geometry")
+    

@@ -31,7 +31,8 @@ import requests
 
 from ..base import BaseProvider, BulkDownloadResult, SceneResult, SceneResults
 from ..exceptions import DataOfflineError
-from ..utils import download_stream
+from ..scihub.sentinel2 import Sentinel1, Sentinel2
+from ..utils import download_stream, import_entry
 from .odata import ODATAStrategy
 from .utils import get_access_token
 
@@ -79,13 +80,23 @@ class DataspaceProvider(BaseProvider):
     def __init__(self, username: str, password: str, strategy: t.Optional[BaseProvider] = None, **kwargs):
         """Build a Dataspace provider instance."""
         self._kwargs = kwargs
+
+        default_options = {k: v for k, v in kwargs.items() if k.startswith("stac_")}
+
         if strategy is None:
-            default_options = {k: v for k, v in kwargs.items() if k.startswith("stac_")}
             strategy = ODATAStrategy(**default_options)
+        elif isinstance(strategy, str):
+            strategy_cls: t.Type[BaseProvider] = import_entry(strategy)
+            strategy = strategy_cls(**default_options)
+
         self.strategy = strategy
         self.username = username
         self.password = password
         self.session = kwargs.get("session", requests.session())
+        self.collections = {
+            "SENTINEL-1": Sentinel1,
+            "SENTINEL-2": Sentinel2,
+        }
 
     def search(self, query, *args, **kwargs) -> SceneResults:
         """Search for data products in Copernicus Dataspace program."""

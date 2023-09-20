@@ -70,7 +70,7 @@ install_requires = [
     'sentinelsat>=0.14,<1.3',
     'Shapely>=1.8',
     'tqdm>=4.50',
-    'pystac-client>=0.6'
+    'pystac-client>=0.6,<0.7'
 ]
 
 packages = find_packages()

@@ -19,6 +19,7 @@
 """Define the BDC-Collector utilities used along the package."""
 
 import contextlib
+import importlib
 import logging
 import os
 import typing as t
@@ -120,3 +121,19 @@ def get_date_time(date: t.Union[datetime, str]) -> datetime:
         return date
 
     return dateutil.parser.isoparse(date)
+
+
+def import_entry(module_class_string: str):
+    """Import a class from Python module string."""
+    module_fragments = module_class_string.rsplit(".", 1)
+    if len(module_fragments) <= 1:
+        raise ValueError(f"Could not import {module_class_string}. Use absolute module path like 'module_name.Entry' instead.")
+
+    module_name, class_name = module_fragments
+
+    module = importlib.import_module(module_name)
+    if not hasattr(module, class_name):
+        raise ImportError(f"No class {class_name} in module {module_name}")
+    cls = getattr(module, class_name)
+
+    return cls
