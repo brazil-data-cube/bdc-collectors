@@ -18,10 +18,35 @@
 
 """Represent the code utilities for module dataspace."""
 
+import typing as t
+from datetime import datetime, timedelta
+
 import requests
 
 DEFAULT_TOKEN_URL = "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token"
 """Token exchange endpoint for Copernicus Dataspace program."""
+
+
+class AccessToken(dict):
+    """Represent a Python dictionary containing the Dataspace Access Token."""
+
+    def __init__(self, created_at: t.Optional[datetime] = None, **kwargs):
+        """Build a AccessToken object."""
+        if created_at:
+            created_at = datetime.fromisoformat(created_at) if isinstance(created_at, str) else created_at
+
+        self._created_at = created_at or datetime.now()
+        super().__init__(created_at=self._created_at.isoformat(), **kwargs)
+
+    def expired(self) -> bool:
+        """Check if the token is already expired."""
+        delta = timedelta(seconds=self["expires_in"])
+        return (self._created_at + delta) <= datetime.now()
+
+    @property
+    def token(self) -> str:
+        """Retrieve the access token."""
+        return self["access_token"]
 
 
 def get_access_token(username: str, password: str, client_id: str = "cdse-public",
@@ -49,4 +74,4 @@ def get_access_token(username: str, password: str, client_id: str = "cdse-public
     if not data.get("access_token"):
         raise RuntimeError("Server did not returned Access Token")
 
-    return data["access_token"]
+    return AccessToken(**data)

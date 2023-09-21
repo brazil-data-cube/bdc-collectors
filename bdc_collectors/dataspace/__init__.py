@@ -33,8 +33,8 @@ from ..base import BaseProvider, BulkDownloadResult, SceneResult, SceneResults
 from ..exceptions import DataOfflineError
 from ..scihub.sentinel2 import Sentinel1, Sentinel2
 from ..utils import download_stream, import_entry
+from ._token import TokenManager
 from .odata import ODATAStrategy
-from .utils import get_access_token
 
 
 def init_provider():
@@ -56,6 +56,13 @@ class DataspaceProvider(BaseProvider):
     - STAC
 
     By default, the ODATAStrategy is used to search for Sentinel Data.
+    For Authorization and Token Authentication, as defined in
+    `Access Token <https://documentation.dataspace.copernicus.eu/APIs/Token.html>`_,
+    an ``access_token`` is required to download data. By default, this module stores these tokens in
+    :class:`bdc_collectors.dataspace._token.TokenManager`. Whenever a download is initiated by 
+    :method:`bdc_collectors.dataspace.DataspaceProvider.download`, the bdc-collectors creates two (2) access tokens
+    in memory and then use it to download as many scenes as can. When the token expires, it automatically refresh
+    a new token.
 
     Examples:
         The following example consists in a minimal download scenes from Dataspace program using ODATA API
@@ -90,13 +97,16 @@ class DataspaceProvider(BaseProvider):
             strategy = strategy_cls(**default_options)
 
         self.strategy = strategy
-        self.username = username
-        self.password = password
+        # self.username = username
+        # self.password = password
         self.session = kwargs.get("session", requests.session())
         self.collections = {
             "SENTINEL-1": Sentinel1,
             "SENTINEL-2": Sentinel2,
         }
+
+        manager_options = {k: v for k, v in kwargs.items() if k.startswith("token_")}
+        self._token_manager = TokenManager(username, password, redis_url=kwargs.get("redis_url"), **manager_options)
 
     def search(self, query, *args, **kwargs) -> SceneResults:
         """Search for data products in Copernicus Dataspace program."""
@@ -129,6 +139,11 @@ class DataspaceProvider(BaseProvider):
         if "Online" in query and not query.get("Online"):
             raise DataOfflineError(query.scene_id)
 
+        filename = f"{query.scene_id}.zip"
+        target_file = os.path.join(output, filename)
+        tmp_file = os.path.join(output, f"{filename}.incomplete")
+        os.makedirs(output, exist_ok=True)
+
         # Temporary workaround:
         # It seems like catalogue.dataspace.copernicus.eu is not being resolved
         # through Python requests library.
@@ -138,17 +153,13 @@ class DataspaceProvider(BaseProvider):
 
         download_url = parsed_changed.geturl()
 
-        token = get_access_token(self.username, self.password)  # TODO: Retrieve values from self._kwargs
-        headers = {"Authorization": f"Bearer {token}"}
+        token = self._token_manager.get_token()
+
+        headers = {"Authorization": f"Bearer {token.token}"}
         self.session.headers = headers
         response = self.session.get(download_url, stream=True, timeout=600, allow_redirects=True)
 
-        # TODO: Validate Offline/Exception to retry later
-
-        tmp_file = f"/tmp/{query.scene_id}.zip"
-        target_file = os.path.join(output, f"{query.scene_id}.zip")
-        os.makedirs(os.path.dirname(target_file), exist_ok=True)
-
+        # TODO: Validate Offline/Exception to retry later Checksum
         download_stream(tmp_file, response, progress=self._kwargs.get("progress", False))
 
         shutil.move(tmp_file, target_file)
