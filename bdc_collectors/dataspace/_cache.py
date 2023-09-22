@@ -19,8 +19,8 @@
 """Define a minimal cache strategy for Dataspace metadata.
 
 This file contains the following strategies:
-- RedisStrategy
-- RawDictStrategy
+- :class:`bdc_collectors.dataspace._cache.RedisStrategy`
+- :class:`bdc_collectors.dataspace._cache.RawDictStrategy`
 """
 
 import os

@@ -27,8 +27,8 @@ from datetime import datetime
 
 import dateutil
 import requests
-from shapely import from_wkt
 from shapely.geometry import base, shape
+from shapely.wkt import loads as from_wkt
 from tqdm import tqdm
 
 from .exceptions import DownloadError
