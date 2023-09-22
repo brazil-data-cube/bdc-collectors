@@ -55,8 +55,6 @@ class TokenManager:
                  token_cache: t.Optional[t.Union[str, Cache]] = None,
                  token_limit: int = 2, **kwargs):
         """Build user clients interface."""
-        # import redis
-
         self._username = username
         self._password = password
 
@@ -83,7 +81,6 @@ class TokenManager:
     @tokens.setter
     def tokens(self, obj):
         """Update users."""
-        #self._cache.set(self._key, json.dumps(obj))
         self._cache.add(self._key, json.dumps(obj))
 
     def use(self):

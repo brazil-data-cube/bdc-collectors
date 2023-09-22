@@ -97,8 +97,6 @@ class DataspaceProvider(BaseProvider):
             strategy = strategy_cls(**default_options)
 
         self.strategy = strategy
-        # self.username = username
-        # self.password = password
         self.session = kwargs.get("session", requests.session())
         self.collections = {
             "SENTINEL-1": Sentinel1,
