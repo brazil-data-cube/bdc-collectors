@@ -40,6 +40,10 @@ Providers
 SciHub Copernicus
 +++++++++++++++++
 
+.. deprecated: 1.0
+
+    Use `Dataspace`_ instead.
+
 .. automodule:: bdc_collectors.scihub
     :members:
 
@@ -78,6 +82,32 @@ MODIS
 .. automodule:: bdc_collectors.modis
     :members:
 
+
+.. _Dataspace:
+
+Copernicus Dataspace EcoSystem
+++++++++++++++++++++++++++++++
+
+.. automodule:: bdc_collectors.dataspace
+    :members:
+
+
+Dataspace API Implementations
+
+.. automodule:: bdc_collectors.dataspace.odata
+    :members:
+
+
+.. automodule:: bdc_collectors.dataspace.stac
+    :members:
+
+
+.. automodule:: bdc_collectors.dataspace._token
+    :members:
+
+
+.. automodule:: bdc_collectors.dataspace._cache
+    :members:
 
 Exceptions
 ----------

@@ -37,6 +37,7 @@ class TokenManager:
     
     Examples:
         Use the TokenManager as following to generate a new token:    
+
         >>> from bdc_collectors.dataspace._token import TokenManager
         >>> manager = TokenManager("username", "password")
         >>> token = manager.get_token()
@@ -44,6 +45,7 @@ class TokenManager:
         >>> another = manager.get_token()
 
         You can also use Redis Backend for token management. (Make sure you have the library 'redis' installed and server up and running.)
+
         >>> from bdc_collectors.dataspace._cache import RedisStrategy
         >>> from bdc_collectors.dataspace._token import TokenManager
         >>> manager = TokenManager("username", "password", token_cache=RedisStrategy())

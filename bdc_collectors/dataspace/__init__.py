@@ -24,13 +24,14 @@ This module is a new version of :class:`bdc_collectors.scihub.SciHub` (deprecate
 import logging
 import os
 import shutil
+import time
 import typing as t
 from urllib.parse import ParseResult, urlparse
 
 import requests
 
 from ..base import BaseProvider, BulkDownloadResult, SceneResult, SceneResults
-from ..exceptions import DataOfflineError
+from ..exceptions import DataOfflineError, DownloadError
 from ..scihub.sentinel2 import Sentinel1, Sentinel2
 from ..utils import download_stream, import_entry
 from ._token import TokenManager
@@ -60,7 +61,7 @@ class DataspaceProvider(BaseProvider):
     `Access Token <https://documentation.dataspace.copernicus.eu/APIs/Token.html>`_,
     an ``access_token`` is required to download data. By default, this module stores these tokens in
     :class:`bdc_collectors.dataspace._token.TokenManager`. Whenever a download is initiated by 
-    :method:`bdc_collectors.dataspace.DataspaceProvider.download`, the bdc-collectors creates two (2) access tokens
+    :meth:`bdc_collectors.dataspace.DataspaceProvider.download`, the bdc-collectors creates two (2) access tokens
     in memory and then use it to download as many scenes as can. When the token expires, it automatically refresh
     a new token.
 
@@ -75,6 +76,7 @@ class DataspaceProvider(BaseProvider):
 
 
         You may change the API backend with command:
+
         >>> from bdc_collectors.dataspace.stac import StacStrategy
         >>> stac = StacStrategy()
         >>> provider = DataspaceProvider(username='user@email.com', password='passwd', strategy=stac)
@@ -151,14 +153,25 @@ class DataspaceProvider(BaseProvider):
 
         download_url = parsed_changed.geturl()
 
-        token = self._token_manager.get_token()
+        # Retry 3 times before reject
+        for i in range(3):
+            token = self._token_manager.get_token()
 
-        headers = {"Authorization": f"Bearer {token.token}"}
-        self.session.headers = headers
-        response = self.session.get(download_url, stream=True, timeout=600, allow_redirects=True)
+            headers = {"Authorization": f"Bearer {token.token}"}
+            self.session.headers = headers
+            try:
+                response = self.session.get(download_url, stream=True, timeout=600, allow_redirects=True)
 
-        # TODO: Validate Offline/Exception to retry later Checksum
-        download_stream(tmp_file, response, progress=self._kwargs.get("progress", False))
+                # TODO: Validate Offline/Exception to retry later Checksum
+                download_stream(tmp_file, response, progress=self._kwargs.get("progress", False))
+
+                break
+            except Exception:
+                logging.debug(f"Error in download {query.scene_id}")
+                time.sleep(3)
+
+            if i == 2:
+                raise DownloadError(f"Could not download {query.scene_id}")
 
         shutil.move(tmp_file, target_file)
 
