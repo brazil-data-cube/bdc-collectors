@@ -88,7 +88,7 @@ class DataspaceProvider(BaseProvider):
         """Build a Dataspace provider instance."""
         self._kwargs = kwargs
 
-        default_options = {k: v for k, v in kwargs.items() if k.startswith("stac_")}
+        default_options = {k: v for k, v in kwargs.items() if k.startswith("stac_") or k.startswith("odata_")}
 
         if strategy is None:
             strategy = ODATAStrategy(**default_options)

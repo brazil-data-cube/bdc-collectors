@@ -18,15 +18,15 @@
 
 """Define the implementation of ODATA for provider Copernicus Dataspace Program."""
 
+import logging
 import typing as t
 from copy import deepcopy
 
-from requests import Session
-from shapely.geometry import base, box, shape
-from shapely.wkt import loads as wkt_loads
+from requests import PreparedRequest, Session
+from shapely.geometry import box
 
 from ..base import BaseProvider, SceneResult, SceneResults
-from ..utils import get_date_time
+from ..utils import get_date_time, to_geom
 
 ODATA_URL: str = "https://catalogue.dataspace.copernicus.eu/odata"
 PRODUCTS_URL = "{url}/v1/Products"
@@ -36,10 +36,16 @@ STAC_RFC_DATETIME: str = "%Y-%m-%dT%H:%M:%SZ"
 class ODATAStrategy(BaseProvider):
     """Represent the implementation of Copernicus Dataspace program API using ODATA (Open Data Protocol)."""
 
-    def __init__(self, api_url: str = ODATA_URL, **kwargs):
+    def __init__(self,
+                 odata_api_url: str = ODATA_URL,
+                 odata_api_max_records: int = 12000,
+                 odata_api_limit: int = 500,
+                 **kwargs):
         """Build an instance of ODATA strategy method."""
         self.session = Session()
-        self.api_url = api_url
+        self.api_url = odata_api_url
+        self._odata_api_max_records = odata_api_max_records
+        self._odata_api_limit = odata_api_limit
 
     def search(self, query, *args, **kwargs) -> SceneResults:
         """Search for data products in Copernicus Dataspace program."""
@@ -58,7 +64,7 @@ class ODATAStrategy(BaseProvider):
             filters.append(f"Collection/Name eq '{query}'")
 
         if data.get("geom"):
-            geom = _get_geom(data["geom"])
+            geom = to_geom(data["geom"])
             filters.append(f"OData.CSC.Intersects(area=geography'SRID=4326;{geom.wkt}')")
         if data.get("bbox"):
             bbox = box(*data.pop("bbox"))
@@ -77,37 +83,51 @@ class ODATAStrategy(BaseProvider):
         filter_expression = " and ".join(filters)
         params = {
             "$filter": filter_expression,
-            "$top": 1000
+            "$top": self._odata_api_limit,
+            "$expand": "Attributes",
+            "$orderby": "ContentDate/Start desc"
         }
         params.update(**options)
 
-        response = self.session.get(PRODUCTS_URL.format(url=self.api_url), params=params)
-        if response.status_code != 200:
-            raise RuntimeError(f"Error {response.status_code}: {response.content}")
+        products: t.List[t.Dict[str, t.Any]] = []
 
-        # TODO: validate code/output
-        products = response.json()["value"]
+        prepared = PreparedRequest()
+        prepared.prepare_url(PRODUCTS_URL.format(url=self.api_url), params)
+        url = prepared.url
+
+        while True:
+            response = self.session.get(url)
+            if response.status_code != 200:
+                raise RuntimeError(f"Error {response.status_code}: {response.content}")
+
+            data = response.json()
+            products_found = data["value"]
+            if len(products_found) == 0:
+                break
+
+            products.extend(products_found)
+
+            if data.get("@odata.nextLink") is None:
+                break
+
+            url = data.get("@odata.nextLink")
+
+            # Break control for too many records 
+            if len(products) > self._odata_api_max_records:
+                logging.warning(f"Max records for BDC Collectors DataSpace ODATA API reached limit {self._odata_api_max_records}. Skipping.")
+                break
 
         return [
             self._serialize_product(product) for product in products
         ]
 
     def _serialize_product(self, product: t.Dict[str, t.Any]) -> SceneResult:
-        cloud_cover = 0  # TODO: Get it from STAC??
+        attribute_dict = {
+            attribute["Name"]: attribute["Value"] for attribute in product["Attributes"]
+        }
+        product.pop("Attributes")
         return SceneResult(product["Name"].replace(".SAFE", ""),
-                           cloud_cover,
+                           attribute_dict.get("cloudCover"),
                            link=f"{PRODUCTS_URL.format(url=self.api_url)}({product['Id']})/$value",
-                           **product)
-
-
-
-def _get_geom(geom: t.Any) -> base.BaseGeometry:
-    if isinstance(geom, str):
-        return wkt_loads(geom)
-    elif isinstance(geom, dict):
-        return shape(geom)
-    elif isinstance(geom, base.BaseGeometry):
-        return geom
-
-    raise ValueError(f"Invalid geometry")
-    
+                           **product,
+                           **attribute_dict)

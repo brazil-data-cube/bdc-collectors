@@ -27,6 +27,8 @@ from datetime import datetime
 
 import dateutil
 import requests
+from shapely import from_wkt
+from shapely.geometry import base, shape
 from tqdm import tqdm
 
 from .exceptions import DownloadError
@@ -137,3 +139,20 @@ def import_entry(module_class_string: str):
     cls = getattr(module, class_name)
 
     return cls
+
+
+def to_geom(geom: t.Any) -> base.BaseGeometry:
+    """Build a shapely geometry object from string wkt/geojson.
+    
+    Raises:
+        ValueError: When the value is not a valid Geometry string/geojson object.
+        GeometryTypeError: When the given type in JSON object is not a valid Geometry type
+    """
+    if isinstance(geom, str):
+        return from_wkt(geom)
+    elif isinstance(geom, dict):
+        return shape(geom)
+    elif isinstance(geom, base.BaseGeometry):
+        return geom
+
+    raise ValueError(f"Invalid geometry")
