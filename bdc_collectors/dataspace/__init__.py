@@ -21,11 +21,13 @@
 This module is a new version of :class:`bdc_collectors.scihub.SciHub` (deprecated) to consume and download Sentinel products.
 """
 
+import hashlib
 import logging
 import os
 import shutil
 import time
 import typing as t
+from pathlib import Path
 from urllib.parse import ParseResult, urlparse
 
 import requests
@@ -141,8 +143,16 @@ class DataspaceProvider(BaseProvider):
 
         filename = f"{query.scene_id}.zip"
         target_file = os.path.join(output, filename)
+
         tmp_file = os.path.join(output, f"{filename}.incomplete")
         os.makedirs(output, exist_ok=True)
+
+        if self._check_integrity(query, target_file):
+            return target_file
+
+        if self._check_integrity(query, tmp_file):
+            shutil.move(tmp_file, target_file)
+            return target_file
 
         # Temporary workaround:
         # It seems like catalogue.dataspace.copernicus.eu is not being resolved
@@ -165,7 +175,9 @@ class DataspaceProvider(BaseProvider):
                 # TODO: Validate Offline/Exception to retry later Checksum
                 download_stream(tmp_file, response, progress=self._kwargs.get("progress", False))
 
-                break
+                if self._check_integrity(query, tmp_file):
+                    break
+
             except Exception:
                 logging.debug(f"Error in download {query.scene_id}")
                 time.sleep(3)
@@ -201,3 +213,67 @@ class DataspaceProvider(BaseProvider):
         except BaseException:
             logging.error(f"DownloadError for {entry.scene_id}")
         return None
+
+    def _check_integrity(self, scene: SceneResult, filepath: str):
+        """Check for scene file integrity if exists.
+        
+        Note:
+            Ensure that the file is writable.
+            It removes the file when its invalid.
+        """
+        if not os.path.exists(filepath):
+            return False
+
+        if scene.get("Checksum"):
+            checksums = scene["Checksum"]
+            if not _is_valid_checksum(filepath, checksums):
+                os.unlink(filepath)
+
+                return False
+
+        # TODO: Consider scene.get("ContentLength")??
+        return True
+
+
+def _is_valid_checksum(filepath: str, checksums: t.List[t.Dict[str, t.Any]]) -> bool:
+    """Assert checksum validity of data"""
+    for context in checksums:
+        algorithm_name = context["Algorithm"]
+        algorithm_cls = getattr(hashlib, algorithm_name.lower(), None)
+        if not algorithm_cls:
+            logging.debug(f"No support for checksum algorithm {algorithm_name}, skipping.")
+            continue
+
+        algorithm = algorithm_cls()
+        checksum = _check_sum(filepath, algorithm)
+        if checksum == context["Value"]:
+            return True
+
+    return False
+
+
+def _check_sum(file_path: t.Union[str, t.Any], algorithm: t.Any, chunk_size=16384) -> bytes:
+    """Read a file and generate a checksum.
+
+    Raises:
+        IOError when could not open given file.
+
+    Args:
+        file_path (str|BytesIo): Path to the file
+        algorithm (hashlib.Hash): A python hashlib algorithm.
+        chunk_size (int): Size in bytes to read per iteration. Default is 16384 (16KB).
+
+    Returns:
+        The hex digest.
+    """
+    def _read(stream):
+        for chunk in iter(lambda: stream.read(chunk_size), b""):
+            algorithm.update(chunk)
+
+    if isinstance(file_path, str) or isinstance(file_path, Path):
+        with open(str(file_path), "rb") as f:
+            _read(f)
+    else:
+        _read(file_path)
+
+    return algorithm.hexdigest()
