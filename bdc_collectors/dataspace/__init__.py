@@ -153,10 +153,6 @@ class DataspaceProvider(BaseProvider):
             shutil.move(tmp_file, target_file)
             return target_file
 
-        # Temporary workaround:
-        # It seems like catalogue.dataspace.copernicus.eu is not being resolved
-        # through Python requests library.
-        # Using zipper.dataspace instead
         response = self.session.get(query.link, allow_redirects=False)
 
         download_url = query.link
