@@ -28,7 +28,6 @@ import shutil
 import time
 import typing as t
 from pathlib import Path
-from urllib.parse import ParseResult, urlparse
 
 import requests
 
@@ -154,14 +153,13 @@ class DataspaceProvider(BaseProvider):
             shutil.move(tmp_file, target_file)
             return target_file
 
-        # Temporary workaround:
-        # It seems like catalogue.dataspace.copernicus.eu is not being resolved
-        # through Python requests library.
-        # Using zipper.dataspace instead
-        parsed: ParseResult = urlparse(query.link)
-        parsed_changed = parsed._replace(netloc="zipper.dataspace.copernicus.eu")
+        response = self.session.get(query.link, allow_redirects=False)
 
-        download_url = parsed_changed.geturl()
+        download_url = query.link
+
+        while response.status_code in (301, 302, 303, 307):
+            download_url = response.headers["Location"]
+            response = self.session.get(download_url, allow_redirects=False)
 
         # Retry 3 times before reject
         for i in range(3):
