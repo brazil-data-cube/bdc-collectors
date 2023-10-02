@@ -38,7 +38,7 @@ except ImportError:
 class Cache(metaclass=ABCMeta):
     """Simple abstraction of Cache handler."""
 
-    def store(self, key, value, **properties):
+    def store(self, key, value, **properties):  # pragma: nocover
         """Store the value into cache.
 
         Args:
@@ -48,7 +48,7 @@ class Cache(metaclass=ABCMeta):
         """
         raise NotImplementedError()
 
-    def get(self, keys):
+    def get(self, keys):  # pragma: nocover
         """Retrieve the cache information.
 
         Args:
@@ -59,7 +59,7 @@ class Cache(metaclass=ABCMeta):
         """
         raise NotImplementedError()
 
-    def lock(self, key: str, **kwargs):
+    def lock(self, key: str, **kwargs):  # pragma: nocover
         """Retrieve a lock for dealing with cache."""
         raise NotImplementedError()
 
@@ -117,7 +117,7 @@ class RedisStrategy(Cache):
 class RawDictStrategy(Cache):
     """Simple implementation of cache as strategy using Python dictionaries."""
 
-    def __init__(self, url=None):
+    def __init__(self, **kwargs):
         """Create a In-memory strategy."""
         self._cache = {}
         self._locks = {}
