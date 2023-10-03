@@ -11,8 +11,8 @@ Changes
 =======
 
 
-Version 1.0.0 (2023-10-03)
---------------------------
+Version 1.0.0.dev1 (2023-10-03)
+-------------------------------
 
 - Review module dependencies
 - Add driver for Copernicus DataSpace EcoSystem.
