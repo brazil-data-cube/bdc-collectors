@@ -85,7 +85,7 @@ class BaseLandsat(USGSCollection):
         output = dict()
         scene_id = self.parser.scene_id
 
-        internal_bands = self.bands or []
+        internal_bands = getattr(self, 'bands', [])
 
         for f in path.iterdir():
             if f.is_file() and f.suffix.lower() == '.tif':

@@ -1,6 +1,6 @@
 ..
     This file is part of Brazil Data Cube BDC-Collectors.
-    Copyright (C) 2022 INPE.
+    Copyright (C) 2023 INPE.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@ The command ``search`` has the following parameters::
         -t --time     TEXT [required]  Time interval. (start/end). Format should be (YYYY-mm-dd)
         -u --username TEXT             Optional username used to search in provider.
            --password TEXT             Optional password used to search in provider.
+           --config   PATH             Path to the configuration file to extend options for provider creation
            --platform TEXT             Platform sensor (if required)
            --help                      Show this message and exit.
 
@@ -156,6 +157,12 @@ To download Landsat-8 Digital Number from `USGS Earth Explorer <https://earthexp
 SciHub
 ~~~~~~
 
+
+.. warning::
+
+    The official Copernicus SciHub is being deprecated. Use ``Dataspace`` instead.
+
+
 To download Sentinel-2 from `SciHub <https://scihub.copernicus.eu/dhus/>`_::
 
     bdc-collector download --provider=SciHub \
@@ -169,6 +176,20 @@ To download L2A::
     bdc-collector download --provider=SciHub \
                            --scene-id=S2B_MSIL2A_20200930T135119_N0214_R024_T21KXA_20200930T175714 \
                            --output=. \
+                           --username=user \
+                           --password=password
+
+
+Dataspace
+~~~~~~~~~
+
+
+To download Sentinel-2 from `Dataspace EcoSystem <https://dataspace.copernicus.eu/>`_::
+
+    bdc-collector download --provider=Dataspace \
+                           --scene-id=S2B_MSIL2A_20200930T135119_N0214_R024_T21KXA_20200930T175714 \
+                           --output=. \
+                           --dataset SENTINEL-2 \
                            --username=user \
                            --password=password
 

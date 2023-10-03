@@ -1,6 +1,6 @@
 #
 # This file is part of Brazil Data Cube BDC-Collectors.
-# Copyright (C) 2022 INPE.
+# Copyright (C) 2023 INPE.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -63,13 +63,14 @@ setup_requires = [
 
 install_requires = [
     'python-dateutil>=2',
-    'Flask>=1.1.0',
+    'Flask>=1.1.0,<2.3',
     'google-cloud-storage>=1.28,<2',
     'beautifulsoup4>=4.9,<5',
-    'redis>=3.5,<4',
-    'sentinelsat>=0.14,<1.2',
-    'Shapely>=1.7,<2',
-    'tqdm>=4.50'
+    'redis>=4',
+    'sentinelsat>=0.14,<1.3',
+    'Shapely>=1.8',
+    'tqdm>=4.50',
+    'pystac-client>=0.6,<0.7'
 ]
 
 packages = find_packages()
@@ -105,9 +106,7 @@ setup(
             'scihub = bdc_collectors.scihub',
             'dgi = bdc_collectors.dgi',
             'modis = bdc_collectors.modis',
-        ],
-        'bdc_db.scripts': [
-            'bdc_collectors = bdc_collectors.scripts'
+            'dataspace = bdc_collectors.dataspace'
         ]
     },
     extras_require=extras_require,
@@ -115,13 +114,16 @@ setup(
     setup_requires=setup_requires,
     tests_require=tests_require,
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 3 - Stable',
         'Environment :: Web Environment',
         'Intended Audience :: Education',
         'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: MIT License',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Scientific/Engineering :: GIS',
     ],

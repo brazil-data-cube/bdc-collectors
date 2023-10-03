@@ -34,6 +34,7 @@ from shapely.geometry import box
 
 from ..base import BaseProvider, SceneResult
 from ..exceptions import DataOfflineError, DownloadError
+from ..utils import get_date_time
 from .clients import UserClients
 from .sentinel2 import Sentinel1, Sentinel2
 
@@ -43,14 +44,6 @@ def init_provider():
     return dict(
         SciHub=SciHub
     )
-
-
-def _get_date_time(date) -> datetime:
-    """Get a datetime object from entry."""
-    if isinstance(date, datetime):
-        return date
-
-    return dateutil.parser.isoparse(date)
 
 
 class SciHub(BaseProvider):
@@ -129,8 +122,8 @@ class SciHub(BaseProvider):
             options['area'] = envelope.wkt
 
         if 'start_date' in kwargs and 'end_date':
-            start_date = _get_date_time(options.pop('start_date'))
-            end_date = _get_date_time(options.pop('end_date'))
+            start_date = get_date_time(options.pop('start_date'))
+            end_date = get_date_time(options.pop('end_date'))
 
             options['date'] = start_date, end_date
 

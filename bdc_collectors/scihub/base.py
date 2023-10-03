@@ -42,8 +42,9 @@ class SentinelCollection(BaseCollection):
         output = dict()
 
         # For Sen2cor files, use recursive and seek for jp2 files
-        if collection._metadata and collection._metadata.get('processors'):
-            processors = collection._metadata['processors']
+        metadata = getattr(collection, '_metadata', getattr(collection, 'metadata_', None))
+        if metadata and metadata.get('processors'):
+            processors = metadata['processors']
 
             processors = [proc['name'].lower() for proc in processors]
 
@@ -78,7 +79,7 @@ class SentinelCollection(BaseCollection):
 
         return output
 
-    def compressed_file(self, collection, prefix=None):
+    def compressed_file(self, collection, prefix=None, path_include_month=False):
         """Retrieve path to the compressed scene (.zip) on local storage."""
         if prefix is None:
             prefix = current_app.config.get('DATA_DIR')
@@ -90,11 +91,16 @@ class SentinelCollection(BaseCollection):
 
         relative = Path(collection.name) / version / tile[:2] / tile[2] / tile[3:] / year / scene_id
 
+        if path_include_month:
+            month = str(self.parser.sensing_date().month)
+            relative = Path(collection.name) / version / \
+                tile[:2] / tile[2] / tile[3:] / year / month / scene_id
+
         scene_path = Path(prefix or '') / relative
 
         return scene_path / f'{scene_id}.zip'
 
-    def path(self, collection, prefix=None) -> Path:
+    def path(self, collection, prefix=None, path_include_month=False) -> Path:
         """Retrieve the relative path to the Collection on Brazil Data Cube cluster."""
         if prefix is None:
             prefix = current_app.config.get('DATA_DIR')
@@ -104,6 +110,11 @@ class SentinelCollection(BaseCollection):
         year = str(self.parser.sensing_date().year)
 
         relative = Path(collection.name) / version / tile[:2] / tile[2] / tile[3:] / year / self.parser.scene_id
+
+        if path_include_month:
+            month = str(self.parser.sensing_date().month)
+            relative = Path(collection.name) / version / \
+                tile[:2] / tile[2] / tile[3:] / year / month / self.parser.scene_id
 
         scene_path = Path(prefix or '') / relative
 

@@ -1,6 +1,6 @@
 ..
     This file is part of BDC-Collectors.
-    Copyright (C) 2020 INPE.
+    Copyright (C) 2023 INPE.
 
     BDC-Collectors is a free software; you can redistribute it and/or modify it
     under the terms of the MIT License; see LICENSE file for more details.
@@ -9,6 +9,22 @@
 =======
 Changes
 =======
+
+
+Version 1.0.0.dev1 (2023-10-03)
+-------------------------------
+
+- Review module dependencies
+- Add driver for Copernicus DataSpace EcoSystem.
+- Improve docs for command line and downloading.
+
+
+Version 0.9.0 (2023-01-26)
+--------------------------
+
+- Review dependencies for collections
+- Minor bugs related API provider for Landsat
+- Minimal support for Sentinel-1
 
 
 Version 0.8.0 (2022-09-21)

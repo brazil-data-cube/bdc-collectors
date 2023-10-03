@@ -19,11 +19,16 @@
 """Define the BDC-Collector utilities used along the package."""
 
 import contextlib
+import importlib
 import logging
 import os
-from typing import Any
+import typing as t
+from datetime import datetime
 
+import dateutil
 import requests
+from shapely.geometry import base, shape
+from shapely.wkt import loads as from_wkt
 from tqdm import tqdm
 
 from .exceptions import DownloadError
@@ -105,8 +110,49 @@ def download_stream(file_path: str, response: requests.Response, chunk_size=1024
         raise DownloadError(f'Download file is corrupt. Expected {total_size} bytes, got {file_size}')
 
 
-def entry_version(version: Any) -> str:
+def entry_version(version: t.Any) -> str:
     """Retrieve the string representation of collection version for folders."""
     if (isinstance(version, str) and '.' in version) or isinstance(version, float):
         return f'v{version}'
     return 'v{0:03d}'.format(int(version))
+
+
+def get_date_time(date: t.Union[datetime, str]) -> datetime:
+    """Get a datetime object from entry."""
+    if isinstance(date, datetime):
+        return date
+
+    return dateutil.parser.isoparse(date)
+
+
+def import_entry(module_class_string: str):
+    """Import a class from Python module string."""
+    module_fragments = module_class_string.rsplit(".", 1)
+    if len(module_fragments) <= 1:
+        raise ValueError(f"Could not import {module_class_string}. Use absolute module path like 'module_name.Entry' instead.")
+
+    module_name, class_name = module_fragments
+
+    module = importlib.import_module(module_name)
+    if not hasattr(module, class_name):
+        raise ImportError(f"No class {class_name} in module {module_name}")
+    cls = getattr(module, class_name)
+
+    return cls
+
+
+def to_geom(geom: t.Any) -> base.BaseGeometry:
+    """Build a shapely geometry object from string wkt/geojson.
+    
+    Raises:
+        ValueError: When the value is not a valid Geometry string/geojson object.
+        GeometryTypeError: When the given type in JSON object is not a valid Geometry type
+    """
+    if isinstance(geom, str):
+        return from_wkt(geom)
+    elif isinstance(geom, dict):
+        return shape(geom)
+    elif isinstance(geom, base.BaseGeometry):
+        return geom
+
+    raise ValueError(f"Invalid geometry")
