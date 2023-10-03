@@ -27,7 +27,37 @@ from flask.cli import FlaskGroup, with_appcontext
 from . import create_app
 
 
-@click.group(cls=FlaskGroup, create_app=create_app)
+def get_version(ctx, param, value):
+    """Retrieve the package version for command line."""
+    if not value or ctx.resilient_parsing:
+        return
+
+    import platform
+    from . import __version__
+
+    click.echo(
+        f"Python {platform.python_version()}\n"
+        f"BDC-Collector {__version__}",
+        color=ctx.color,
+    )
+    ctx.exit()
+
+
+version_option = click.Option(
+    ["--version"],
+    help="Show the application version.",
+    expose_value=False,
+    callback=get_version,
+    is_flag=True,
+    is_eager=True,
+)
+
+
+@click.group(cls=FlaskGroup,
+             create_app=create_app,
+             add_default_commands=False,
+             add_version_option=False,
+             params=[version_option])
 def cli():
     """Command line for BDC-Collectors."""
     click.secho("""BDC-Collectors  Copyright (C) 2023  INPE
