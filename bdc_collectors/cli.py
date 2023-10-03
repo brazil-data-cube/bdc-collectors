@@ -1,6 +1,6 @@
 #
 # This file is part of Brazil Data Cube BDC-Collectors.
-# Copyright (C) 2022 INPE.
+# Copyright (C) 2023 INPE.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ from . import create_app
 @click.group(cls=FlaskGroup, create_app=create_app)
 def cli():
     """Command line for BDC-Collectors."""
-    click.secho("""BDC-Collectors  Copyright (C) 2022  INPE
+    click.secho("""BDC-Collectors  Copyright (C) 2023  INPE
 This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
 This is free software, and you are welcome to redistribute it
 under certain conditions; type `show c' for details.""", bold=True)

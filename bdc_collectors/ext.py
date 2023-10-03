@@ -22,7 +22,7 @@ import warnings
 from threading import Lock
 from typing import Dict, List, Type
 
-import pkg_resources
+import importlib.metadata
 from flask import Flask
 
 from .base import BaseProvider
@@ -86,10 +86,10 @@ class CollectorExtension:
     Note:
         Make sure to initialize the ``CollectorExtension`` before.
 
-    We also the command line `bdc-collectors` which provides a way to
+    We also the command line `bdc-collector` which provides a way to
     consume those providers in terminal::
 
-        bdc-collectors --help
+        bdc-collector --help
     """
 
     state: CollectorState
@@ -119,7 +119,7 @@ class CollectorExtension:
     def init_providers(self, entry_point: str = 'bdc_collectors.providers', **kwargs):
         """Load the supported providers from setup.py entry_point."""
         if entry_point:
-            for base_entry in pkg_resources.iter_entry_points(entry_point):
+            for base_entry in importlib.metadata.entry_points(group=entry_point):
                 provider = base_entry.load()
 
                 if hasattr(provider, 'init_provider') and callable(provider.init_provider):
