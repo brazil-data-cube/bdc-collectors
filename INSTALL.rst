@@ -1,6 +1,6 @@
 ..
     This file is part of Brazil Data Cube BDC-Collectors.
-    Copyright (C) 2022 INPE.
+    Copyright (C) 2023 INPE.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -66,9 +66,9 @@ Install in development mode::
 
     If you want to create a new *Python Virtual Environment*, please, follow this instruction:
 
-    *1.* Create a new virtual environment linked to Python 3.8::
+    *1.* Create a new virtual environment linked to Python 3.11::
 
-        python3.8 -m venv venv
+        python3.11 -m venv venv
 
 
     **2.** Activate the new environment::
@@ -90,12 +90,7 @@ Build the Documentation
 
 You can generate the documentation based on Sphinx with the following command::
 
-    python setup.py build_sphinx
-
-
-The above command will generate the documentation in HTML and it will place it under::
-
-    doc/sphinx/_build/html/
+    sphinx-build docs/sphinx docs/sphinx/_build/html
 
 
 The above command will generate the documentation in HTML and it will place it under::
