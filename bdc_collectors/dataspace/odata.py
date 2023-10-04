@@ -55,8 +55,7 @@ class ODATAStrategy(BaseProvider):
         if data.get("ids"):
             products = []
             for item_id in data["ids"]:
-                safe_id = f"{item_id}.SAFE" if not item_id.endswith(".SAFE") else item_id
-                products_found = self._retrieve_products(f"Name eq '{safe_id}'")
+                products_found = self._retrieve_products(f"Name eq '{item_id}'")
                 products.extend(products_found)
 
             return products
@@ -74,8 +73,19 @@ class ODATAStrategy(BaseProvider):
         if data.get("end_date"):
             filters.append(f"ContentDate/Start lt {get_date_time(data.pop('end_date')).strftime(STAC_RFC_DATETIME)}")
 
-        if data.get("product"):
-            filters.append(f"Attributes/OData.CSC.StringAttribute/any(att:att/Name eq 'productType' and att/OData.CSC.StringAttribute/Value eq '{data.pop('product')}')")
+        # Specific attribute helpers
+        # TODO: Implement an adaptative method to deal these attribute names which supports comparators like eq/lt/gt etc
+        for entry in ["productType", "instrumentShortName"]:
+            if data.get(entry):
+                filters.append(f"Attributes/OData.CSC.StringAttribute/any(att:att/Name eq '{entry}' and att/OData.CSC.StringAttribute/Value eq '{data.pop(entry)}')")
+
+        # For unmapped attribute filter, the user may specify manual attributes
+        # attributes = ["Attributes/....... eq '10'"]
+        if data.get("attributes"):
+            if not isinstance(data["attributes"], t.Iterable):
+                raise TypeError("Invalid value for 'attributes'.")
+
+            filters.extend(data["attributes"])
 
         return self._retrieve_products(*filters)
 

@@ -21,8 +21,9 @@ from pathlib import Path
 
 from flask import current_app
 
+from ..utils import entry_version
 from .base import SentinelCollection
-from .parser import Sentinel1Scene
+from .parser import Sentinel1Scene, Sentinel3Scene
 
 
 class Sentinel1(SentinelCollection):
@@ -53,3 +54,65 @@ class Sentinel1(SentinelCollection):
 
 class Sentinel2(SentinelCollection):
     """Simple abstraction for Sentinel-2."""
+
+
+class Sentinel3(SentinelCollection):
+    """Simple abstraction for Sentinel-3."""
+
+    parser_class = Sentinel3Scene
+
+    def get_files(self, collection, path=None, prefix=None):
+        """List all files in the collection."""
+        if path is None:
+            path = self.path(collection, prefix)
+
+        path = Path(path)
+
+        output = dict()
+
+        for entry in path.rglob("*.nc"):
+            output[entry.stem] = entry
+
+        return output
+
+    def compressed_file(self, collection, prefix=None, path_include_month=False):
+        """Retrieve path to the compressed scene (.zip) on local storage."""
+        if prefix is None:
+            prefix = current_app.config.get('DATA_DIR')
+
+        scene_id = self.parser.scene_id
+        scene_path = self.path(collection, prefix=prefix, path_include_month=path_include_month)
+
+        return scene_path / f'{scene_id}.zip'
+
+    def path(self, collection, prefix=None, path_include_month=False) -> Path:
+        """Retrieve the relative path to the Collection on Brazil Data Cube cluster."""
+        if prefix is None:
+            prefix = current_app.config.get('DATA_DIR')
+
+        year = str(self.parser.sensing_date().year)
+        month = str(self.parser.sensing_date().month)
+        version = entry_version(collection.version)
+        scene_id = self.parser.scene_id
+
+        relative = Path(collection.name) / version / year / month / scene_id
+
+        scene_path = Path(prefix or '') / relative
+
+        return scene_path
+
+    def get_assets(self, collection, path=None, prefix=None) -> dict:
+        """Retrieve the map assets of Sentinel product."""
+        if path is None:
+            path = self.path(collection, prefix=prefix)
+
+        path = Path(path)
+
+        output = dict()
+
+        thumbnail = list(path.rglob('*.jpg'))
+
+        if thumbnail:
+            output['thumbnail'] = str(thumbnail)
+
+        return output
