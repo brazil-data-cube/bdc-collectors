@@ -33,7 +33,7 @@ import requests
 
 from ..base import BaseProvider, BulkDownloadResult, SceneResult, SceneResults
 from ..exceptions import DataOfflineError, DownloadError
-from ..scihub.sentinel2 import Sentinel1, Sentinel2
+from ..scihub.sentinel2 import Sentinel1, Sentinel2, Sentinel3
 from ..utils import download_stream, import_entry
 from ._token import TokenManager
 from .odata import ODATAStrategy
@@ -104,6 +104,7 @@ class DataspaceProvider(BaseProvider):
         self.collections = {
             "SENTINEL-1": Sentinel1,
             "SENTINEL-2": Sentinel2,
+            "SENTINEL-3": Sentinel3
         }
 
         manager_options = {k: v for k, v in kwargs.items() if k.startswith("token_")}
@@ -119,14 +120,13 @@ class DataspaceProvider(BaseProvider):
         if not isinstance(query, SceneResult):
             item_ids = kwargs.get("ids", [])
 
-            scene = ""
-            if query.startswith("S2"):
-                scene = query
+            scene = query
 
             if kwargs.get("sceneid") or kwargs.get("scene_id"):
                 scene: str = kwargs.get("sceneid", kwargs.get("scene_id"))
 
-            if not scene.endswith(".SAFE"):
+            # Helper to set up SAFE files for Sentinel-1 and Sentinel-2
+            if not scene.endswith(".SAFE") and scene[:2] in ("S1", "S2"):
                 scene = f"{scene}.SAFE"
 
             item_ids.append(scene)
