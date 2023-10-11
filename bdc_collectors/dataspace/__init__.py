@@ -112,7 +112,19 @@ class DataspaceProvider(BaseProvider):
 
     def search(self, query, *args, **kwargs) -> SceneResults:
         """Search for data products in Copernicus Dataspace program."""
-        entries = self.strategy.search(query, *args, **kwargs)
+        options = kwargs.copy()
+
+        # Compatibility with others BDC-Providers
+        scenes = []
+        if options.get("scene"):
+            scenes.append(self._item_id(options["scene"]))
+        if options.get("scenes"):
+            scenes.extend([self._item_id(scene) for scene in options["scenes"]])
+        if scenes:
+            options.setdefault("ids", [])
+            options["ids"].extend(scenes)
+
+        entries = self.strategy.search(query, *args, **options)
         return entries
 
     def download(self, query: t.Union[SceneResult, str], output: str, *args, **kwargs) -> str:
@@ -125,9 +137,7 @@ class DataspaceProvider(BaseProvider):
             if kwargs.get("sceneid") or kwargs.get("scene_id"):
                 scene: str = kwargs.get("sceneid", kwargs.get("scene_id"))
 
-            # Helper to set up SAFE files for Sentinel-1 and Sentinel-2
-            if not scene.endswith(".SAFE") and scene[:2] in ("S1", "S2"):
-                scene = f"{scene}.SAFE"
+            scene = self._item_id(scene)
 
             item_ids.append(scene)
 
@@ -231,6 +241,9 @@ class DataspaceProvider(BaseProvider):
 
         # TODO: Consider scene.get("ContentLength")??
         return True
+
+    def _item_id(self, scene: str) -> str:
+        return f"{scene}.SAFE" if not scene.endswith(".SAFE") and scene[:2] in ("S1", "S2") else scene
 
 
 def _is_valid_checksum(filepath: str, checksums: t.List[t.Dict[str, t.Any]]) -> bool:
