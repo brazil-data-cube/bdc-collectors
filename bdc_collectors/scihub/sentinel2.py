@@ -31,14 +31,16 @@ class Sentinel1(SentinelCollection):
 
     parser_class = Sentinel1Scene
 
-    def path(self, collection, prefix=None) -> Path:
+    def path(self, collection, prefix=None, path_include_month=False) -> Path:
         if prefix is None:
             prefix = current_app.config.get('DATA_DIR')
 
         date = self.parser.sensing_date()
         year = str(date.year)
+        day = str(date.day)
         month = date.strftime('%MM')
-        relative = f'{collection.name}/v{collection.version}/{year}/{month}/{self.parser.scene_id}'
+        version = entry_version(collection.version)
+        relative = f'{collection.name}/{version}/{year}/{month}/{day}'
 
         return Path(prefix or '') / relative
 
@@ -50,6 +52,16 @@ class Sentinel1(SentinelCollection):
                 name = '_'.join(entry.stem.split('_')[-2:])
                 output[name] = entry
         return output
+
+    def compressed_file(self, collection, prefix=None, path_include_month=False):
+        """Retrieve path to the compressed scene (.zip) on local storage."""
+        if prefix is None:
+            prefix = current_app.config.get('DATA_DIR')
+
+        scene_id = self.parser.scene_id
+        scene_path = self.path(collection, prefix=prefix, path_include_month=path_include_month)
+
+        return scene_path / f'{scene_id}.zip'
 
 
 class Sentinel2(SentinelCollection):
@@ -92,10 +104,10 @@ class Sentinel3(SentinelCollection):
 
         year = str(self.parser.sensing_date().year)
         month = str(self.parser.sensing_date().month)
+        day = str(self.parser.sensing_date().day)
         version = entry_version(collection.version)
-        scene_id = self.parser.scene_id
 
-        relative = Path(collection.name) / version / year / month / scene_id
+        relative = Path(collection.name) / version / year / month / day
 
         scene_path = Path(prefix or '') / relative
 
