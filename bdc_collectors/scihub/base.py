@@ -92,7 +92,7 @@ class SentinelCollection(BaseCollection):
         relative = Path(collection.name) / version / tile[:2] / tile[2] / tile[3:] / year / scene_id
 
         if path_include_month:
-            month = self.parser.sensing_date().strftime('%MM')
+            month = self.parser.sensing_date().strftime('%m')
             relative = Path(collection.name) / version / \
                 tile[:2] / tile[2] / tile[3:] / year / month / scene_id
 

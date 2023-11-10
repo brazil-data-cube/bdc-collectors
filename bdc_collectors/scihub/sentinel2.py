@@ -37,9 +37,9 @@ class Sentinel1(SentinelCollection):
 
         date = self.parser.sensing_date()
         year = str(date.year)
-        day = str(date.day)
-        month = date.strftime('%MM')
-        version = entry_version(collection.version)
+        day = date.strftime("%d")
+        month = date.strftime('%m')
+        version = f"v{collection.version}"
         relative = f'{collection.name}/{version}/{year}/{month}/{day}'
 
         return Path(prefix or '') / relative
@@ -107,9 +107,9 @@ class Sentinel3(SentinelCollection):
             prefix = current_app.config.get('DATA_DIR')
 
         year = str(self.parser.sensing_date().year)
-        month = str(self.parser.sensing_date().month)
-        day = str(self.parser.sensing_date().day)
-        version = entry_version(collection.version)
+        month = self.parser.sensing_date().strftime('%m')
+        day = self.parser.sensing_date().strftime("%d")
+        version = f"v{collection.version}"
 
         relative = Path(collection.name) / version / year / month / day
 
