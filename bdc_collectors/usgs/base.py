@@ -30,7 +30,7 @@ from .parser import LandsatScene
 class USGSCollection(BaseCollection):
     """Define a generic way to deal with USGS collections."""
 
-    def _path(self, collection, prefix=None) -> Path:
+    def _path(self, collection, prefix=None, **kwargs) -> Path:
         if prefix is None:
             prefix = current_app.config.get('DATA_DIR')
 
@@ -50,12 +50,12 @@ class USGSCollection(BaseCollection):
 
         return scene_path
 
-    def compressed_file(self, collection, prefix=None):
+    def compressed_file(self, collection, prefix=None, **kwargs):
         """Retrieve path to the compressed scene .zip."""
         scene_id = self.parser.scene_id
         return self._path(collection, prefix=prefix) / f'{scene_id}.tar.gz'
 
-    def path(self, collection, prefix=None) -> Path:
+    def path(self, collection, prefix=None, **kwargs) -> Path:
         """Retrieve the relative path to the Collection on Brazil Data Cube cluster."""
         return self._path(collection, prefix=prefix)
 
@@ -74,7 +74,7 @@ class BaseLandsat(USGSCollection):
         'MTL.xml', 'SR_QA_RADSAT.TIF', 'SR_QA_AEROSOL.TIF', 'MD5.txt', 'GCP.txt', 'VER.jpg', 'VER.txt'
     ]
 
-    def get_files(self, collection, path=None, prefix=None):
+    def get_files(self, collection, path=None, prefix=None, **kwargs):
         """List all files from Landsat."""
         # TODO: Use parameter path instead
         if path is None:
@@ -98,7 +98,7 @@ class BaseLandsat(USGSCollection):
 
         return output
 
-    def get_assets(self, collection, path=None, prefix=None) -> dict:
+    def get_assets(self, collection, path=None, prefix=None, **kwargs) -> dict:
         """Retrieve the map of MTL and ANG assets of Landsat product."""
         if path is None:
             path = self.path(collection, prefix=prefix)

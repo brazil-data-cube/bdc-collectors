@@ -32,7 +32,7 @@ class SentinelCollection(BaseCollection):
 
     parser_class = Sentinel2Scene
 
-    def get_files(self, collection, path=None, prefix=None):
+    def get_files(self, collection, path=None, prefix=None, **kwargs):
         """List all files in the collection."""
         if path is None:
             path = self.path(collection, prefix)
@@ -79,7 +79,7 @@ class SentinelCollection(BaseCollection):
 
         return output
 
-    def compressed_file(self, collection, prefix=None, path_include_month=False):
+    def compressed_file(self, collection, prefix=None, path_include_month=False, **kwargs):
         """Retrieve path to the compressed scene (.zip) on local storage."""
         if prefix is None:
             prefix = current_app.config.get('DATA_DIR')
@@ -92,7 +92,7 @@ class SentinelCollection(BaseCollection):
         relative = Path(collection.name) / version / tile[:2] / tile[2] / tile[3:] / year / scene_id
 
         if path_include_month:
-            month = str(self.parser.sensing_date().month)
+            month = self.parser.sensing_date().strftime('%MM')
             relative = Path(collection.name) / version / \
                 tile[:2] / tile[2] / tile[3:] / year / month / scene_id
 
@@ -100,7 +100,7 @@ class SentinelCollection(BaseCollection):
 
         return scene_path / f'{scene_id}.zip'
 
-    def path(self, collection, prefix=None, path_include_month=False) -> Path:
+    def path(self, collection, prefix=None, path_include_month=False, **kwargs) -> Path:
         """Retrieve the relative path to the Collection on Brazil Data Cube cluster."""
         if prefix is None:
             prefix = current_app.config.get('DATA_DIR')
@@ -120,7 +120,7 @@ class SentinelCollection(BaseCollection):
 
         return scene_path
 
-    def get_assets(self, collection, path=None, prefix=None) -> dict:
+    def get_assets(self, collection, path=None, prefix=None, **kwargs) -> dict:
         """Retrieve the map assets of Sentinel product."""
         if path is None:
             path = self.path(collection, prefix=prefix)

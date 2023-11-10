@@ -33,7 +33,7 @@ class ModisCollection(BaseCollection):
 
     parser_class = ModisScene
 
-    def get_assets(self, collection, path=None, prefix=None) -> Dict[str, str]:
+    def get_assets(self, collection, path=None, prefix=None, **kwargs) -> Dict[str, str]:
         """Get a list of extra assets contained in collection path.
 
         Args:
@@ -47,7 +47,7 @@ class ModisCollection(BaseCollection):
         """
         return dict()
 
-    def path(self, collection, prefix=None, cube_prefix=None) -> Path:
+    def path(self, collection, prefix=None, cube_prefix=None, **kwargs) -> Path:
         """Retrieve the relative path to the Collection on Brazil Data Cube cluster."""
         if prefix is None:
             prefix = current_app.config.get('DATA_DIR')
@@ -63,7 +63,7 @@ class ModisCollection(BaseCollection):
 
         return scene_path
 
-    def compressed_file(self, collection, prefix=None) -> Path:
+    def compressed_file(self, collection, prefix=None, **kwargs) -> Path:
         """Show the path to the MODIS HDF file."""
         path = self.path(collection=collection, prefix=prefix, cube_prefix='Archive')
 

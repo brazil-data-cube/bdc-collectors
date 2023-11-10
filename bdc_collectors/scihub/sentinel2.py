@@ -31,25 +31,41 @@ class Sentinel1(SentinelCollection):
 
     parser_class = Sentinel1Scene
 
-    def path(self, collection, prefix=None) -> Path:
+    def path(self, collection, prefix=None, path_include_month=False, **kwargs) -> Path:
         if prefix is None:
             prefix = current_app.config.get('DATA_DIR')
 
         date = self.parser.sensing_date()
         year = str(date.year)
+        day = str(date.day)
         month = date.strftime('%MM')
-        relative = f'{collection.name}/v{collection.version}/{year}/{month}/{self.parser.scene_id}'
+        version = entry_version(collection.version)
+        relative = f'{collection.name}/{version}/{year}/{month}/{day}'
 
         return Path(prefix or '') / relative
 
-    def get_files(self, collection, path=None, prefix=None):
+    def get_files(self, collection, path=None, prefix=None, **kwargs):
         globber = Path(path or self.path(collection, prefix)).rglob('*')
         output = {}
         for entry in globber:
-            if entry.suffix.lower() == '.tif':
+            if entry.suffix.lower().startswith('.tif'):
                 name = '_'.join(entry.stem.split('_')[-2:])
                 output[name] = entry
+            elif entry.suffix.lower() == ".xml":
+                output[entry.name] = entry
+            elif entry.name == "quick-look.png":
+                output["thumbnail"] = entry
         return output
+
+    def compressed_file(self, collection, prefix=None, path_include_month=False, **kwargs):
+        """Retrieve path to the compressed scene (.zip) on local storage."""
+        if prefix is None:
+            prefix = current_app.config.get('DATA_DIR')
+
+        scene_id = self.parser.scene_id
+        scene_path = self.path(collection, prefix=prefix, path_include_month=path_include_month)
+
+        return scene_path / f'{scene_id}.zip'
 
 
 class Sentinel2(SentinelCollection):
@@ -61,7 +77,7 @@ class Sentinel3(SentinelCollection):
 
     parser_class = Sentinel3Scene
 
-    def get_files(self, collection, path=None, prefix=None):
+    def get_files(self, collection, path=None, prefix=None, **kwargs):
         """List all files in the collection."""
         if path is None:
             path = self.path(collection, prefix)
@@ -75,7 +91,7 @@ class Sentinel3(SentinelCollection):
 
         return output
 
-    def compressed_file(self, collection, prefix=None, path_include_month=False):
+    def compressed_file(self, collection, prefix=None, path_include_month=False, **kwargs):
         """Retrieve path to the compressed scene (.zip) on local storage."""
         if prefix is None:
             prefix = current_app.config.get('DATA_DIR')
@@ -85,23 +101,23 @@ class Sentinel3(SentinelCollection):
 
         return scene_path / f'{scene_id}.zip'
 
-    def path(self, collection, prefix=None, path_include_month=False) -> Path:
+    def path(self, collection, prefix=None, path_include_month=False, **kwargs) -> Path:
         """Retrieve the relative path to the Collection on Brazil Data Cube cluster."""
         if prefix is None:
             prefix = current_app.config.get('DATA_DIR')
 
         year = str(self.parser.sensing_date().year)
         month = str(self.parser.sensing_date().month)
+        day = str(self.parser.sensing_date().day)
         version = entry_version(collection.version)
-        scene_id = self.parser.scene_id
 
-        relative = Path(collection.name) / version / year / month / scene_id
+        relative = Path(collection.name) / version / year / month / day
 
         scene_path = Path(prefix or '') / relative
 
         return scene_path
 
-    def get_assets(self, collection, path=None, prefix=None) -> dict:
+    def get_assets(self, collection, path=None, prefix=None, **kwargs) -> dict:
         """Retrieve the map assets of Sentinel product."""
         if path is None:
             path = self.path(collection, prefix=prefix)
