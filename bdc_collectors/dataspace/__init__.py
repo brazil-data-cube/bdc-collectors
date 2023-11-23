@@ -34,7 +34,7 @@ import requests
 from ..base import BaseProvider, BulkDownloadResult, SceneResult, SceneResults
 from ..exceptions import DataOfflineError, DownloadError
 from ..scihub.sentinel2 import Sentinel1, Sentinel2, Sentinel3
-from ..utils import download_stream, import_entry
+from ..utils import download_stream, import_entry, to_bool
 from ._token import TokenManager
 from .odata import ODATAStrategy
 
@@ -52,7 +52,7 @@ def init_provider():
 
 class DataspaceProvider(BaseProvider):
     """Represent the Driver for Copernicus Dataspace program.
-    
+
     This module supports the following API provider using strategies:
     - ODATA
     - STAC
@@ -61,7 +61,7 @@ class DataspaceProvider(BaseProvider):
     For Authorization and Token Authentication, as defined in
     `Access Token <https://documentation.dataspace.copernicus.eu/APIs/Token.html>`_,
     an ``access_token`` is required to download data. By default, this module stores these tokens in
-    :class:`bdc_collectors.dataspace._token.TokenManager`. Whenever a download is initiated by 
+    :class:`bdc_collectors.dataspace._token.TokenManager`. Whenever a download is initiated by
     :meth:`bdc_collectors.dataspace.DataspaceProvider.download`, the bdc-collectors creates two (2) access tokens
     in memory and then use it to download as many scenes as can. When the token expires, it automatically refresh
     a new token.
@@ -210,7 +210,6 @@ class DataspaceProvider(BaseProvider):
 
         return (success, [], failed,)
 
-
     def _download(self, entry: SceneResult, output: str, **kwargs):
         try:
             downloaded_file = self.download(entry, output=output, **kwargs)
@@ -224,13 +223,20 @@ class DataspaceProvider(BaseProvider):
 
     def _check_integrity(self, scene: SceneResult, filepath: str):
         """Check for scene file integrity if exists.
-        
+
         Note:
             Ensure that the file is writable.
             It removes the file when its invalid.
         """
         if not os.path.exists(filepath):
             return False
+
+        skip_checksum = to_bool(os.getenv("SKIP_CHECKSUM", "0"))
+        if skip_checksum:
+            res = is_valid_zip(filepath)
+
+            logging.info(f"Testing zip (unzip -t) {filepath} {res}")
+            return res
 
         if scene.get("Checksum"):
             checksums = scene["Checksum"]
@@ -243,7 +249,11 @@ class DataspaceProvider(BaseProvider):
         return True
 
     def _item_id(self, scene: str) -> str:
-        return f"{scene}.SAFE" if not scene.endswith(".SAFE") and scene[:2] in ("S1", "S2") else scene
+        if not scene.endswith(".SAFE") and scene[:2] in ("S1", "S2"):
+            return f"{scene}.SAFE"
+        elif not scene.endswith(".SEN3") and scene[:2] in ("S3",):
+            return f"{scene}.SEN3"
+        return scene
 
 
 def _is_valid_checksum(filepath: str, checksums: t.List[t.Dict[str, t.Any]]) -> bool:
@@ -259,6 +269,8 @@ def _is_valid_checksum(filepath: str, checksums: t.List[t.Dict[str, t.Any]]) -> 
         checksum = _check_sum(filepath, algorithm)
         if checksum == context["Value"]:
             return True
+
+        logging.warning(f"Checksum error {context['Value']}, got {checksum}")
 
     return False
 
@@ -277,6 +289,7 @@ def _check_sum(file_path: t.Union[str, t.Any], algorithm: t.Any, chunk_size=1638
     Returns:
         The hex digest.
     """
+
     def _read(stream):
         for chunk in iter(lambda: stream.read(chunk_size), b""):
             algorithm.update(chunk)
@@ -288,3 +301,12 @@ def _check_sum(file_path: t.Union[str, t.Any], algorithm: t.Any, chunk_size=1638
         _read(file_path)
 
     return algorithm.hexdigest()
+
+
+def is_valid_zip(filepath: str) -> bool:
+    import subprocess
+
+    proc = subprocess.Popen(["unzip", "-t", filepath], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc.wait()
+
+    return proc.returncode == 0

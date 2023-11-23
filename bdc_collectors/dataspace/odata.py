@@ -136,7 +136,7 @@ class ODATAStrategy(BaseProvider):
             attribute["Name"]: attribute["Value"] for attribute in product["Attributes"]
         }
         product.pop("Attributes")
-        return SceneResult(product["Name"].replace(".SAFE", ""),
+        return SceneResult(product["Name"].replace(".SAFE", "").replace(".SEN3", ""),
                            attribute_dict.get("cloudCover"),
                            link=f"{PRODUCTS_URL.format(url=self.api_url)}({product['Id']})/$value",
                            **product,
