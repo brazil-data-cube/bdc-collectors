@@ -120,6 +120,10 @@ class DataspaceProvider(BaseProvider):
             scenes.append(self._item_id(options["scene"]))
         if options.get("scenes"):
             scenes.extend([self._item_id(scene) for scene in options["scenes"]])
+
+        if options.get("filename"):
+            scenes.append(self._item_id(options["filename"].replace("*", "")))
+
         if scenes:
             options.setdefault("ids", [])
             options["ids"].extend(scenes)
