@@ -276,6 +276,8 @@ class USGS(BaseProvider):
         """
         day_night_indicator = kwargs.get('day_night_indicator', 'Day')
         day_night_filter_id = self._get_filter(dataset=query, context='Day/Night Indicator')
+        if day_night_filter_id is None:  # Not supported in dataset
+            return options
 
         # When no filter specified or no meta filter for Day/Night indicator, use day only.
         if len(options['sceneFilter']['metadataFilter']['childFilters']) == 0 or \
