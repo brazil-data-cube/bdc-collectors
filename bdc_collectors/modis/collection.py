@@ -54,7 +54,7 @@ class ModisCollection(BaseCollection):
 
         year = str(self.parser.sensing_date().year)
         tile = self.parser.tile_id()
-        version = entry_version(collection.version)
+        version = f"v{collection.version}"
         scene_id = self.parser.scene_id
 
         relative = Path(collection.name) / version / tile[:3] / tile[3:] / year / scene_id
@@ -67,4 +67,4 @@ class ModisCollection(BaseCollection):
         """Show the path to the MODIS HDF file."""
         path = self.path(collection=collection, prefix=prefix, cube_prefix='Archive')
 
-        return path / f'{self.parser.scene_id}.hdf'
+        return path.parent / f'{self.parser.scene_id}.hdf'
