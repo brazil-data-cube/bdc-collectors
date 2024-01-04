@@ -11,6 +11,14 @@ Changes
 =======
 
 
+Version 1.0.0.dev2 (2024-01-04)
+-------------------------------
+
+- Fix search in Landsat API using day/night indicator
+- Improve stability of driver Copernicus DataSpace EcoSystem
+- Improve driver to search in provider NASA Modis
+
+
 Version 1.0.0.dev1 (2023-10-03)
 -------------------------------
 
