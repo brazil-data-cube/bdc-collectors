@@ -22,6 +22,7 @@ import logging
 import re
 from typing import List, Type
 
+import shapely.geometry
 from shapely.geometry import shape
 
 from ..base import BaseCollection, BaseProvider, SceneResult
@@ -33,6 +34,7 @@ from .landsat5 import Landsat5
 from .landsat7 import Landsat7
 from .landsat8 import Landsat8
 from .parser import LandsatScene
+from ..utils import to_geom
 
 
 def init_provider():
@@ -176,7 +178,15 @@ class USGS(BaseProvider):
 
             options['sceneFilter'].setdefault('metadataFilter', dict(filterType='and', childFilters=[]))
 
-            if 'bbox' in kwargs and kwargs['bbox'] is not None:
+            if kwargs.get("geom"):
+                geom = to_geom(kwargs["geom"])
+                options['sceneFilter']['spatialFilter'] = dict(
+                    filterType='geojson',
+                    geoJson=shapely.geometry.mapping(geom),
+                )
+                self._check_day_indicator(query, options, **kwargs)
+
+            if 'bbox' in kwargs and kwargs['bbox'] is not None:  # TODO: Use as geojson instead
                 bbox = kwargs['bbox']
                 options['sceneFilter']['spatialFilter'] = dict(
                     filterType='mbr',
