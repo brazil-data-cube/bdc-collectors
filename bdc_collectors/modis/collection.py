@@ -24,7 +24,6 @@ from typing import Dict
 from flask import current_app
 
 from ..base import BaseCollection
-from ..utils import entry_version
 from .parser import ModisScene
 
 

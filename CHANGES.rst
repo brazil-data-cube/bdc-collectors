@@ -11,6 +11,12 @@ Changes
 =======
 
 
+Version 1.0.0.dev3 (2024-03-04)
+-------------------------------
+
+- Fix MODIS api search using geometry
+
+
 Version 1.0.0.dev2 (2024-01-04)
 -------------------------------
 
