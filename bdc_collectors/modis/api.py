@@ -69,6 +69,9 @@ class ModisAPI(BaseProvider):
         options = dict(
             product=query
         )
+        client_opts = self._kwargs.get("client_options", {})
+        options.update(client_opts)
+
         path = kwargs.get('path')
         if path is None:
             path = self._guess_path(query)
@@ -226,7 +229,7 @@ class ModisAPI(BaseProvider):
                 downloaded_meta_file = f'{api.writeFilePath}/{file_xml}'
                 meta = self._read_meta(downloaded_meta_file)
 
-                if meta.get("geometry"):
+                if geom is not None and meta.get("geometry"):
                     g = shapely.geometry.shape(meta["geometry"])
                     if not g.intersects(geom):
                         continue
