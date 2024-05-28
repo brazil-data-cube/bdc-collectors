@@ -237,7 +237,7 @@ class ModisAPI(BaseProvider):
                 link = f'{api.url}/{api.path}/{date_reference}/{file}'
 
                 scenes.append(
-                    SceneResult(scene, cloud_cover=float(meta['QAPercentCloudCover']), link=link, **meta)
+                    SceneResult(scene, cloud_cover=float(meta['QAPercentCloudCover']) if meta['QAPercentCloudCover'] else None, link=link, **meta)
                 )
         return scenes
 
