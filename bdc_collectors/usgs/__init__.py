@@ -27,14 +27,13 @@ from shapely.geometry import shape
 
 from ..base import BaseCollection, BaseProvider, SceneResult
 from ..exceptions import DownloadError
+from ..utils import to_geom
 from ._collections import get_resolver
 from .api import EarthExplorer, LandsatApi
 from .base import USGSCollection
 from .landsat5 import Landsat5
 from .landsat7 import Landsat7
 from .landsat8 import Landsat8
-from .parser import LandsatScene
-from ..utils import to_geom
 
 
 def init_provider():
