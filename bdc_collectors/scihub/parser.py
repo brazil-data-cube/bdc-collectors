@@ -105,7 +105,8 @@ class Sentinel1Scene(SceneParser):
 class Sentinel3Scene(SceneParser):
     """Define the parser of Sentinel 3 Scene identifiers.
     
-    Follows the `Sentinel-3 Naming Convention <https://sentinels.copernicus.eu/web/sentinel/user-guides/sentinel-3-olci/naming-convention>`_."""
+    Follows the `Sentinel-3 Naming Convention <https://sentinels.copernicus.eu/web/sentinel/user-guides/sentinel-3-olci/naming-convention>`_.
+    """
 
     fragments: List[str]
 
@@ -143,7 +144,7 @@ class Sentinel3Scene(SceneParser):
         return self.fragments[0]
 
     def datatype_id(self):
-        """Return the scene data type identifier"""
+        """Return the scene data type identifier."""
         return self.fragments[3:7]
 
     def level(self) -> str:

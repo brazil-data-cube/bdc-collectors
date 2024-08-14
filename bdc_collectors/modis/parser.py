@@ -65,6 +65,6 @@ class ModisScene(_SceneParser):
         """Retrieve the collection level."""
         return ''
 
-    def version(self) -> '':
+    def version(self):
         """Retrieve the Collection Version."""
         return self.fragments[3]

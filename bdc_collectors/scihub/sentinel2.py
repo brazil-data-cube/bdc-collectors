@@ -32,6 +32,7 @@ class Sentinel1(SentinelCollection):
     parser_class = Sentinel1Scene
 
     def path(self, collection, prefix=None, path_include_month=False, **kwargs) -> Path:
+        """Retrieve base path for sentinel dataset."""
         if prefix is None:
             prefix = current_app.config.get('DATA_DIR')
 
@@ -45,6 +46,7 @@ class Sentinel1(SentinelCollection):
         return Path(prefix or '') / relative
 
     def get_files(self, collection, path=None, prefix=None, **kwargs):
+        """Retrieve the mapped files inside a sentinel folder."""
         globber = Path(path or self.path(collection, prefix)).rglob('*')
         output = {}
         for entry in globber:

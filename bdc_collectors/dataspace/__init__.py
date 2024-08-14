@@ -261,7 +261,7 @@ class DataspaceProvider(BaseProvider):
 
 
 def _is_valid_checksum(filepath: str, checksums: t.List[t.Dict[str, t.Any]]) -> bool:
-    """Assert checksum validity of data"""
+    """Assert checksum validity of data."""
     for context in checksums:
         algorithm_name = context["Algorithm"]
         algorithm_cls = getattr(hashlib, algorithm_name.lower(), None)
@@ -308,6 +308,7 @@ def _check_sum(file_path: t.Union[str, t.Any], algorithm: t.Any, chunk_size=1638
 
 
 def is_valid_zip(filepath: str) -> bool:
+    """Check the consistency of Zip file."""
     import subprocess
 
     proc = subprocess.Popen(["unzip", "-t", filepath], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
