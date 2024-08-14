@@ -10,6 +10,17 @@
 Changes
 =======
 
+Version 1.0.0 (2024-08-14)
+--------------------------
+
+- Add driver for Copernicus DataSpace EcoSystem.
+- Review module dependencies
+- Improve stability of driver Copernicus DataSpace EcoSystem
+- Improve driver to search in provider NASA Modis
+- Improve docs for command line and downloading.
+- Fix MODIS api search using geometry
+- Fix search in Landsat API using day/night indicator
+
 
 Version 1.0.0.dev3 (2024-03-04)
 -------------------------------
