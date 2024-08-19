@@ -10,7 +10,7 @@
 Changes
 =======
 
-Version 1.0.0 (2024-08-14)
+Version 1.0.0 (2024-08-19)
 --------------------------
 
 - Add driver for Copernicus DataSpace EcoSystem.
