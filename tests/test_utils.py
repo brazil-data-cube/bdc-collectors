@@ -22,9 +22,10 @@ from tempfile import TemporaryDirectory
 
 import pytest
 import requests
+import shapely.geometry
 
 from bdc_collectors.exceptions import DownloadError
-from bdc_collectors.utils import download_stream, working_directory
+from bdc_collectors.utils import download_stream, to_geom, working_directory
 
 
 @pytest.fixture
@@ -81,3 +82,18 @@ def test_change_work_dir():
             assert os.getcwd() == tmp
 
     assert os.getcwd() == old
+
+
+def test_to_geom():
+    for value in ["POINT(-54 -12)", shapely.geometry.Point(-53, -15), {"type": "Point", "coordinates": [-47, -10]}]:
+        geom = to_geom(value)
+        assert isinstance(geom, shapely.geometry.base.BaseGeometry)
+
+    with pytest.raises(ValueError) as exc:
+        to_geom(10)
+
+    exc.match("Invalid geometry")
+
+    with pytest.raises(shapely.errors.GEOSException) as exc:
+        to_geom("PPOINT (-54 -12)")
+    exc.match("ParseException: Unknown type: 'PPOINT'")
