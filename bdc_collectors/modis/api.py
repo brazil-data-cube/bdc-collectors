@@ -30,6 +30,7 @@ import shapely.geometry
 
 from ..base import BaseCollection, BaseProvider, SceneResult, SceneResults
 from ..exceptions import DataOfflineError
+from ..utils import to_geom
 from .collection import ModisCollection
 from .parser import ModisScene
 
@@ -68,6 +69,9 @@ class ModisAPI(BaseProvider):
         options = dict(
             product=query
         )
+        client_opts = self._kwargs.get("client_options", {})
+        options.update(client_opts)
+
         path = kwargs.get('path')
         if path is None:
             path = self._guess_path(query)
@@ -93,8 +97,13 @@ class ModisAPI(BaseProvider):
             # The end date should be the same as today.
             options['enddate'] = options['today']
 
-        # TODO: Implement way to deal with minimum bounding region
         api = self._get_client(**options)
+
+        if kwargs.get("bbox"):
+            options["geom"] = shapely.geometry.box(*kwargs["bbox"])
+
+        if kwargs.get("geom"):
+            options["geom"] = to_geom(kwargs["geom"])
 
         dates = api.getListDays()
 
@@ -208,6 +217,7 @@ class ModisAPI(BaseProvider):
         files = api.getFilesList(date_reference)
 
         scenes = []
+        geom = kwargs.get("geom")
 
         for file in files:
             if file.endswith('.hdf'):
@@ -218,10 +228,16 @@ class ModisAPI(BaseProvider):
 
                 downloaded_meta_file = f'{api.writeFilePath}/{file_xml}'
                 meta = self._read_meta(downloaded_meta_file)
+
+                if geom is not None and meta.get("geometry"):
+                    g = shapely.geometry.shape(meta["geometry"])
+                    if not g.intersects(geom):
+                        continue
+
                 link = f'{api.url}/{api.path}/{date_reference}/{file}'
 
                 scenes.append(
-                    SceneResult(scene, cloud_cover=float(meta['QAPercentCloudCover']), link=link, **meta)
+                    SceneResult(scene, cloud_cover=float(meta['QAPercentCloudCover']) if meta['QAPercentCloudCover'] else None, link=link, **meta)
                 )
         return scenes
 

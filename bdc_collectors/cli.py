@@ -33,6 +33,7 @@ def get_version(ctx, param, value):
         return
 
     import platform
+
     from . import __version__
 
     click.echo(

@@ -83,7 +83,7 @@ class TestSciHub:
             }
         )
 
-        requests_mock.post(search_url, json=json_result, status_code=200, headers={'content-type': 'application/json'})
+        requests_mock.get(search_url, json=json_result, status_code=200, headers={'content-type': 'application/json'})
 
         res = provider.search('S2MSI1C', start_date='2020-01-01', end_date='2020-01-10',
                               platform='Sentinel-2', cloud_cover=100, bbox=[-54, -12, -52, -10])

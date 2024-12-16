@@ -1,6 +1,6 @@
 #
 # This file is part of Brazil Data Cube BDC-Collectors.
-# Copyright (C) 2023 INPE.
+# Copyright (C) 2024 INPE.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -63,14 +63,14 @@ setup_requires = [
 
 install_requires = [
     'python-dateutil>=2',
-    'Flask>=1.1.0,<2.3',
+    'Flask>=1.1',
     'google-cloud-storage>=1.28,<2',
     'beautifulsoup4>=4.9,<5',
     'redis>=4',
     'sentinelsat>=0.14,<1.3',
     'Shapely>=1.8',
     'tqdm>=4.50',
-    'pystac-client>=0.6,<0.7'
+    'pystac-client>=0.6,<0.8'
 ]
 
 packages = find_packages()

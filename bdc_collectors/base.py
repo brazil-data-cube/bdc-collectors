@@ -78,7 +78,7 @@ class BaseCollection:
         self.parser = self.parser_class(scene_id)
         self.collection = collection
 
-    def get_files(self, collection, path=None, prefix=None) -> Dict[str, Path]:
+    def get_files(self, collection, path=None, prefix=None, **kwargs) -> Dict[str, Path]:
         """List all files in the collection.
 
         Returns:
@@ -92,7 +92,7 @@ class BaseCollection:
 
         return {i: entry for i, entry in enumerate(entries)}
 
-    def get_assets(self, collection, path=None, prefix=None) -> Dict[str, str]:
+    def get_assets(self, collection, path=None, prefix=None, **kwargs) -> Dict[str, str]:
         """Get a list of extra assets contained in collection path.
 
         Args:
@@ -106,7 +106,7 @@ class BaseCollection:
         """
         return dict()
 
-    def path(self, collection, prefix=None, path_include_month=False) -> Path:
+    def path(self, collection, prefix=None, path_include_month=False, **kwargs) -> Path:
         """Retrieve the relative path to the Collection on Brazil Data Cube cluster.
 
         Note:
@@ -129,7 +129,7 @@ class BaseCollection:
 
         return scene_path
 
-    def compressed_file(self, collection, prefix=None, path_include_month=False) -> Path:
+    def compressed_file(self, collection, prefix=None, path_include_month=False, **kwargs) -> Path:
         """Retrieve the path to the compressed file L1.
 
         .. deprecated:: 0.6.2

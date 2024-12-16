@@ -10,6 +10,37 @@
 Changes
 =======
 
+Version 1.0.1 (2024-12-16)
+--------------------------
+
+- Fix depended bot related Flask dependency <2.3 due Werkzeug vulnerability on version less than 3x
+
+
+Version 1.0.0 (2024-08-19)
+--------------------------
+
+- Add driver for Copernicus DataSpace EcoSystem.
+- Review module dependencies
+- Improve stability of driver Copernicus DataSpace EcoSystem
+- Improve driver to search in provider NASA Modis
+- Improve docs for command line and downloading.
+- Fix MODIS api search using geometry
+- Fix search in Landsat API using day/night indicator
+
+
+Version 1.0.0.dev3 (2024-03-04)
+-------------------------------
+
+- Fix MODIS api search using geometry
+
+
+Version 1.0.0.dev2 (2024-01-04)
+-------------------------------
+
+- Fix search in Landsat API using day/night indicator
+- Improve stability of driver Copernicus DataSpace EcoSystem
+- Improve driver to search in provider NASA Modis
+
 
 Version 1.0.0.dev1 (2023-10-03)
 -------------------------------
