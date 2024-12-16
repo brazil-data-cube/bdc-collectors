@@ -10,6 +10,12 @@
 Changes
 =======
 
+Version 1.0.1 (2024-12-16)
+--------------------------
+
+- Fix depended bot related Flask dependency <2.3 due Werkzeug vulnerability on version less than 3x
+
+
 Version 1.0.0 (2024-08-19)
 --------------------------
 

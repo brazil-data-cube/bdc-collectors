@@ -63,7 +63,7 @@ setup_requires = [
 
 install_requires = [
     'python-dateutil>=2',
-    'Flask>=1.1.0,<2.3',
+    'Flask>=1.1',
     'google-cloud-storage>=1.28,<2',
     'beautifulsoup4>=4.9,<5',
     'redis>=4',
