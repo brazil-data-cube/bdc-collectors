@@ -10,6 +10,11 @@
 Changes
 =======
 
+Version 1.0.2 (2024-12-30)
+--------------------------
+
+- Review scene parsing for Sentinel-2 products - 2C
+
 Version 1.0.1 (2024-12-16)
 --------------------------
 
