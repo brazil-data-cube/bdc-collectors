@@ -35,7 +35,7 @@ class Sentinel2Scene(SceneParser):
 
         fragments = scene_id.split('_')
 
-        if len(fragments) != 7 or fragments[0] not in ('S2A', 'S2B'):
+        if len(fragments) != 7 or not fragments[0].startswith("S2"):
             raise RuntimeError(f'Invalid sentinel scene {scene_id}')
 
         self.fragments = fragments
@@ -74,7 +74,7 @@ class Sentinel1Scene(SceneParser):
 
         fragments = scene_id.split('_')
 
-        if len(fragments) != 9 or fragments[0] not in ('S1A', 'S1B'):
+        if len(fragments) != 9 or not fragments[0].startswith("S1"):
             raise RuntimeError(f'Invalid sentinel scene {scene_id}')
 
         self.fragments = fragments
