@@ -291,3 +291,80 @@ The following code is an example of an ``entry_points`` in ``setup.py`` file:
             'mycatalog = my_app.mycatalog'
         ]
     }
+
+
+Creating a new provider based on existent provider
+++++++++++++++++++++++++++++++++++++++++++++++++++
+
+This example shows how to create your own provider based on :class:`bdc_collectors.dataspace.DataspaceProvider`.
+You can also use this if you would like to implement a different provider from scratch.
+
+
+This example assume you have a minimal package named ``my-app`` with the following structure::
+
+    my-app/
+    ├── setup.py
+    └── my_app/
+        ├── __init__.py
+        └── api.py
+
+
+Create a file named ``my_app/api.py`` and use the following snippet for a minimal set up for inheriting from :class:`bdc_collectors.dataspace.DataspaceProvider`::
+
+    from typing import Type
+
+    from ..base import BaseCollection
+    from ..dataspace import DataspaceProvider
+
+    def init_provider():
+        return dict(MyProvider=MyProviderAPI)
+
+
+    class MyProviderAPI(DataspaceProvider):
+        def __init__(self, *args, **kwargs):
+            kwargs.setdefault("api_url", "https://my-url-provider-hub")
+            super(MyProviderAPI, self).__init__(*args, **kwargs)
+        def get_collector(self, collection: str) -> Type[BaseCollection]:
+            # ... logic for custom data collection
+            return super().get_collector(collection) # optional
+        def search(self, *args, **kwargs):
+            # ... logic for search collection
+            return super().search(*args, **kwargs) # optional
+        def download(self, *args, **kwargs):
+            # ... logic for search collection
+            return super().download(*args, **kwargs) # optional
+
+
+The file ``my_app/__init__.py`` should export the ``MyProviderAPI`` as following::
+
+    from .api import MyProviderAPI, init_provider
+
+    __all__ = (
+        "MyProviderAPI",
+        "init_provider"
+    )
+
+
+Edit ``setup.py`` and register your module with the following statement::
+
+
+    entry_points={
+        'bdc_collectors.providers': [
+            'myprovider = my_app'
+        ]
+    }
+
+After that, you can install the module and it will be loaded whenever you call the extension like as following::
+
+    from bdc_collectors.ext import CollectorExtension
+    from flask import Flask
+
+    app = Flask(__name__)
+    ext = CollectorExtension(app)  # flask_app
+    catalog = ext.get_provider("MyProvider")(parameter1="x", parameter2="b", ...)
+    catalog.search(...)
+
+    # Or use directly
+    # from my_app import MyProviderAPI
+    # catalog = MyProviderAPI(parameter1="x", parameter2="b", ...)
+    # catalog.search(...)
