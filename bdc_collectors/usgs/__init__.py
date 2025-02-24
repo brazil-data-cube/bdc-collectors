@@ -83,11 +83,10 @@ class USGS(BaseProvider):
 
         self.kwargs = kwargs
 
-        if lazy:
-            self.api = None
-        else:
-            self.api = LandsatApi(self.kwargs['username'], self.kwargs['password'])
-            self.ee = EarthExplorer(self.kwargs['username'], self.kwargs['password'])
+        self.api = None
+
+        if not lazy:
+            self._api()
 
     def _set_default_collections(self, datasets, data_type):
         for dataset in datasets:
@@ -97,7 +96,7 @@ class USGS(BaseProvider):
     def _api(self):
         """Lazy API instance."""
         if self.api is None:
-            self.api = LandsatApi(self.kwargs['username'], self.kwargs['password'])
+            self.api = LandsatApi(self.kwargs['username'], self.kwargs['token'])
             self.ee = EarthExplorer(self.kwargs['username'], self.kwargs['password'])
 
     def get_collector(self, collection: str) -> Type[BaseCollection]:

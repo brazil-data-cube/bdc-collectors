@@ -38,6 +38,10 @@ class LandsatApi:
     This interface follows the `JSON API 1.5 <https://m2m.cr.usgs.gov/api/docs/json/>`_ stable spec.
 
     Use this API directly only if you really need. Otherwise use `bdc_collectors.usgs.USGS` instead.
+
+    Note:
+        This interface is already according to M2M Login Tokens.
+        Consider ``password`` as ``token``.
     """
 
     api_url: str = 'https://m2m.cr.usgs.gov/api/api/json/{version}'
@@ -46,7 +50,7 @@ class LandsatApi:
 
     _filters: Dict[str, Any]
 
-    def __init__(self, username: str, password: str, version: str = 'stable',
+    def __init__(self, username: str, token: str, version: str = 'stable',
                  lazy: bool = False, progress: bool = False, **kwargs):
         """Build a API instance."""
         self.api_url = self.api_url.format(version=version)
@@ -54,7 +58,7 @@ class LandsatApi:
         self.session.headers.update(**{'Content-Type': 'application/json'})
         self._credentials = dict(
             username=username,
-            password=password,
+            token=token,
             **kwargs
         )
         self.progress = progress
@@ -71,7 +75,7 @@ class LandsatApi:
         Raises:
             RuntimeError for any error occurred.
         """
-        response = self.session.post(f'{self.api_url}/login', json=self._credentials,
+        response = self.session.post(f'{self.api_url}/login-token', json=self._credentials,
                                      headers={'Content-Type': 'application/json'})
 
         # TODO: validate content type

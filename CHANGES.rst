@@ -10,6 +10,14 @@
 Changes
 =======
 
+Version 1.0.3 (2025-02-21)
+--------------------------
+
+- Update USGS Connector API to support login-token (#103)
+- Remove warnings from docs buiding
+- Review Dockerfile version
+
+
 Version 1.0.2 (2024-12-30)
 --------------------------
 
